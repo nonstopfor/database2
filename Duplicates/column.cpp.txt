@@ -1,0 +1,59 @@
+#include "column.h"
+#include <iostream> 
+using namespace std;
+
+bool str_com(const string& a,const string& b) { //忽略大小写的字符串比较函数 
+	if (a.length()!=b.length()) return false;
+	else {
+		bool c;
+		for (int i=0; i<a.length();i++) {
+			if (isalpha(a[i])&&isalpha(b[i])) 
+				c = (a[i]==b[i]) || (a[i]-b[i]=='A'-'a') || (a[i]-b[i]=='a'-'A');
+			else c = (a[i]==b[i]);
+			if (!c) return false;
+		}
+		return true;
+	}
+}
+
+Column::Column(string a,string b,bool c): cname(a),can_be_null(c) {
+    if (str_com(b,"INT")) type = "int(11)";
+    else if (str_com(b,"CHAR")) type = "char(1)";
+    else type = "double";
+}
+
+Column::~Column() {}
+
+string Column::getname() const {return cname;} //获得列名的接口 
+
+string Column::gettype() const {return type;} //获得列所对应变量类型的接口 
+
+bool Column::can_null() const {return can_be_null;} //获得列所存储变量是否可为空的接口 
+
+int Column::getsize() {return cvalue.size();} //获得列所存储数据的数量，即行数的接口 
+
+void Column::insert(const string& a) { //插入新数据 
+	string value = a;
+	if ((value[0]=='\"'&&value[value.length()-1]=='\"')||(value[0]=='\''&&value[value.length()-1]=='\'')) { //删除字符头尾的引号 
+		value.erase(value.begin());
+		value.erase(value.end()-1);
+	}
+	cvalue.push_back(value);
+}
+
+void Column::del(int s) { //删除行 
+	cvalue.erase(cvalue.begin()+s);
+}
+
+void Column::update(int s,const string& a) { //修改某行数据 
+	string value = a;
+	if ((value[0]=='\"'&&value[value.length()-1]=='\"')||(value[0]=='\''&&value[value.length()-1]=='\'')) {
+		value.erase(value.begin());
+		value.erase(value.end()-1);
+	}
+	cvalue[s] = value;
+}
+
+string& Column::operator[] (int s) { //重载[]以便于直接访问某一行数据 
+	return cvalue[s];
+}
