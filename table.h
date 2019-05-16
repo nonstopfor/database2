@@ -4,7 +4,7 @@
 #include <vector>
 #include "column.h"
 using namespace std;
-//函数的具体功能和实现均在cpp文件中 
+
 
 class Table {
 	string tname; //表格名 
@@ -16,6 +16,9 @@ public:
 	string getname() const; //获得表格名的接口
 	string getprime () const; //获得表格主键名的接口
 	int getsize(); //获得表格列数的接口
+	int getrowsize();//获得表格行数的接口
+	int count(string& s);
+	Column* operator[](const int i);//重载[]，便于以列指标访问列的指针
 	friend class Database; //方便Database类访问Table数据
 	Column* operator[] (const string& a); //重载[]，便于以列名访问列的指针
 	void create(const string& a,const string& b,bool c); //在表格中添加列，a为列名，b为列变量的类型名，c表示该列元素是否可为NULL

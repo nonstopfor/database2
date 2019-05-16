@@ -5,7 +5,7 @@
 #include <algorithm>
 #include "table.h"
 using namespace std;
-//函数的具体功能和实现均在cpp文件中 
+
 
 class Database {
 	string dname; //数据库名 
@@ -19,6 +19,7 @@ public:
 	void create(const string& a,const string& b); //在库里创建表格的函数，a表示表格名，b为表格的主键
 	void show(); //展示数据库所包含的表格
 	bool find_table(const string& a); //传入表格名判断库里是否有该表
+	Table* get_table(const string& a);//通过表格名获得相应表格的指针
 	void del(const string& a); //通过表格名删除表格
 };
 

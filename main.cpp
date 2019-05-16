@@ -5,7 +5,21 @@
 #include <vector>
 #include "database.h"
 using namespace std;
-
+string ordername;//调用sort之前更新
+vector<string>overall_columnname;
+map<vector<string>,int>overall_mcount;//调用sort之前更新
+bool cmp(vector<string> u,vector<string> v){
+	if(Tolower(ordername.substr(0,5))=="count"){
+		return overall_mcount[u]<overall_mcount[v];
+	}
+	else{
+		int k;
+		for(k=0;k<overall_columnname.size();++k){
+			if(overall_columnname[k]==ordername) break;
+		}
+		return u[k]<v[k];
+	}
+}
 int main() {
     string todo; Database* now = NULL; //now表示现在正在使用的数据库，便于切换操作 
     map<string,Database*> database; //从数据库名映射至相应的数据库指针 
@@ -164,7 +178,7 @@ int main() {
 			string value = todo.substr(q+1,s-q-1);
 			(*now)[tname]->update_row(cname,value,(*now)[tname]->whereClauses(clause));
 		}
-		else if (str_com(todo.substr(0,7),"SELECT ")) { //查询表格信息 
+		/*else if (str_com(todo.substr(0,7),"SELECT ")) { //查询表格信息 
 			int p = todo.find(' ',7);
 			int q = todo.find(' ',p+6);
 			if (q==-1) q = todo.length()-1;
@@ -185,11 +199,284 @@ int main() {
 			else clause = todo.substr(pp+7,todo.length()-pp-8);
 			if (cname=="*") (*now)[tname]->show_all((*now)[tname]->whereClauses(clause)); //若select后为 * ，则调用show_all显示全部 
 			else (*now)[tname]->show_one(cname,(*now)[tname]->whereClauses(clause));
+		}*/
+		else{
+			todo.erase(todo.size()-1);//为了适应之前的代码读入时把分号也读入进来
+			auto t=cut(todo);int l=t.size();
+			if (Tolower(todo).find("outfile")!=-1){//数据导出
+				fstream fout;
+				string filename=t[l-3].substr(1,t[l-3].size()-2);
+				ifstream check_if_exist(filename);
+				if(check_if_exist.is_open()){
+					continue;
+				}
+				fout.open(filename,ios::out);
+				if(now->find_table(t[l-1])){
+						Table* ptable=now->get_table(t[l-1]);
+						if(t[1]=="*"){
+							cout<<"getin";
+							for(int i=0;i<ptable->getrowsize();++i){
+								cout<<"get";
+								for(int j=0;j<ptable->getsize();++j){
+									fout<<(*((*ptable)[j]))[i]<<"\t";
+									cout<<"write";
+								}
+								fout<<endl;
+							}
+						}
+						else{
+							vector<string>columnname;
+							for(int i=1;i<=l-6;++i){
+								if(i!=l-6){
+									columnname.push_back(t[i].erase(t[i].size()-1));
+								}
+								else{
+									columnname.push_back(t[i]);
+								}
+							}
+							for(int i=0;i<ptable->getrowsize();++i){
+								for(int j=0;j<columnname.size();++j){
+									fout<<(*(*ptable)[columnname[j]])[i]<<"\t";
+								}
+							}
+						}
+					}
+				fout.close();	
+			}
+			else if(Tolower(todo).find("infile")!=-1){//数据导入
+				string filename;
+				for(int i=0;i<l;++i){
+					if(Tolower(t[i])=="infile"){
+						filename=t[i+1].substr(1,t[i+1].size()-2);
+						break;
+					}
+				}
+				fstream fin;
+				fin.open(filename,ios::in);
+				if(t[l-1].back()!=')'){
+					string s;
+					Table* ptable=now->get_table(t[l-1]);
+					while(getline(fin,s)){
+						auto u=cut(s);
+						for(int i=0;i<u.size();++i){
+							(*ptable)[i]->insert(u[i]);
+						}
+					}
+				}
+				else{
+					string tablename="";
+					int i;int j;
+					for(i=0;i<l;++i){
+						if(Tolower(t[i])=="table"){
+							for(j=0;j<t[i+1].size();++j){
+								if(t[i+1][j]=='(') break;
+								tablename+=t[i+1][j];
+							}						
+							break;
+						}
+					}
+					Table* ptable=now->get_table(tablename);
+					vector<string>columnname;
+					columnname.push_back(t[i+1].substr(j+1,t[i+1].size()-j-2));
+					for(int u=i+2;u<l;++u){
+						columnname.push_back(t[u].substr(0,t[u].size()-1));
+					}
+					string s;
+					while(getline(fin,s)){
+						
+						auto u=cut(s);
+						for(int i=0;i<u.size();++i){
+							
+							(*ptable)[columnname[i]]->insert(u[i]);
+						}
+						ptable->default_fill();
+
+					}
+					ptable->sort_prime();
+				}
+				fin.close();
+			}
+			else if(Tolower(todo).find("order by")!=-1){//排序语句
+				Table* ptable;
+				int i;//i对应from出现的下标
+				for(i=0;i<t.size();++i){
+					if(Tolower(t[i])=="from"){
+						ptable=now->get_table(t[i+1]);
+						break;
+					}
+				}
+				vector<string>group;
+				
+				vector<vector<string>>result;
+				string countname="*";
+				int mode=0;
+				map<vector<string>,int>m;//计算出现的次数
+				map<vector<string>,int>mcount;//计算count值
+				if(Tolower(todo).find("count")!=-1){
+					mode=1;
+					for(int i=0;i<l;++i){
+						if(Tolower(t[i]).substr(0,5)=="count"){
+							countname=t[i].substr(6,t[i].size()-7);
+							break;
+						}
+					}
+					
+				}
+				int j;//j对应GROUP BY中的BY出现的下标
+				for(j=0;j<l;++j){
+					if(Tolower(t[j])=="by") break;
+				}
+				for(int q=j+1;q<l-4;++q){
+					group.push_back(t[q].substr(0,t[q].size()-1));
+				}
+				group.push_back(t[l-4]);
+				for(int i=0;i<ptable->getrowsize();++i){
+					vector<string>temp;
+					for(int j=0;j<group.size();++j){
+						temp.push_back((*(*ptable)[group[j]])[i]);
+					}					
+					if(m[temp]){
+						++m[temp];
+					}
+					else{
+						result.push_back(temp);
+						++m[temp];
+					}
+					if(countname=="*") ++mcount[temp];
+					else {
+						if((*(*ptable)[countname])[i]!="NULL") ++mcount[temp];
+					}
+				}
+				for(int i=0;i<group.size();++i){
+					cout<<group[i]<<'\t';
+				}
+				if(mode){
+					string u="COUNT(";
+					u+=countname;u+=")";
+					cout<<u;
+				}
+				cout<<endl;
+				overall_columnname.clear();
+				for(int i=0;i<group.size();++i){
+					overall_columnname.push_back(group[i]);
+				}
+				ordername=t[l-1];
+				overall_mcount=mcount;
+				sort(result.begin(),result.end(),cmp);
+				for(int i=0;i<result.size();++i){
+					for(int j=0;j<result[i].size();++j){
+						cout<<result[i][j]<<'\t';
+					}
+					if(mode) cout<<mcount[result[i]];
+					cout<<endl;
+				}
+			}
+			else if(Tolower(todo).find("group by")!=-1){//分组语句
+				Table* ptable;
+				int i;//i对应from出现的下标
+				for(i=0;i<t.size();++i){
+					if(Tolower(t[i])=="from"){
+						ptable=now->get_table(t[i+1]);
+						break;
+					}
+				}
+				vector<string>group;
+				
+				vector<vector<string>>result;
+				string countname="*";
+				int mode=0;
+				map<vector<string>,int>m;//计算出现的次数
+				map<vector<string>,int>mcount;//计算count值
+				if(Tolower(todo).find("count")!=-1){
+					mode=1;
+					for(int i=0;i<l;++i){
+						if(Tolower(t[i]).substr(0,5)=="count"){
+							countname=t[i].substr(6,t[i].size()-7);
+							break;
+						}
+					}
+					
+				}
+				int j;//j对应BY出现的下标
+				for(j=0;j<l;++j){
+					if(Tolower(t[j])=="by") break;
+				}
+				for(int q=j+1;q<l-1;++q){
+					group.push_back(t[q].substr(0,t[q].size()-1));
+				}
+				group.push_back(t[l-1]);
+				for(int i=0;i<ptable->getrowsize();++i){
+					vector<string>temp;
+					for(int j=0;j<group.size();++j){
+						temp.push_back((*(*ptable)[group[j]])[i]);
+					}					
+					if(m[temp]){
+						++m[temp];
+					}
+					else{
+						result.push_back(temp);
+						++m[temp];
+					}
+					if(countname=="*") ++mcount[temp];
+					else {
+						if((*(*ptable)[countname])[i]!="NULL") ++mcount[temp];
+					}
+				}
+				for(int i=0;i<group.size();++i){
+					cout<<group[i]<<'\t';
+				}
+				if(mode){
+					string u="COUNT(";
+					u+=countname;u+=")";
+					cout<<u;
+				}
+				cout<<endl;
+				for(int i=0;i<result.size();++i){
+					for(int j=0;j<result[i].size();++j){
+						cout<<result[i][j]<<'\t';
+					}
+					if(mode) cout<<mcount[result[i]];
+					cout<<endl;
+				}
+			}
+			else if(Tolower(todo).find("count")!=-1){//实现COUNT()函数
+				cout<<t[1]<<endl;
+				Table* ptable=(*now)[t[l-1]];
+				cout<<ptable->count(t[1])<<endl;
+			}
+			else if(Tolower(t[0])=="select"&&Tolower(t[l-2])=="from"){//查询表格信息
+				//由于去了分号，这里要加回来（适应之前的代码）
+				todo+=';';
+				int p = todo.find(' ',7);
+				int q = todo.find(' ',p+6);
+				if (q==-1) q = todo.length()-1;
+				string tname = todo.substr(p+6,q-p-6);
+				if (!(now->find_table(tname))) {
+					cout << "Table Not Found!\n";
+					continue;
+				}
+				string cname = todo.substr(7,p-7);
+				if ((!((*now)[tname]->find_column(cname)))&&(cname!="*")) {
+					cout << "Column Not Found!\n";
+					continue;
+				}
+				string clause;
+				int pp = todo.find(" WHERE ");
+				if (pp==-1) pp = todo.find(" where ");
+				if (pp==-1) clause = "";
+				else clause = todo.substr(pp+7,todo.length()-pp-8);
+				if (cname=="*") (*now)[tname]->show_all((*now)[tname]->whereClauses(clause)); //若select后为 * ，则调用show_all显示全部 
+				else (*now)[tname]->show_one(cname,(*now)[tname]->whereClauses(clause));
+			}
+
+
 		}
-		else {
+		
+
+		/*else {
 			cout << "WRONG INPUT!\n"; //防止错误输入使程序崩溃 
 			continue;
-		}
+		}*/
 	}
 	return 0;
 }

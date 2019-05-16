@@ -47,6 +47,13 @@ bool Database::find_table(const string& a) { //给出表格名判断库里是否有这个表格
 	
 }
 
+Table* Database::get_table(const string& a){//通过表格名获得相应表格的指针
+	for(auto t=dvalue.begin();t!=dvalue.end();t++){
+		if((*t)->getname()==a) return *t;
+	}
+	//return nullptr;
+}
+
 void Database::del(const string& a) { //给出表格名删除表格 
 	for (auto t=dvalue.begin();t!=dvalue.end();t++) {
 		if ((*t)->getname()==a) {

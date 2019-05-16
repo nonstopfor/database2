@@ -2,8 +2,9 @@
 #define COLUMN_H
 #include <vector>
 #include <string>
+#include<fstream>
 using namespace std;
-//函数的具体功能和实现均在cpp文件中 
+
 
 class Column {
 	string cname; //列名 
@@ -25,5 +26,7 @@ public:
 };
 
 bool str_com(const string& a,const string& b);
-
+string Tolower(string x);
+vector<string> cut(string& s);
+    
 #endif

@@ -16,7 +16,27 @@ string Table::getname() const {return tname;} //获取表格名的接口
 string Table::getprime () const {return primary_key;} //获取主键的接口 
 
 int Table::getsize() {return tvalue.size();} //获取表格列数的接口 
+int Table::getrowsize(){return (*this)[primary_key]->getsize();}
 
+int Table::count(string& s){
+	if(Tolower(s)=="count(*)"){
+		return getrowsize();
+	}
+	else{
+		string columnname=s.substr(6,s.size()-7);
+		int result=0;
+		for(int i=0;i<(*this)[columnname]->getsize();++i){
+			if((*((*this)[columnname]))[i]!="NULL"){
+							++result;
+			}
+		}
+		return result;
+	}
+}
+
+Column* Table::operator[](const int i){
+	return tvalue[i];
+}
 Column* Table::operator[] (const string& a) { //重载[]以便于用列名访问到列的指针 
 	for (auto t=tvalue.begin();t!=tvalue.end();t++) {
 		if ((*t)->getname()==a) return (*t);
