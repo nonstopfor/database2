@@ -28,6 +28,7 @@ public:
 	//2.可能比较对象为某个表格属性和常数
 	void enumerate(int& num_table,int step,vector<int>v,vector<string>& tablename,
 	vector<vector<int>>& result,string condition);//辅助进行---行组合的枚举
+	vector<vector<string>> simple_select(string todo);
 };
 
 #endif

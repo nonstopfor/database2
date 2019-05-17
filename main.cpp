@@ -7,8 +7,9 @@
 using namespace std;
 string ordername;//调用sort之前更新
 vector<string>overall_columnname;
+int order_sub;//UNION操作中排序指标对应的下标
 map<vector<string>,int>overall_mcount;//调用sort之前更新
-bool cmp(vector<string> u,vector<string> v){
+bool cmp(vector<string>& u,vector<string>& v){
 	if(Tolower(ordername.substr(0,5))=="count"){
 		return overall_mcount[u]<overall_mcount[v];
 	}
@@ -19,6 +20,16 @@ bool cmp(vector<string> u,vector<string> v){
 		}
 		return u[k]<v[k];
 	}
+}
+bool cmp2(vector<string>& u,vector<string>& v){//用于UNION实现中sort，去重
+	for(int i=0;i<u.size();++i){
+		if(u[i]<v[i]) return true;
+		else if(u[i]>v[i]) return false;
+	}
+	return false;
+}
+bool cmp3(vector<string>& u,vector<string>& v){//用于UNION实现中的ORDER BY语句
+	return u[order_sub]<v[order_sub];
 }
 int main() {
     string todo; Database* now = NULL; //now表示现在正在使用的数据库，便于切换操作 
@@ -296,6 +307,74 @@ int main() {
 				}
 				fin.close();
 			}
+			else if(Tolower(todo).find("union")!=-1){//实现union操作符
+				//先实现UNION连接两个结果集，有需要再改进
+				//之前组只实现了select之后有一个属性，可能需要再改进，暂时用simple_select
+				int pos_union=Tolower(todo).find("union");
+				int pos_select2=Tolower(todo).find("select",pos_union);
+				int pos_order=Tolower(todo).find("order");
+
+				if(pos_order==-1){
+					pos_order=todo.size()+1;
+				}
+				string todo1=todo.substr(0,pos_union-1);
+				vector<string>columnname;
+				auto cut_todo1=cut(todo1);
+				for(int i=1;i<cut_todo1.size()-2;++i){
+					string x;
+					if(i!=cut_todo1.size()-3){
+						x=cut_todo1[i].substr(0,cut_todo1[i].size()-1);
+					}
+					else{
+						x=cut_todo1[i];
+					}
+					columnname.push_back(x);
+				}
+				vector<vector<string>> result1=now->simple_select(todo1);
+				string todo2=todo.substr(pos_select2,pos_order-pos_select2-1);
+				
+				vector<vector<string>> result2=now->simple_select(todo2);
+				
+				
+				vector<vector<string>> result=result1;
+				
+				result.insert(result.end(),result2.begin(),result2.end());
+				
+				if(Tolower(todo).find("union all")!=-1){
+					sort(result.begin(),result.end(),cmp2);
+					auto end_unique=unique(result.begin(),result.end());
+					result.erase(end_unique,result.end());
+				}
+				
+				if(Tolower(todo).find("order")!=-1){
+					ordername=t[l-1];
+					auto& w=columnname;//找排序指标对应的下标
+					for(int i=0;i<w.size();++i){
+						string x;
+						if(i!=w.size()-3){
+							x=w[i].substr(0,w[i].size()-1);
+						}
+						else x=w[i];
+						if(x==ordername) {
+							order_sub=i;
+							break;
+						}
+					}
+					sort(result.begin(),result.end(),cmp3);
+				}
+				//cout<<todo1<<endl<<todo2<<endl;
+				for(int i=0;i<columnname.size();++i){
+					cout<<columnname[i]<<'\t';
+				}
+				cout<<endl;
+				for(int i=0;i<result.size();++i){
+					for(int j=0;j<result[i].size();++j){
+						cout<<result[i][j]<<'\t';
+					}
+					cout<<endl;
+				}
+				
+			}
 			else if(Tolower(todo).find("order by")!=-1){//排序语句
 				Table* ptable;
 				int i;//i对应from出现的下标
@@ -468,9 +547,7 @@ int main() {
 				if (cname=="*") (*now)[tname]->show_all((*now)[tname]->whereClauses(clause)); //若select后为 * ，则调用show_all显示全部 
 				else (*now)[tname]->show_one(cname,(*now)[tname]->whereClauses(clause));
 			}
-			else if(Tolower(todo).find("union")!=-1){//实现union操作符
-
-			}
+			
 			else if(Tolower(t[0])=="select"){//实现多表的whereclause
 				vector<string>tablename;//存储from后面的表名
 				int pos_from=0,pos_where=0;

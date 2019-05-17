@@ -93,18 +93,18 @@ bool Database::where_multiple_work(vector<string>& tablename, vector<int>&data, 
 	if(condition=="*") return true;
 	bool ans = true;
     const bool default_ans = false;
-    int now_space=0, f=0;
-    now_space = condition.find(" OR "); //按照优先级先处理OR
-    if (now_space == -1) now_space = condition.find(" or ");
-    if (!f && now_space != -1) {
+    int this_space=0, f=0;
+    this_space = condition.find(" OR "); //按照优先级先处理OR
+    if (this_space == -1) this_space = condition.find(" or ");
+    if (!f && this_space != -1) {
         f = 1;
-        return ans = where_multiple_work(tablename,data, condition.substr(0, now_space)) || where_multiple_work(tablename, data,condition.substr(now_space+4, condition.length()-now_space-4));
+        return ans = where_multiple_work(tablename,data, condition.substr(0, this_space)) || where_multiple_work(tablename, data,condition.substr(this_space+4, condition.length()-this_space-4));
     }
-    now_space = condition.find(" AND "); //再处理AND
-    if (now_space == -1) now_space = condition.find(" and ");
-    if (!f && now_space != -1) {
+    this_space = condition.find(" AND "); //再处理AND
+    if (this_space == -1) this_space = condition.find(" and ");
+    if (!f && this_space != -1) {
         f = 1;
-		return ans = where_multiple_work(tablename,data, condition.substr(0, now_space)) && where_multiple_work(tablename, data,condition.substr(now_space+4, condition.length()-now_space-4));
+		return ans = where_multiple_work(tablename,data, condition.substr(0, this_space)) && where_multiple_work(tablename, data,condition.substr(this_space+4, condition.length()-this_space-4));
     }
 	//先获得需要比较的数据
 	vector<string>t;
@@ -197,4 +197,56 @@ bool Database::where_multiple_work(vector<string>& tablename, vector<int>&data, 
 	}
 	string opt=t[1];
 	return compare(data1,data2,type1,type2,opt);
+}
+
+vector<vector<string>> Database::simple_select(string todo){
+	vector<vector<string>>result;
+	todo+=';';//为了适应之前组的代码
+	int p = todo.find(' ',7);
+	int q = todo.find(' ',p+6);
+	if (q==-1) q = todo.length()-1;
+	string tname = todo.substr(p+6,q-p-6);
+	if (!(this->find_table(tname))) {
+		cout << "Table Not Found!\n";
+		
+	}
+	string cname = todo.substr(7,p-7);
+	if ((!((*this)[tname]->find_column(cname)))&&(cname!="*")) {
+		cout << "Column Not Found!\n";
+		
+	}
+	string clause;
+	int pp = todo.find(" WHERE ");
+	if (pp==-1) pp = todo.find(" where ");
+	if (pp==-1) clause = "";
+	else clause = todo.substr(pp+7,todo.length()-pp-8);
+	if(cname=="*"){
+		auto u=(*this)[tname]->whereClauses(clause);
+		for(int i=0;i<(*this)[tname]->getrowsize();++i){
+			if(u[i]){
+				vector<string>temp;
+				for(int j=0;j<(*this)[tname]->getsize();++j){
+					temp.push_back((*(*(*this)[tname])[j])[i]);
+				}
+				result.push_back(temp);
+			}
+			
+		}
+	}
+	else{
+		auto u=(*this)[tname]->whereClauses(clause);
+		for(int i=0;i<(*this)[tname]->getrowsize();++i){
+			if(u[i]){
+				vector<string>temp;
+				temp.push_back((*(*(*this)[tname])[cname])[i]);
+				result.push_back(temp);
+			}
+			
+		}
+	}
+	return result;
+
+
+	//if (cname=="*") (*this)[tname]->show_all((*this)[tname]->whereClauses(clause)); //若select后为 * ，则调用show_all显示全部 
+	//else (*this)[tname]->show_one(cname,(*this)[tname]->whereClauses(clause));
 }

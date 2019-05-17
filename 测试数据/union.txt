@@ -1,0 +1,12 @@
+CREATE DATABASE OOP;
+USE OOP;
+CREATE TABLE oop_info(stu_id INT NOT NULL, PRIMARY KEY(stu_id), stu_name CHAR, join_year INT);
+INSERT INTO oop_info(stu_id, stu_name, join_year) VALUES (2018011243, "a", 2008);
+INSERT INTO oop_info(stu_id, stu_name, join_year) VALUES (2018011344, "b", 2009);
+INSERT INTO oop_info(stu_id, stu_name, join_year) VALUES (2018011445, "c", 2010);
+CREATE TABLE oop_score(stu_id INT NOT NULL, PRIMARY KEY(stu_id), stu_score INT, exam_year INT);
+INSERT INTO oop_score(stu_id, stu_score, exam_year) VALUES (2018011243, 91, 2008);
+INSERT INTO oop_score(stu_id, stu_score, exam_year) VALUES (2018011344, 92, 2009);
+INSERT INTO oop_score(stu_id, stu_score, exam_year) VALUES (2018011445, 95, 2011);
+SELECT stu_id FROM oop_info UNION SELECT stu_id FROM oop_score ORDER BY stu_id;
+SELECT stu_id FROM oop_info UNION ALL SELECT stu_id FROM oop_score ORDER BY stu_id;
