@@ -21,6 +21,13 @@ public:
 	bool find_table(const string& a); //传入表格名判断库里是否有该表
 	Table* get_table(const string& a);//通过表格名获得相应表格的指针
 	void del(const string& a); //通过表格名删除表格
+	vector<vector<int>> where_multiple(vector<string>& tablename,string condition);//返回多表中哪些行符合条件
+	bool where_multiple_work(vector<string>& tablename, vector<int>&data, string condition);
+	//辅助函数，判断某一个组合是否满足条件    data中保存了各表对应的行数,保存顺序与tablename中一致
+	//待改进：1.大于小于等于号前后可能无空格(已解决)
+	//2.可能比较对象为某个表格属性和常数
+	void enumerate(int& num_table,int step,vector<int>v,vector<string>& tablename,
+	vector<vector<int>>& result,string condition);//辅助进行---行组合的枚举
 };
 
 #endif

@@ -34,6 +34,7 @@ public:
 	void update_row(string cname,string value,const vector<bool>& check); //修改表中数据，cname表示列名，value表示要填入的值
 	vector<bool> whereClauses(const string& str); //把一个wherecluause处理为bool向量，其中check[i]为true表示该行符合条件，反之同理
 	bool whereclauses_work(const int& i, const string& str); //为实现whereClauses函数定义的辅助函数，详见table.cpp
+	
 };
 
 

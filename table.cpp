@@ -235,7 +235,7 @@ bool Table::whereclauses_work(const int& i, const string& str) { //对单行(第i行)
                 if ((l_string != "NULL") && (r_string != "NULL")) ans = l_string > r_string;
                 else ans = default_ans;
             }
-            if (str_type == "double(10,2)") {
+            if (str_type == "double") {
                 if ((*this)[l_string] != NULL) l_string = (((*this)[l_string])->cvalue[i]);
                 else r_string = (((*this)[r_string])->cvalue[i]);
                 if ((l_string != "NULL") && (r_string != "NULL")) ans = stod(l_string) > stod(r_string);
@@ -261,7 +261,7 @@ bool Table::whereclauses_work(const int& i, const string& str) { //对单行(第i行)
                 if ((l_string != "NULL") && (r_string != "NULL")) ans = l_string < r_string;
                 else ans = default_ans;
             }
-            if (str_type == "double(10,2)") {
+            if (str_type == "double") {
                 if ((*this)[l_string] != NULL) l_string = (((*this)[l_string])->cvalue[i]);
                 else r_string = (((*this)[r_string])->cvalue[i]);
                 if ((l_string != "NULL") && (r_string != "NULL")) ans = stod(l_string) < stod(r_string);
@@ -287,7 +287,7 @@ bool Table::whereclauses_work(const int& i, const string& str) { //对单行(第i行)
                 if ((l_string != "NULL") && (r_string != "NULL")) ans = l_string == r_string;
                 else ans = default_ans;
             }
-            if (str_type == "double(10,2)") {
+            if (str_type == "double") {
                 if ((*this)[l_string] != NULL) l_string = (((*this)[l_string])->cvalue[i]);
                 else r_string = (((*this)[r_string])->cvalue[i]);
                 if ((l_string != "NULL") && (r_string != "NULL")) ans = stod(l_string) == stod(r_string);

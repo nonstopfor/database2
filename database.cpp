@@ -63,3 +63,138 @@ void Database::del(const string& a) { //给出表格名删除表格
 		}
 	}
 }
+void Database::enumerate(int& num_table,int step,vector<int>v,vector<string>& tablename,
+	vector<vector<int>>& result,string condition){
+	if(step==num_table+1){
+		if(where_multiple_work(tablename,v,condition)){
+			result.push_back(v);
+		}
+
+		return;
+	}
+	else{
+		for(int i=0;i<(*this)[tablename[step-1]]->getrowsize();++i){
+			vector<int>u=v;
+			u.push_back(i);
+			enumerate(num_table,step+1,u,tablename,result,condition);
+		}
+	}
+}
+vector<vector<int>> Database::where_multiple(vector<string>& tablename,string condition){
+	vector<vector<int>> result;
+	int num_table=tablename.size();
+	//由于表的数目不确定，导致for循环层数不确定，故考虑用递归枚举
+	vector<int>temp;
+	enumerate(num_table,1,temp,tablename,result,condition);
+	return result;
+}
+
+bool Database::where_multiple_work(vector<string>& tablename, vector<int>&data, string condition){
+	if(condition=="*") return true;
+	bool ans = true;
+    const bool default_ans = false;
+    int now_space=0, f=0;
+    now_space = condition.find(" OR "); //按照优先级先处理OR
+    if (now_space == -1) now_space = condition.find(" or ");
+    if (!f && now_space != -1) {
+        f = 1;
+        return ans = where_multiple_work(tablename,data, condition.substr(0, now_space)) || where_multiple_work(tablename, data,condition.substr(now_space+4, condition.length()-now_space-4));
+    }
+    now_space = condition.find(" AND "); //再处理AND
+    if (now_space == -1) now_space = condition.find(" and ");
+    if (!f && now_space != -1) {
+        f = 1;
+		return ans = where_multiple_work(tablename,data, condition.substr(0, now_space)) && where_multiple_work(tablename, data,condition.substr(now_space+4, condition.length()-now_space-4));
+    }
+	//先获得需要比较的数据
+	vector<string>t;
+	string tablename1,tablename2,columnname1,columnname2;
+	int x=condition.find('=');
+	if(x==-1) x=condition.find('>');
+	if(x==-1) x=condition.find('<');
+	int lx=x-1,rx=x+1;
+	while(condition[lx]==' ') --lx;
+	while(condition[rx]==' ') ++rx;
+	int ll=0,rr=condition.size()-1;
+	while(condition[ll]==' ') ++ll;
+	while(condition[rr]==' ') --rr;
+	t.push_back(condition.substr(ll,lx+1-ll));
+	string u="";u+=condition[x];
+	t.push_back(u);
+	t.push_back(condition.substr(rx,rr+1-rx));
+	//完成切割
+
+	int i;
+	bool c1=false,c2=false;//第一个数据和第二个数据是否是常数
+	for(i=0;i<t[0].size();++i){
+		if(t[0][i]=='.'){
+			tablename1=t[0].substr(0,i);
+			columnname1=t[0].substr(i+1,t[0].size()-i-1);
+			break;
+		}
+	}
+	if(i==t[0].size()){
+		c1=true;
+	}
+	for(i=0;i<t[2].size();++i){
+		if(t[2][i]=='.'){
+			tablename2=t[2].substr(0,i);
+			columnname2=t[2].substr(i+1,t[2].size()-i-1);
+			break;
+		}
+	}
+	if(i==t[2].size()) {
+		c2=true;
+	}
+	string data1,data2,type1,type2;
+	if(!c1){
+		for(int i=0;i<tablename.size();++i){
+			if(tablename[i]==tablename1){
+				data1=(*(*(*this)[tablename1])[columnname1])[data[i]];
+				type1=(*(*(*this)[tablename1])[columnname1]).gettype();
+				break;
+			}
+		}
+	}
+	else{
+		if(isdigit(t[0][0])){
+			data1=t[0];
+			if(t[0].find('.')!=-1){
+				type1="int(11)";
+			}
+			else{
+				type1="double";
+			}
+		}
+		else{
+			data1=t[0].substr(1,t[0].size()-2);
+			type1="char(1)";
+		}
+	}
+	if(!c2){
+		for(int i=0;i<tablename.size();++i){
+			if(tablename[i]==tablename2){
+				data2=(*(*(*this)[tablename2])[columnname2])[data[i]];
+				type2=(*(*(*this)[tablename2])[columnname2]).gettype();
+				break;
+			}
+		}
+	}
+	else{
+		if(isdigit(t[2][0])){
+			data2=t[2];
+			if(t[2].find('.')!=-1){
+				type2="int(11)";
+			}
+			else{
+				type2="double";
+			}
+		}
+		else{
+			data2=t[2].substr(1,t[2].size()-2);
+			type2="char(1)";
+		}
+	}
+	string opt=t[1];
+	return compare(data1,data2,type1,type2,opt);
+}

@@ -444,7 +444,7 @@ int main() {
 				Table* ptable=(*now)[t[l-1]];
 				cout<<ptable->count(t[1])<<endl;
 			}
-			else if(Tolower(t[0])=="select"&&Tolower(t[l-2])=="from"){//查询表格信息
+			else if(Tolower(t[0])=="select"&&Tolower(t[l-2])=="from"){//查询表格信息,单whereclause
 				//由于去了分号，这里要加回来（适应之前的代码）
 				todo+=';';
 				int p = todo.find(' ',7);
@@ -468,7 +468,68 @@ int main() {
 				if (cname=="*") (*now)[tname]->show_all((*now)[tname]->whereClauses(clause)); //若select后为 * ，则调用show_all显示全部 
 				else (*now)[tname]->show_one(cname,(*now)[tname]->whereClauses(clause));
 			}
+			else if(Tolower(todo).find("union")!=-1){//实现union操作符
 
+			}
+			else if(Tolower(t[0])=="select"){//实现多表的whereclause
+				vector<string>tablename;//存储from后面的表名
+				int pos_from=0,pos_where=0;
+				for(int i=0;i<l;++i){
+					if(Tolower(t[i])=="from"){
+						pos_from=i;
+					}
+					if(Tolower(t[i])=="where"){
+						pos_where=i;
+						break;
+					}
+				}
+				string condition;
+				if(pos_where){
+					for(int i=pos_from+1;i<pos_where;++i){
+						if(i==pos_where-1){
+							tablename.push_back(t[i]);
+						}
+						else{
+							tablename.push_back(t[i].substr(0,t[i].size()-1));
+						}
+					}
+					int u=todo.find(" WHERE ");
+					if(u==-1) u=todo.find(" where ");
+					condition=todo.substr(u+7,todo.size()-u-7);					
+				}
+				else{
+					condition="*";
+				}
+				vector<string>columnname;
+				vector<string>ctablename;//存储输出时每个列对应的表格的名字
+				map<string,int>table_sub;//存储输出时的表名在v中的vector中的第几个
+				for(int i=0;i<tablename.size();++i){
+					table_sub[tablename[i]]=i;
+				}
+				for(int i=1;i<pos_from;++i){
+					int x=t[i].find('.');
+					ctablename.push_back(t[i].substr(0,x));
+					if(i==pos_from-1){
+						columnname.push_back(t[i].substr(x+1,t[i].size()-x-1));
+					}
+					else{
+						columnname.push_back(t[i].substr(x+1,t[i].size()-x-2));
+					}
+				}
+
+				vector<vector<int>>v=now->where_multiple(tablename,condition);
+				for(int i=0;i<columnname.size();++i){
+					cout<<columnname[i]<<'\t';
+				}
+				cout<<endl;
+				for(int i=0;i<v.size();++i){
+					for(int j=0;j<columnname.size();++j){
+						int x=table_sub[ctablename[j]];
+						cout<<(*(*(*now)[ctablename[j]])[columnname[j]])[v[i][x]]<<'\t';
+					}
+					cout<<endl;
+				}
+			}
 
 		}
 		
