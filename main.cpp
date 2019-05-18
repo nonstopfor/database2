@@ -309,7 +309,7 @@ int main() {
 			}
 			else if(Tolower(todo).find("union")!=-1){//实现union操作符
 				//先实现UNION连接两个结果集，有需要再改进
-				//之前组只实现了select之后有一个属性，可能需要再改进，暂时用simple_select
+				//之前组只实现了select之后有一个属性，这里已改进为可以有多个属性（单表）
 				int pos_union=Tolower(todo).find("union");
 				int pos_select2=Tolower(todo).find("select",pos_union);
 				int pos_order=Tolower(todo).find("order");
@@ -330,10 +330,10 @@ int main() {
 					}
 					columnname.push_back(x);
 				}
-				vector<vector<string>> result1=now->simple_select(todo1);
+				vector<vector<string>> result1=now->multiple_select(todo1);
 				string todo2=todo.substr(pos_select2,pos_order-pos_select2-1);
 				
-				vector<vector<string>> result2=now->simple_select(todo2);
+				vector<vector<string>> result2=now->multiple_select(todo2);
 				
 				
 				vector<vector<string>> result=result1;

@@ -250,3 +250,48 @@ vector<vector<string>> Database::simple_select(string todo){
 	//if (cname=="*") (*this)[tname]->show_all((*this)[tname]->whereClauses(clause)); //若select后为 * ，则调用show_all显示全部 
 	//else (*this)[tname]->show_one(cname,(*this)[tname]->whereClauses(clause));
 }
+
+vector<vector<string>> Database::multiple_select(string todo){
+	vector<vector<string>>result;
+	auto t=cut(todo);int l=t.size();
+	int pos_where=0;
+	for(int i=0;i<l;++i){
+		if(Tolower(t[i])=="where"){
+			pos_where=i;break;
+		}
+	}
+	string clause="";
+	if(pos_where){
+		int pp=Tolower(todo).find("where");
+		clause=todo.substr(pp+6,todo.size()-pp-6);
+	}
+	int pos_from=0;
+	string tablename="";
+	for(int i=0;i<l;++i){
+		if(Tolower(t[i])=="from"){
+			pos_from=i;
+			tablename=t[i+1];
+			break;
+		}
+	}
+	vector<string>columnname;
+	for(int i=1;i<pos_from;++i){
+		if(i!=pos_from-1){
+			columnname.push_back(t[i].substr(0,t[i].size()-1));
+		}
+		else{
+			columnname.push_back(t[i]);
+		}
+	}
+	auto check=(*this)[tablename]->whereClauses(clause);
+	for(int i=0;i<check.size();++i){
+		if(check[i]){
+			vector<string>temp;
+			for(int j=0;j<columnname.size();++j){
+				temp.push_back((*(*(*this)[tablename])[columnname[j]])[i]);
+			}
+			result.push_back(temp);
+		}
+	}
+	return result;
+}

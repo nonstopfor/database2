@@ -32,7 +32,7 @@ public:
 	void swap_row(int a,int b); //给行数交换某两行（行数从0开始）
 	void sort_prime(); //根据主键从大到小给表格的行排序
 	void update_row(string cname,string value,const vector<bool>& check); //修改表中数据，cname表示列名，value表示要填入的值
-	vector<bool> whereClauses(const string& str); //把一个wherecluause处理为bool向量，其中check[i]为true表示该行符合条件，反之同理
+	vector<bool> whereClauses(const string& str); //把一个wherecluause处理为bool向量，其中check[i]为true表示该行符合条件，反之同理,这里的str不带分号
 	bool whereclauses_work(const int& i, const string& str); //为实现whereClauses函数定义的辅助函数，详见table.cpp
 	
 };
