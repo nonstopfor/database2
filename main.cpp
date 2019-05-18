@@ -9,6 +9,7 @@ string ordername;//调用sort之前更新
 vector<string>overall_columnname;
 int order_sub;//UNION操作中排序指标对应的下标
 map<vector<string>,int>overall_mcount;//调用sort之前更新
+string data_keep_filename="data_keep.txt";
 bool cmp(vector<string>& u,vector<string>& v){
 	if(Tolower(ordername.substr(0,5))=="count"){
 		return overall_mcount[u]<overall_mcount[v];
@@ -31,15 +32,62 @@ bool cmp2(vector<string>& u,vector<string>& v){//用于UNION实现中sort，去重
 bool cmp3(vector<string>& u,vector<string>& v){//用于UNION实现中的ORDER BY语句
 	return u[order_sub]<v[order_sub];
 }
+
+void read_data(map<string,Database*>& database,vector<string>& all_database){
+	fstream fin;
+	fin.open(data_keep_filename,ios::in);
+	if(!fin.is_open()) return;
+	string x;
+	Database* now_database;
+	Table* now_table;
+	while(getline(fin,x)){
+		auto t=cut(x);
+		if(t[0]=="database:"){
+			database[t[1]]=new Database(t[1]);
+			now_database=database[t[1]];
+			all_database.push_back(t[1]);
+			
+		}
+		else if(t[0]=="table:"){
+			string tablename=t[1],prime_key=t[2];
+			now_database->create(tablename,prime_key);
+			now_table=(*now_database)[tablename];
+		}
+		else if(t[0]=="column:"){
+			for(int i=1;i<t.size();i+=3){
+				bool q;
+				if(t[i+2]=="1") q=true;
+				else q=false;
+				if(t[i+1][0]=='i') t[i+1]="INT";
+				else if(t[i+1][0]=='c') t[i+1]="CHAR";
+				now_table->create(t[i],t[i+1],q);
+			}
+		}
+		else if(t[0]=="data:"){
+			for(int i=1;i<t.size();++i){
+				(*now_table)[i-1]->insert(t[i]);
+			}
+		}
+		/*else if(t[0]=="nowdatabase:"){
+			now_database=database[t[1]];
+		}*/
+	}
+	fin.close();
+}
+
 int main() {
+	
     string todo; Database* now = NULL; //now表示现在正在使用的数据库，便于切换操作 
     map<string,Database*> database; //从数据库名映射至相应的数据库指针 
+	vector<string>all_database;
+	read_data(database,all_database);
     while(getline(cin,todo)) {
     	if (todo=="") continue; 
     	if (todo[todo.length()-1]==' ') todo.erase(todo.end()-1); //删除行末空格 
     	if (str_com(todo.substr(0,8).c_str(),"CREATE D")) { //创建数据库 
     		string dname = todo.substr(16,todo.length()-17); //截取数据库名dname，下同 
     		database[dname] = new Database(dname);
+			all_database.push_back(dname);
 		}
 		else if (str_com(todo.substr(0,6),"DROP D")) { //删除数据库 
 			string dname = todo.substr(14,todo.length()-15);
@@ -47,8 +95,19 @@ int main() {
 				cout << "Database Not Found!\n";
 				continue;
 			} 
+			int i;
+			for(i=0;i<all_database.size();++i){
+				if(all_database[i]==dname){
+					//all_database.erase(all_database.begin()+i);
+					all_database.erase(all_database.begin()+i);
+					break;
+				}
+			}		
+			
 			delete database[dname]; //释放内存 
 			database.erase(dname);
+			
+
 		}
 		else if (str_com(todo.substr(0,4),"USE ")) { //利用now指针切换数据库 
 			string dname = todo.substr(4,todo.length()-5);
@@ -609,12 +668,18 @@ int main() {
 			}
 
 		}
-		
-
+		fstream fout;
+		fout.open(data_keep_filename,ios::out|ios::ate);
+		for(int i=0;i<all_database.size();++i){
+			database[all_database[i]]->keep_data(data_keep_filename,fout);
+		}
+		//fout<<"nowdatabase: "<<now->getname()<<endl;
+		fout.close();
 		/*else {
 			cout << "WRONG INPUT!\n"; //防止错误输入使程序崩溃 
 			continue;
 		}*/
+		
 	}
 	return 0;
 }

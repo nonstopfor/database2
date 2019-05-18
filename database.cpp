@@ -295,3 +295,25 @@ vector<vector<string>> Database::multiple_select(string todo){
 	}
 	return result;
 }
+
+void Database::keep_data(string filename,fstream& fout){
+	fout<<"database: "<<dname<<endl;
+	for(int i=0;i<dvalue.size();++i){
+		auto& t=*(dvalue[i]);
+		fout<<"table: "<<t.getname()<<" "<<t.getprime()<<endl;
+		fout<<"column: ";
+		for(int i=0;i<t.getsize();++i){
+			auto& u=*t[i];
+			fout<<u.getname()<<" "<<u.gettype()<<" "<<u.can_null()<<" ";
+		}
+		fout<<endl;
+		for(int j=0;j<t.getrowsize();++j){
+			fout<<"data: ";
+			for(int i=0;i<t.getsize();++i){
+				auto& u=*t[i];
+				fout<<u[j]<<" ";
+			}
+			fout<<endl;
+		}
+	}
+}

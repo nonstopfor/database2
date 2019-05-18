@@ -31,6 +31,7 @@ public:
 	vector<vector<string>> simple_select(string todo);//select后面有一个属性，单表，todo末尾无分号，无空格
 	vector<vector<string>> multiple_select(string todo);//select后面有多/1个属性，单表
 	//todo末尾无分号，无空格
+	void keep_data(string filename,fstream& fout);
 };
 
 #endif
