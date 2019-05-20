@@ -287,8 +287,15 @@ vector<vector<string>> Database::multiple_select(string todo){
 	for(int i=0;i<check.size();++i){
 		if(check[i]){
 			vector<string>temp;
-			for(int j=0;j<columnname.size();++j){
-				temp.push_back((*(*(*this)[tablename])[columnname[j]])[i]);
+			if(t[1]!="*"){
+				for(int j=0;j<columnname.size();++j){
+					temp.push_back((*(*(*this)[tablename])[columnname[j]])[i]);
+				}
+			}
+			else{
+				for(int j=0;j<(*this)[tablename]->getsize();++j){
+					temp.push_back((*(*(*this)[tablename])[j])[i]);
+				}
 			}
 			result.push_back(temp);
 		}

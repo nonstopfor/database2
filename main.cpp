@@ -80,7 +80,8 @@ int main() {
     string todo; Database* now = NULL; //now表示现在正在使用的数据库，便于切换操作 
     map<string,Database*> database; //从数据库名映射至相应的数据库指针 
 	vector<string>all_database;
-	read_data(database,all_database);
+	//便于测试，先不从存档中读入数据
+	//read_data(database,all_database);
     while(getline(cin,todo)) {
     	if (todo=="") continue; 
     	if (todo[todo.length()-1]==' ') todo.erase(todo.end()-1); //删除行末空格 
@@ -582,90 +583,112 @@ int main() {
 				Table* ptable=(*now)[t[l-1]];
 				cout<<ptable->count(t[1])<<endl;
 			}
-			else if(Tolower(t[0])=="select"&&Tolower(t[l-2])=="from"){//查询表格信息,单whereclause
-				//由于去了分号，这里要加回来（适应之前的代码）
-				todo+=';';
-				int p = todo.find(' ',7);
-				int q = todo.find(' ',p+6);
-				if (q==-1) q = todo.length()-1;
-				string tname = todo.substr(p+6,q-p-6);
-				if (!(now->find_table(tname))) {
-					cout << "Table Not Found!\n";
-					continue;
-				}
-				string cname = todo.substr(7,p-7);
-				if ((!((*now)[tname]->find_column(cname)))&&(cname!="*")) {
-					cout << "Column Not Found!\n";
-					continue;
-				}
-				string clause;
-				int pp = todo.find(" WHERE ");
-				if (pp==-1) pp = todo.find(" where ");
-				if (pp==-1) clause = "";
-				else clause = todo.substr(pp+7,todo.length()-pp-8);
-				if (cname=="*") (*now)[tname]->show_all((*now)[tname]->whereClauses(clause)); //若select后为 * ，则调用show_all显示全部 
-				else (*now)[tname]->show_one(cname,(*now)[tname]->whereClauses(clause));
-			}
-			
-			else if(Tolower(t[0])=="select"){//实现多表的whereclause
-				vector<string>tablename;//存储from后面的表名
+			else if(Tolower(t[0])=="select"){//查询表格信息,包括单表和多表
+				
 				int pos_from=0,pos_where=0;
 				for(int i=0;i<l;++i){
-					if(Tolower(t[i])=="from"){
-						pos_from=i;
-					}
-					if(Tolower(t[i])=="where"){
-						pos_where=i;
-						break;
+					if(Tolower(t[i])=="from") pos_from=i;
+					if(Tolower(t[i])=="where") {
+						pos_where=i;break;
 					}
 				}
-				string condition;
-				if(pos_where){
-					for(int i=pos_from+1;i<pos_where;++i){
-						if(i==pos_where-1){
-							tablename.push_back(t[i]);
+				if(pos_where-pos_from>2||(!pos_where&&pos_from<l-2)){//多表
+					vector<string>tablename;//存储from后面的表名
+					int pos_from=0,pos_where=0;
+					for(int i=0;i<l;++i){
+						if(Tolower(t[i])=="from"){
+							pos_from=i;
 						}
-						else{
-							tablename.push_back(t[i].substr(0,t[i].size()-1));
+						if(Tolower(t[i])=="where"){
+							pos_where=i;
+							break;
 						}
 					}
-					int u=todo.find(" WHERE ");
-					if(u==-1) u=todo.find(" where ");
-					condition=todo.substr(u+7,todo.size()-u-7);					
-				}
-				else{
-					condition="*";
-				}
-				vector<string>columnname;
-				vector<string>ctablename;//存储输出时每个列对应的表格的名字
-				map<string,int>table_sub;//存储输出时的表名在v中的vector中的第几个
-				for(int i=0;i<tablename.size();++i){
-					table_sub[tablename[i]]=i;
-				}
-				for(int i=1;i<pos_from;++i){
-					int x=t[i].find('.');
-					ctablename.push_back(t[i].substr(0,x));
-					if(i==pos_from-1){
-						columnname.push_back(t[i].substr(x+1,t[i].size()-x-1));
+					string condition;
+					if(pos_where){
+						for(int i=pos_from+1;i<pos_where;++i){
+							if(i==pos_where-1){
+								tablename.push_back(t[i]);
+							}
+							else{
+								tablename.push_back(t[i].substr(0,t[i].size()-1));
+							}
+						}
+						int u=todo.find(" WHERE ");
+						if(u==-1) u=todo.find(" where ");
+						condition=todo.substr(u+7,todo.size()-u-7);					
 					}
 					else{
-						columnname.push_back(t[i].substr(x+1,t[i].size()-x-2));
+						condition="*";
 					}
-				}
+					vector<string>columnname;
+					vector<string>ctablename;//存储输出时每个列对应的表格的名字
+					map<string,int>table_sub;//存储输出时的表名在v中的vector中的第几个
+					for(int i=0;i<tablename.size();++i){
+						table_sub[tablename[i]]=i;
+					}
+					for(int i=1;i<pos_from;++i){
+						int x=t[i].find('.');
+						ctablename.push_back(t[i].substr(0,x));
+						if(i==pos_from-1){
+							columnname.push_back(t[i].substr(x+1,t[i].size()-x-1));
+						}
+						else{
+							columnname.push_back(t[i].substr(x+1,t[i].size()-x-2));
+						}
+					}
 
-				vector<vector<int>>v=now->where_multiple(tablename,condition);
-				for(int i=0;i<columnname.size();++i){
-					cout<<columnname[i]<<'\t';
-				}
-				cout<<endl;
-				for(int i=0;i<v.size();++i){
-					for(int j=0;j<columnname.size();++j){
-						int x=table_sub[ctablename[j]];
-						cout<<(*(*(*now)[ctablename[j]])[columnname[j]])[v[i][x]]<<'\t';
+					vector<vector<int>>v=now->where_multiple(tablename,condition);
+					for(int i=0;i<columnname.size();++i){
+						cout<<columnname[i]<<'\t';
 					}
 					cout<<endl;
+					for(int i=0;i<v.size();++i){
+						for(int j=0;j<columnname.size();++j){
+							int x=table_sub[ctablename[j]];
+							cout<<(*(*(*now)[ctablename[j]])[columnname[j]])[v[i][x]]<<'\t';
+						}
+						cout<<endl;
+					}
+				} 
+				else{//单表
+					
+					vector<string>columnname;
+					
+					if(t[1]!="*"){
+						
+						for(int i=1;i<pos_from;++i){
+							if(i==pos_from-1){
+								columnname.push_back(t[i]);
+							}
+							else {
+								columnname.push_back(t[i].substr(0,t[i].size()-1));
+							}
+						}
+					}
+					else{
+						
+						string tablename=t[pos_from+1];
+						for(int i=0;i<(*now)[tablename]->getsize();++i){
+							columnname.push_back((*((*now)[tablename]))[i]->getname());
+						}
+					}
+					
+					auto u=now->multiple_select(todo);		
+					for(int i=0;i<columnname.size();++i){
+						cout<<columnname[i]<<'\t';
+					}			
+					cout<<endl;
+					for(int i=0;i<u.size();++i){
+						for(int j=0;j<u[i].size();++j){
+							cout<<u[i][j]<<'\t';
+						}
+						cout<<endl;
+					}
 				}
 			}
+			
+			
 
 		}
 		fstream fout;

@@ -216,7 +216,56 @@ bool Table::whereclauses_work(const int& i, const string& str) { //对单行(第i行)
         ans = whereclauses_work(i, str.substr(0, now_space)) && whereclauses_work(i, str.substr(now_space+5, str.length()-now_space-5));
     }
     if (!f) { //如果在处理的片段中没有OR或者AND，即没有递归过，仅仅含有>、<、=的判断，则对其进行判断处理；处理思路为找到比较运算符的位置，然后将其前后分割，并转化为可以比较的类型，最后进行比较，并将结果返回
-        now_space = str.find(">"); //处理>
+        //这里的修改并未影响功能，只是为了增加对更多操作符的支持，比如like,==等
+		
+		auto t=cut(str);string opt;
+		int x=str.find("=");int y=x+1;opt="=";
+		if(x==-1) x=str.find("<"),y=x+1,opt="<";
+		if(x==-1) x=str.find(">"),y=x+1,opt=">";
+		if(x==-1) x=Tolower(str).find("like"),y=x+4,opt="like";
+		string data1=str.substr(0,x);
+		string data2=str.substr(y,str.size()-y);
+		clear_space(data1);
+		clear_space(data2);
+		data2=data2.substr(1,data2.size()-2);
+		string type1,type2;
+		if((*this)[data1]!=NULL){//是属性
+			type1=(*this)[data1]->gettype();
+			data1=(*(*this)[data1])[i];
+		}
+		else {//是常数
+			if(isdigit(data1[0])){
+				if(data1.find(".")!=-1){
+					type1="int(11)";
+				}
+				else{
+					type1="double";
+				}
+			}
+			else{
+				type1="char(1)";
+			}
+		}
+		if((*this)[data2]!=NULL){//是属性
+			type2=(*this)[data2]->gettype();
+			data2=(*(*this)[data2])[i];
+		}
+		else {//是常数
+			if(isdigit(data2[0])){
+				if(data2.find(".")!=-1){
+					type2="int(11)";
+				}
+				else{
+					type2="double";
+				}
+			}
+			else{
+				type2="char(1)";
+			}
+		}
+		
+		ans=compare(data1,data2,type1,type2,opt);
+		/*now_space = str.find(">"); //处理>
         if (now_space != -1) {
             string l_string = str.substr(0, now_space);
             string r_string = str.substr(now_space+1, str.length()-now_space-1);
@@ -293,7 +342,7 @@ bool Table::whereclauses_work(const int& i, const string& str) { //对单行(第i行)
                 if ((l_string != "NULL") && (r_string != "NULL")) ans = stod(l_string) == stod(r_string);
                 else ans = default_ans;
             }
-        }
+        }*/
     }
     return ans;
 }

@@ -28,6 +28,7 @@ public:
 
 bool str_com(const string& a,const string& b);
 string Tolower(string x);
-vector<string> cut(string& s);
+vector<string> cut(const string& s);
 bool compare(string data1,string data2,string type1,string type2,string opt);
+void clear_space(string& data);//除去data前后的空格
 #endif
