@@ -279,7 +279,10 @@ bool Table::whereclauses_work(const int& i, const string& str) { //ï¿½Ôµï¿½ï¿½ï¿
 					break;
 				}
 			}
-			if(data1!="NULL")data1=CAL_alg(hold_strs,type1);
+			if(data1!="NULL"){
+				data1=CAL_alg(hold_strs,type1);
+				if(data1=="NULL")type1="char(1)";
+			}
 
 		}
 
