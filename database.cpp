@@ -2,36 +2,36 @@
 #include <iostream>
 using namespace std;
 
-bool com(Table* t1,Table* t2) { //Îª¶ÔdvalueÊ¹ÓÃsort¶øÐ´µÄ±È½Ïº¯Êý 
+bool com(Table* t1,Table* t2) { //Îªï¿½ï¿½dvalueÊ¹ï¿½ï¿½sortï¿½ï¿½Ð´ï¿½Ä±È½Ïºï¿½ï¿½ï¿½ 
 	return (t1->getname()) < (t2->getname());
 }
 
 Database::Database(string a): dname(a) {}
 
-Database::~Database() { //Îö¹¹º¯ÊýÊÍ·ÅÄÚ´æ 
+Database::~Database() { //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½ï¿½Ú´ï¿½ 
 	for (auto t=dvalue.begin();t!=dvalue.end();t++) {
 		if ((*t)) delete (*t);
 	}
 }
 
-Table* Database::operator[] (const string& a) { //ÖØÔØ[]ÒÔ·½±ãÓÃ±í¸ñÃû·ÃÎÊ±í¸ñÖ¸Õë 
+Table* Database::operator[] (const string& a) { //ï¿½ï¿½ï¿½ï¿½[]ï¿½Ô·ï¿½ï¿½ï¿½ï¿½Ã±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½ 
 	for (auto t=dvalue.begin();t!=dvalue.end();t++) {
 		if ((*t)->getname()==a) return (*t);
 	}
 	return NULL;
 }
 
-string Database::getname() const {return dname;} //»ñµÃÊý¾Ý¿âÃûµÄ½Ó¿Ú 
+string Database::getname() const {return dname;} //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý¿ï¿½ï¿½ï¿½ï¿½Ä½Ó¿ï¿½ 
 
-int Database::getsize() {return dvalue.size();} //»ñµÃÊý¾Ý¿âÄÚ±í¸ñÊýÁ¿µÄ½Ó¿Ú 
+int Database::getsize() {return dvalue.size();} //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý¿ï¿½ï¿½Ú±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä½Ó¿ï¿½ 
 
-void Database::create(const string& a,const string& b) { //ÔÚ¿âÀïÐÂ½¨±í¸ñµÄ½Ó¿Ú 
+void Database::create(const string& a,const string& b) { //ï¿½Ú¿ï¿½ï¿½ï¿½ï¿½Â½ï¿½ï¿½ï¿½ï¿½ï¿½Ä½Ó¿ï¿½ 
 	dvalue.push_back(new Table(a,b));
-	sort(dvalue.begin(),dvalue.end(),com); //±í¸ñ°´×ÖµäÐòÅÅÐò 
+	sort(dvalue.begin(),dvalue.end(),com); //ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 }
 
-void Database::show() { //´òÓ¡Êý¾Ý¿â°üº¬µÄ±í¸ñ 
-	if (!dvalue.empty()) { //Êý¾Ý¿âÎª¿ÕÔò²»Êä³ö 
+void Database::show() { //ï¿½ï¿½Ó¡ï¿½ï¿½ï¿½Ý¿ï¿½ï¿½ï¿½ï¿½ï¿½Ä±ï¿½ï¿½ï¿½ 
+	if (!dvalue.empty()) { //ï¿½ï¿½ï¿½Ý¿ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 		cout << "Tables_in_" << dname << endl;
 		for (auto t=dvalue.begin();t!=dvalue.end();t++) {
 			cout << ((*t)->getname()) << endl;
@@ -39,7 +39,7 @@ void Database::show() { //´òÓ¡Êý¾Ý¿â°üº¬µÄ±í¸ñ
 	}
 }
 
-bool Database::find_table(const string& a) { //¸ø³ö±í¸ñÃûÅÐ¶Ï¿âÀïÊÇ·ñÓÐÕâ¸ö±í¸ñ 
+bool Database::find_table(const string& a) { //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶Ï¿ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 	for (auto t=dvalue.begin();t!=dvalue.end();t++) {
 		if ((*t)->getname()==a) return true;
 	}
@@ -47,14 +47,14 @@ bool Database::find_table(const string& a) { //¸ø³ö±í¸ñÃûÅÐ¶Ï¿âÀïÊÇ·ñÓÐÕâ¸ö±í¸ñ
 	
 }
 
-Table* Database::get_table(const string& a){//Í¨¹ý±í¸ñÃû»ñµÃÏàÓ¦±í¸ñµÄÖ¸Õë
+Table* Database::get_table(const string& a){//Í¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½
 	for(auto t=dvalue.begin();t!=dvalue.end();t++){
 		if((*t)->getname()==a) return *t;
 	}
 	//return nullptr;
 }
 
-void Database::del(const string& a) { //¸ø³ö±í¸ñÃûÉ¾³ý±í¸ñ 
+void Database::del(const string& a) { //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 	for (auto t=dvalue.begin();t!=dvalue.end();t++) {
 		if ((*t)->getname()==a) {
 			delete (*t);
@@ -83,7 +83,7 @@ void Database::enumerate(int& num_table,int step,vector<int>v,vector<string>& ta
 vector<vector<int>> Database::where_multiple(vector<string>& tablename,string condition){
 	vector<vector<int>> result;
 	int num_table=tablename.size();
-	//ÓÉÓÚ±íµÄÊýÄ¿²»È·¶¨£¬µ¼ÖÂforÑ­»·²ãÊý²»È·¶¨£¬¹Ê¿¼ÂÇÓÃµÝ¹éÃ¶¾Ù
+	//ï¿½ï¿½ï¿½Ú±ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½È·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½forÑ­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È·ï¿½ï¿½ï¿½ï¿½ï¿½Ê¿ï¿½ï¿½ï¿½ï¿½ÃµÝ¹ï¿½Ã¶ï¿½ï¿½
 	vector<int>temp;
 	enumerate(num_table,1,temp,tablename,result,condition);
 	return result;
@@ -94,19 +94,31 @@ bool Database::where_multiple_work(vector<string>& tablename, vector<int>&data, 
 	bool ans = true;
     const bool default_ans = false;
     int this_space=0, f=0;
-    this_space = condition.find(" OR "); //°´ÕÕÓÅÏÈ¼¶ÏÈ´¦ÀíOR
+    this_space = condition.find(" OR "); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¼ï¿½ï¿½È´ï¿½ï¿½ï¿½OR
     if (this_space == -1) this_space = condition.find(" or ");
     if (!f && this_space != -1) {
         f = 1;
         return ans = where_multiple_work(tablename,data, condition.substr(0, this_space)) || where_multiple_work(tablename, data,condition.substr(this_space+4, condition.length()-this_space-4));
     }
-    this_space = condition.find(" AND "); //ÔÙ´¦ÀíAND
+	this_space = condition.find(" XOR ");
+	if (this_space == -1) this_space = condition.find(" xor ");
+    if (!f && this_space != -1) {
+        f = 1;
+        return ans = (where_multiple_work(tablename,data, condition.substr(0, this_space))==where_multiple_work(tablename, data,condition.substr(this_space+4, condition.length()-this_space-4)) ? false : true);
+    }
+    this_space = condition.find(" AND "); //ï¿½Ù´ï¿½ï¿½ï¿½AND
     if (this_space == -1) this_space = condition.find(" and ");
     if (!f && this_space != -1) {
         f = 1;
 		return ans = where_multiple_work(tablename,data, condition.substr(0, this_space)) && where_multiple_work(tablename, data,condition.substr(this_space+4, condition.length()-this_space-4));
     }
-	//ÏÈ»ñµÃÐèÒª±È½ÏµÄÊý¾Ý
+	this_space = condition.find(" NOT "); //ï¿½Ù´ï¿½ï¿½ï¿½AND
+    if (this_space == -1) this_space = condition.find(" not ");
+    if (!f && this_space != -1) {
+        f = 1;
+		return ans = where_multiple_work(tablename,data, condition.substr(0, this_space)) && ! (where_multiple_work(tablename, data,condition.substr(this_space+4, condition.length()-this_space-4)));
+    }
+	//ï¿½È»ï¿½ï¿½ï¿½ï¿½Òªï¿½È½Ïµï¿½ï¿½ï¿½ï¿½ï¿½
 	vector<string>t;
 	string tablename1,tablename2,columnname1,columnname2;
 	int x=condition.find('=');
@@ -122,10 +134,10 @@ bool Database::where_multiple_work(vector<string>& tablename, vector<int>&data, 
 	string u="";u+=condition[x];
 	t.push_back(u);
 	t.push_back(condition.substr(rx,rr+1-rx));
-	//Íê³ÉÇÐ¸î
+	//ï¿½ï¿½ï¿½ï¿½Ð¸ï¿½
 
 	int i;
-	bool c1=false,c2=false;//µÚÒ»¸öÊý¾ÝºÍµÚ¶þ¸öÊý¾ÝÊÇ·ñÊÇ³£Êý
+	bool c1=false,c2=false;//ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ÝºÍµÚ¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½Ç³ï¿½ï¿½ï¿½
 	for(i=0;i<t[0].size();++i){
 		if(t[0][i]=='.'){
 			tablename1=t[0].substr(0,i);
@@ -201,7 +213,7 @@ bool Database::where_multiple_work(vector<string>& tablename, vector<int>&data, 
 
 vector<vector<string>> Database::simple_select(string todo){
 	vector<vector<string>>result;
-	todo+=';';//ÎªÁËÊÊÓ¦Ö®Ç°×éµÄ´úÂë
+	todo+=';';//Îªï¿½ï¿½ï¿½ï¿½Ó¦Ö®Ç°ï¿½ï¿½Ä´ï¿½ï¿½ï¿½
 	int p = todo.find(' ',7);
 	int q = todo.find(' ',p+6);
 	if (q==-1) q = todo.length()-1;
@@ -247,7 +259,7 @@ vector<vector<string>> Database::simple_select(string todo){
 	return result;
 
 
-	//if (cname=="*") (*this)[tname]->show_all((*this)[tname]->whereClauses(clause)); //ÈôselectºóÎª * £¬Ôòµ÷ÓÃshow_allÏÔÊ¾È«²¿ 
+	//if (cname=="*") (*this)[tname]->show_all((*this)[tname]->whereClauses(clause)); //ï¿½ï¿½selectï¿½ï¿½Îª * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½show_allï¿½ï¿½Ê¾È«ï¿½ï¿½ 
 	//else (*this)[tname]->show_one(cname,(*this)[tname]->whereClauses(clause));
 }
 

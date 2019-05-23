@@ -1,21 +1,23 @@
 #include "table.h"
 #include <iostream>
 #include <iomanip>
+#include <sstream>
+#include "math_cal.h"
 using namespace std;
 
 Table::Table(string a,string b): tname(a),primary_key(b) {}
 
-Table::~Table() { //Îö¹¹º¯ÊýÊÍ·ÅÄÚ´æ 
+Table::~Table() { //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½ï¿½Ú´ï¿½ 
 	for (auto t=tvalue.begin();t!=tvalue.end();t++) {
 		if ((*t)) delete (*t);
 	}
 }
 
-string Table::getname() const {return tname;} //»ñÈ¡±í¸ñÃûµÄ½Ó¿Ú 
+string Table::getname() const {return tname;} //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä½Ó¿ï¿½ 
 
-string Table::getprime () const {return primary_key;} //»ñÈ¡Ö÷¼üµÄ½Ó¿Ú 
+string Table::getprime () const {return primary_key;} //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Ä½Ó¿ï¿½ 
 
-int Table::getsize() {return tvalue.size();} //»ñÈ¡±í¸ñÁÐÊýµÄ½Ó¿Ú 
+int Table::getsize() {return tvalue.size();} //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä½Ó¿ï¿½ 
 int Table::getrowsize(){return (*this)[primary_key]->getsize();}
 
 int Table::count(string& s){
@@ -37,23 +39,23 @@ int Table::count(string& s){
 Column* Table::operator[](const int i){
 	return tvalue[i];
 }
-Column* Table::operator[] (const string& a) { //ÖØÔØ[]ÒÔ±ãÓÚÓÃÁÐÃû·ÃÎÊµ½ÁÐµÄÖ¸Õë 
+Column* Table::operator[] (const string& a) { //ï¿½ï¿½ï¿½ï¿½[]ï¿½Ô±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½Ðµï¿½Ö¸ï¿½ï¿½ 
 	for (auto t=tvalue.begin();t!=tvalue.end();t++) {
 		if ((*t)->getname()==a) return (*t);
 	}
 	return NULL;
 }
 
-void Table::create(const string& a,const string& b,bool c) { //ÔÚ±í¸ñÖÐÌí¼ÓÐÂÁÐ£¬a b c·Ö±ð±íÊ¾ÁÐÃû¡¢±äÁ¿ÀàÐÍºÍÊÇ·ñ¿ÉÎª¿Õ 
+void Table::create(const string& a,const string& b,bool c) { //ï¿½Ú±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð£ï¿½a b cï¿½Ö±ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íºï¿½ï¿½Ç·ï¿½ï¿½Îªï¿½ï¿½ 
 	tvalue.push_back(new Column(a,b,c));
 }
 
-void Table::show_all(const vector<bool>& check) { //Õ¹Ê¾±í¸ñÈ«²¿ÐÅÏ¢ 
+void Table::show_all(const vector<bool>& check) { //Õ¹Ê¾ï¿½ï¿½ï¿½ï¿½È«ï¿½ï¿½ï¿½ï¿½Ï¢ 
 	int len = check.size(); int num = 0;
 	for (int i=0; i<len; i++) {
 		if (check[i]) num++;
 	}
-	if (num!=0) { //Âú×ãwhereclausesµÄÐÐÊýÎª0Ôò²»Êä³ö 
+	if (num!=0) { //ï¿½ï¿½ï¿½ï¿½whereclausesï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îª0ï¿½ï¿½ï¿½ï¿½ï¿½ 
 		for (auto t=tvalue.begin();t!=tvalue.end()-1;t++) {
 			cout << (*t)->getname() << '\t';
 		}
@@ -75,12 +77,12 @@ void Table::show_all(const vector<bool>& check) { //Õ¹Ê¾±í¸ñÈ«²¿ÐÅÏ¢
 	}
 }
 
-void Table::show_one(const string& cname,const vector<bool>& check) { //´òÓ¡±í¸ñÌØ¶¨ÁÐ 
+void Table::show_one(const string& cname,const vector<bool>& check) { //ï¿½ï¿½Ó¡ï¿½ï¿½ï¿½ï¿½ï¿½Ø¶ï¿½ï¿½ï¿½ 
 	int len = check.size(); int num = 0;
 	for (int i=0; i<len; i++) {
 		if (check[i]) num++;
 	}
-	if (num!=0) { //Âú×ãwhereclausesµÄÐÐÊýÎª0Ôò²»Êä³ö 
+	if (num!=0) { //ï¿½ï¿½ï¿½ï¿½whereclausesï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îª0ï¿½ï¿½ï¿½ï¿½ï¿½ 
 		cout << (*this)[cname]->getname() << endl;
 		for (int i=0; i<len; i++) {
 			if (check[i]) {
@@ -93,7 +95,7 @@ void Table::show_one(const string& cname,const vector<bool>& check) { //´òÓ¡±í¸ñ
 	}
 }
 
-void Table::show_column() { //Êä³öÖÆ±íÐÅÏ¢ 
+void Table::show_column() { //ï¿½ï¿½ï¿½ï¿½Æ±ï¿½ï¿½ï¿½Ï¢ 
 	cout << "Field\tType\tNull\tKey\tDefault\tExtra\n";
 	for (auto t=tvalue.begin();t!=tvalue.end();t++) {
 		cout << (*t)->getname() << "\t" << (*t)->gettype() << "\t";
@@ -104,14 +106,14 @@ void Table::show_column() { //Êä³öÖÆ±íÐÅÏ¢
 	}
 }
 
-bool Table::find_column(const string& a) { //¸ø³öÁÐÃûÅÐ¶Ï±í¸ñÖÐÊÇ·ñÓÐÕâÒ»ÁÐ 
+bool Table::find_column(const string& a) { //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶Ï±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ 
 	for (auto t=tvalue.begin();t!=tvalue.end();t++) {
 		if ((*t)->getname()==a) return true;
 	}
 	return false;
 }
 
-bool Table::null_check(const string& a) { //¸ø³öÒ»¸öto_check×Ö·û´®ÅÐ¶ÏÊÇ·ñÓÐnot null±äÁ¿Ã»ÓÐ±»¸³Öµ 
+bool Table::null_check(const string& a) { //ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½to_checkï¿½Ö·ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½Ç·ï¿½ï¿½ï¿½not nullï¿½ï¿½ï¿½ï¿½Ã»ï¿½Ð±ï¿½ï¿½ï¿½Öµ 
 	for (auto t=tvalue.begin();t!=tvalue.end();t++) {
 		if (!((*t)->can_null()) && (a.find((*t)->getname())==-1)) {
 			return true;
@@ -120,14 +122,14 @@ bool Table::null_check(const string& a) { //¸ø³öÒ»¸öto_check×Ö·û´®ÅÐ¶ÏÊÇ·ñÓÐnot 
 	return false;
 }
 
-void Table::default_fill() { //¸øÎª±»¸³ÖµµÄ±äÁ¿ÓÃÈ±Ê¡ÖµNULLÌî³ä 
+void Table::default_fill() { //ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½Öµï¿½Ä±ï¿½ï¿½ï¿½ï¿½ï¿½È±Ê¡ÖµNULLï¿½ï¿½ï¿½ 
 	int len = (*this)[primary_key]->getsize();
 	for (auto t=tvalue.begin();t!=tvalue.end();t++) {
 		if ((*t)->getsize()<len) ((*t)->insert("NULL"));
 	}
 }
 
-void Table::del_row(const vector<bool>& check) { //É¾³ýÂú×ãwhereclausesµÄÐÐ 
+void Table::del_row(const vector<bool>& check) { //É¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½whereclausesï¿½ï¿½ï¿½ï¿½ 
 	int len = check.size(); int p = 0;
 	for (int i=0; i<len; i++) {
 		if (check[i]) {
@@ -139,7 +141,7 @@ void Table::del_row(const vector<bool>& check) { //É¾³ýÂú×ãwhereclausesµÄÐÐ
 	}
 }
 
-void Table::update_row(string cname,string value,const vector<bool>& check) { //ÐÞ¸ÄÂú×ãwhereclausesµÄÐÐ 
+void Table::update_row(string cname,string value,const vector<bool>& check) { //ï¿½Þ¸ï¿½ï¿½ï¿½ï¿½ï¿½whereclausesï¿½ï¿½ï¿½ï¿½ 
 	int len = check.size();
 	for (int i=0; i<len; i++) {
 		if (check[i]) {
@@ -149,7 +151,7 @@ void Table::update_row(string cname,string value,const vector<bool>& check) { //
 	sort_prime();
 }
 
-void Table::swap_row(int a,int b) { //¸ø¶¨Á½¸öÐÐºÅ£¬½»»»ÕâÁ½ÐÐµÄÊý¾Ý 
+void Table::swap_row(int a,int b) { //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÐºÅ£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½ï¿½ï¿½ï¿½ï¿½ 
 	string temp;
 	for (int i=0; i<tvalue.size(); i++) {
 		temp = (*(tvalue[i]))[a];
@@ -170,7 +172,7 @@ bool cmp_double(const string& a,const string& b) {
 	return stod(a) > stod(b);
 }
 
-void Table::sort_prime() { //¸ù¾ÝÖ÷¼ü¸ø¸÷ÐÐÅÅÐò 
+void Table::sort_prime() { //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 	int len = (*this)[primary_key]->getsize(); bool cc;
 	string ctype = (*this)[primary_key]->gettype();
 	for (int i=0; i<len-1; i++) {
@@ -183,7 +185,7 @@ void Table::sort_prime() { //¸ù¾ÝÖ÷¼ü¸ø¸÷ÐÐÅÅÐò
 	}
 }
 
-vector<bool> Table::whereClauses(const string& str) { //whereclausesµÄÅÐ¶Ï£¬·µ»ØÒ»¸övector£¬±íÊ¾ÄÇÐ©ÊÇtrue£¬ÄÇÐ©ÊÇfalse
+vector<bool> Table::whereClauses(const string& str) { //whereclausesï¿½ï¿½ï¿½Ð¶Ï£ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½vectorï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½Ð©ï¿½ï¿½trueï¿½ï¿½ï¿½ï¿½Ð©ï¿½ï¿½false
 	int len = (*this)[primary_key]->getsize();
 	vector<bool> check(len,true);
 	if (str=="") return check;
@@ -199,24 +201,36 @@ vector<bool> Table::whereClauses(const string& str) { //whereclausesµÄÅÐ¶Ï£¬·µ»Ø
 	}
 }
 
-bool Table::whereclauses_work(const int& i, const string& str) { //¶Ôµ¥ÐÐ(µÚiÐÐ)½øÐÐÅÐ¶ÏÊÇ·ñ·ûºÏwhereclauseµÄÒªÇó£¬²ÉÓÃµÝ¹éÀ´·Ö¶Î´¦Àí£¬²ã²ã·Ö¸î£¬µ½½öÊ£Ò»¸ö±È½ÏÔËËã·ûÊ±ÔÙ½øÐÐ±È½Ï£¬×îºó½«ËùÓÐ½á¹û²ÉÓÃÂß¼­ÔËËã·ûÁ¬½ÓµÃµ½½á¹û
+bool Table::whereclauses_work(const int& i, const string& str) { //ï¿½Ôµï¿½ï¿½ï¿½(ï¿½ï¿½iï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½whereclauseï¿½ï¿½Òªï¿½ó£¬²ï¿½ï¿½ÃµÝ¹ï¿½ï¿½ï¿½ï¿½Ö¶Î´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¸î£¬ï¿½ï¿½ï¿½ï¿½Ê£Ò»ï¿½ï¿½ï¿½È½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½Ù½ï¿½ï¿½Ð±È½Ï£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÓµÃµï¿½ï¿½ï¿½ï¿½
     bool ans = true;
     const bool default_ans = false;
     int now_space=0, f=0;
-    now_space = str.find(" OR "); //°´ÕÕÓÅÏÈ¼¶ÏÈ´¦ÀíOR
+    now_space = str.find(" OR "); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¼ï¿½ï¿½È´ï¿½ï¿½ï¿½OR
     if (now_space == -1) now_space = str.find(" or ");
     if (!f && now_space != -1) {
         f = 1;
         ans = whereclauses_work(i, str.substr(0, now_space)) || whereclauses_work(i, str.substr(now_space+4, str.length()-now_space-4));
     }
-    now_space = str.find(" AND "); //ÔÙ´¦ÀíAND
+	now_space = str.find(" XOR "); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¼ï¿½ï¿½È´ï¿½ï¿½ï¿½OR
+    if (now_space == -1) now_space = str.find(" xor ");
+    if (!f && now_space != -1) {
+        f = 1;
+        ans = (whereclauses_work(i, str.substr(0, now_space))== whereclauses_work(i, str.substr(now_space+4, str.length()-now_space-4)) ? false : true);
+    }
+    now_space = str.find(" AND "); //ï¿½Ù´ï¿½ï¿½ï¿½AND
     if (now_space == -1) now_space = str.find(" and ");
     if (!f && now_space != -1) {
         f = 1;
         ans = whereclauses_work(i, str.substr(0, now_space)) && whereclauses_work(i, str.substr(now_space+5, str.length()-now_space-5));
     }
-    if (!f) { //Èç¹ûÔÚ´¦ÀíµÄÆ¬¶ÎÖÐÃ»ÓÐOR»òÕßAND£¬¼´Ã»ÓÐµÝ¹é¹ý£¬½ö½öº¬ÓÐ>¡¢<¡¢=µÄÅÐ¶Ï£¬Ôò¶ÔÆä½øÐÐÅÐ¶Ï´¦Àí£»´¦ÀíË¼Â·ÎªÕÒµ½±È½ÏÔËËã·ûµÄÎ»ÖÃ£¬È»ºó½«ÆäÇ°ºó·Ö¸î£¬²¢×ª»¯Îª¿ÉÒÔ±È½ÏµÄÀàÐÍ£¬×îºó½øÐÐ±È½Ï£¬²¢½«½á¹û·µ»Ø
-        //ÕâÀïµÄÐÞ¸Ä²¢Î´Ó°Ïì¹¦ÄÜ£¬Ö»ÊÇÎªÁËÔö¼Ó¶Ô¸ü¶à²Ù×÷·ûµÄÖ§³Ö£¬±ÈÈçlike,==µÈ
+	now_space = str.find(" NOT "); //ï¿½Ù´ï¿½ï¿½ï¿½AND
+    if (now_space == -1) now_space = str.find(" not ");
+    if (!f && now_space != -1) {
+        f = 1;
+        ans = whereclauses_work(i, str.substr(0, now_space)) && ! (whereclauses_work(i, str.substr(now_space+5, str.length()-now_space-5)));
+    }
+    if (!f) { //ï¿½ï¿½ï¿½ï¿½Ú´ï¿½ï¿½ï¿½ï¿½ï¿½Æ¬ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ORï¿½ï¿½ï¿½ï¿½ANDï¿½ï¿½ï¿½ï¿½Ã»ï¿½ÐµÝ¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½>ï¿½ï¿½<ï¿½ï¿½=ï¿½ï¿½ï¿½Ð¶Ï£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶Ï´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë¼Â·Îªï¿½Òµï¿½ï¿½È½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½Ã£ï¿½È»ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½Ö¸î£¬ï¿½ï¿½×ªï¿½ï¿½Îªï¿½ï¿½ï¿½Ô±È½Ïµï¿½ï¿½ï¿½ï¿½Í£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð±È½Ï£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Þ¸Ä²ï¿½Î´Ó°ï¿½ì¹¦ï¿½Ü£ï¿½Ö»ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½Ó¶Ô¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö§ï¿½Ö£ï¿½ï¿½ï¿½ï¿½ï¿½like,==ï¿½ï¿½
 		
 		auto t=cut(str);string opt;
 		int x=str.find("=");int y=x+1;opt="=";
@@ -229,11 +243,57 @@ bool Table::whereclauses_work(const int& i, const string& str) { //¶Ôµ¥ÐÐ(µÚiÐÐ)
 		clear_space(data2);
 		data2=data2.substr(1,data2.size()-2);
 		string type1,type2;
-		if((*this)[data1]!=NULL){//ÊÇÊôÐÔ
+		//temporary handle expresseions
+
+
+
+
+		if(data1.find(" ")!=-1){
+			type1="int(11)";
+			string temp=data1;
+			string tp_hold;
+			vector<string> hold_strs;
+			stringstream IN(data1);
+			bool wrong_flag=false;
+			while(IN>>tp_hold){
+				if(tp_hold=="+"||tp_hold=="-"||tp_hold=="*"||tp_hold=="/"||tp_hold=="%%")hold_strs.push_back(tp_hold);
+				else if(isdigit(tp_hold[0])){
+					hold_strs.push_back(tp_hold);
+				}
+				else{
+					if((*this)[tp_hold]==NULL){
+						wrong_flag=true;
+					}else{
+						if(type1=="char(1)")wrong_flag=true;
+						else{
+							if(type1=="double")type1="double";
+							tp_hold=(*(*this)[tp_hold])[i];
+							hold_strs.push_back(tp_hold);
+						}
+					}
+				}
+
+				if(wrong_flag){
+					data1="NULL";
+					type1="char(1)";
+					break;
+				}
+			}
+			if(data1!="NULL")data1=CAL_alg(hold_strs,type1);
+
+		}
+
+
+
+
+
+
+		//above handle
+		else if((*this)[data1]!=NULL){//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			type1=(*this)[data1]->gettype();
 			data1=(*(*this)[data1])[i];
 		}
-		else {//ÊÇ³£Êý
+		else {//ï¿½Ç³ï¿½ï¿½ï¿½
 			if(isdigit(data1[0])){
 				if(data1.find(".")!=-1){
 					type1="int(11)";
@@ -246,11 +306,49 @@ bool Table::whereclauses_work(const int& i, const string& str) { //¶Ôµ¥ÐÐ(µÚiÐÐ)
 				type1="char(1)";
 			}
 		}
-		if((*this)[data2]!=NULL){//ÊÇÊôÐÔ
+
+
+		if(data2.find(" ")!=-1){
+			type2="int(11)";
+			string temp=data2;
+			string tp_hold;
+			vector<string> hold_strs;
+			stringstream IN(data2);
+			bool wrong_flag=false;
+			while(IN>>tp_hold){
+				if(tp_hold=="+"||tp_hold=="-"||tp_hold=="*"||tp_hold=="/"||tp_hold=="%%")hold_strs.push_back(tp_hold);
+				else if(isdigit(tp_hold[0])){
+					hold_strs.push_back(tp_hold);
+				}
+				else{
+					if((*this)[tp_hold]==NULL){
+						wrong_flag=true;
+					}else{
+						if(type2=="char(1)")wrong_flag=true;
+						else{
+							if(type2=="double")type2="double";
+							tp_hold=(*(*this)[tp_hold])[i];
+							hold_strs.push_back(tp_hold);
+						}
+					}
+				}
+
+				if(wrong_flag){
+					data2="NULL";
+					type2="char(1)";
+					break;
+				}
+			}
+			if(data2!="NULL")data2=CAL_alg(hold_strs,type2);
+
+		}
+
+
+		else if((*this)[data2]!=NULL){//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			type2=(*this)[data2]->gettype();
 			data2=(*(*this)[data2])[i];
 		}
-		else {//ÊÇ³£Êý
+		else {//ï¿½Ç³ï¿½ï¿½ï¿½
 			if(isdigit(data2[0])){
 				if(data2.find(".")!=-1){
 					type2="int(11)";
@@ -265,7 +363,7 @@ bool Table::whereclauses_work(const int& i, const string& str) { //¶Ôµ¥ÐÐ(µÚiÐÐ)
 		}
 		
 		ans=compare(data1,data2,type1,type2,opt);
-		/*now_space = str.find(">"); //´¦Àí>
+		/*now_space = str.find(">"); //ï¿½ï¿½ï¿½ï¿½>
         if (now_space != -1) {
             string l_string = str.substr(0, now_space);
             string r_string = str.substr(now_space+1, str.length()-now_space-1);
@@ -291,7 +389,7 @@ bool Table::whereclauses_work(const int& i, const string& str) { //¶Ôµ¥ÐÐ(µÚiÐÐ)
                 else ans = default_ans;
             }
         }
-        now_space = str.find("<"); //´¦Àí<
+        now_space = str.find("<"); //ï¿½ï¿½ï¿½ï¿½<
         if (now_space != -1) {
             string l_string = str.substr(0, now_space);
             string r_string = str.substr(now_space+1, str.length()-now_space-1);
@@ -317,7 +415,7 @@ bool Table::whereclauses_work(const int& i, const string& str) { //¶Ôµ¥ÐÐ(µÚiÐÐ)
                 else ans = default_ans;
             }
         }
-        now_space = str.find("="); //´¦Àí=
+        now_space = str.find("="); //ï¿½ï¿½ï¿½ï¿½=
         if (now_space != -1) {
             string l_string = str.substr(0, now_space);
             string r_string = str.substr(now_space+1, str.length()-now_space-1);
