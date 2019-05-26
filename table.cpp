@@ -7,17 +7,17 @@ using namespace std;
 
 Table::Table(string a,string b): tname(a),primary_key(b) {}
 
-Table::~Table() { //���������ͷ��ڴ� 
+Table::~Table() { //析构函数释放内存 
 	for (auto t=tvalue.begin();t!=tvalue.end();t++) {
 		if ((*t)) delete (*t);
 	}
 }
 
-string Table::getname() const {return tname;} //��ȡ�������Ľӿ� 
+string Table::getname() const {return tname;}  //获取表格名的接口 
 
-string Table::getprime () const {return primary_key;} //��ȡ�����Ľӿ� 
+string Table::getprime () const {return primary_key;} //获取主键的接口 
 
-int Table::getsize() {return tvalue.size();} //��ȡ���������Ľӿ� 
+int Table::getsize() {return tvalue.size();} //获取表格列数的接口
 int Table::getrowsize(){return (*this)[primary_key]->getsize();}
 
 int Table::count(string& s){
@@ -39,23 +39,23 @@ int Table::count(string& s){
 Column* Table::operator[](const int i){
 	return tvalue[i];
 }
-Column* Table::operator[] (const string& a) { //����[]�Ա������������ʵ��е�ָ�� 
+Column* Table::operator[] (const string& a) { //重载[]以便于用列名访问到列的指针
 	for (auto t=tvalue.begin();t!=tvalue.end();t++) {
 		if ((*t)->getname()==a) return (*t);
 	}
 	return NULL;
 }
 
-void Table::create(const string& a,const string& b,bool c) { //�ڱ������������У�a b c�ֱ��ʾ�������������ͺ��Ƿ��Ϊ�� 
+void Table::create(const string& a,const string& b,bool c) {//在表格中添加新列，a b c分别表示列名、变量类型和是否可为空 
 	tvalue.push_back(new Column(a,b,c));
 }
 
-void Table::show_all(const vector<bool>& check) { //չʾ����ȫ����Ϣ 
+void Table::show_all(const vector<bool>& check) { //展示表格全部信息
 	int len = check.size(); int num = 0;
 	for (int i=0; i<len; i++) {
 		if (check[i]) num++;
 	}
-	if (num!=0) { //����whereclauses������Ϊ0����� 
+	if (num!=0) { //满足whereclauses的行数为0则不输出 
 		for (auto t=tvalue.begin();t!=tvalue.end()-1;t++) {
 			cout << (*t)->getname() << '\t';
 		}
@@ -77,12 +77,12 @@ void Table::show_all(const vector<bool>& check) { //չʾ����ȫ����
 	}
 }
 
-void Table::show_one(const string& cname,const vector<bool>& check) { //��ӡ�����ض��� 
+void Table::show_one(const string& cname,const vector<bool>& check) { //打印表格特定列 
 	int len = check.size(); int num = 0;
 	for (int i=0; i<len; i++) {
 		if (check[i]) num++;
 	}
-	if (num!=0) { //����whereclauses������Ϊ0����� 
+	if (num!=0) { //满足whereclauses的行数为0则不输出  
 		cout << (*this)[cname]->getname() << endl;
 		for (int i=0; i<len; i++) {
 			if (check[i]) {
@@ -95,7 +95,7 @@ void Table::show_one(const string& cname,const vector<bool>& check) { //��ӡ
 	}
 }
 
-void Table::show_column() { //����Ʊ���Ϣ 
+void Table::show_column() { //输出制表信息
 	cout << "Field\tType\tNull\tKey\tDefault\tExtra\n";
 	for (auto t=tvalue.begin();t!=tvalue.end();t++) {
 		cout << (*t)->getname() << "\t" << (*t)->gettype() << "\t";
@@ -106,14 +106,14 @@ void Table::show_column() { //����Ʊ���Ϣ
 	}
 }
 
-bool Table::find_column(const string& a) { //���������жϱ������Ƿ�����һ�� 
+bool Table::find_column(const string& a) { //给出列名判断表格中是否有这一列
 	for (auto t=tvalue.begin();t!=tvalue.end();t++) {
 		if ((*t)->getname()==a) return true;
 	}
 	return false;
 }
 
-bool Table::null_check(const string& a) { //����һ��to_check�ַ����ж��Ƿ���not null����û�б���ֵ 
+bool Table::null_check(const string& a) { //给出一个to_check字符串判断是否有not null变量没有被赋值 
 	for (auto t=tvalue.begin();t!=tvalue.end();t++) {
 		if (!((*t)->can_null()) && (a.find((*t)->getname())==-1)) {
 			return true;
@@ -122,14 +122,14 @@ bool Table::null_check(const string& a) { //����һ��to_check�ַ�
 	return false;
 }
 
-void Table::default_fill() { //��Ϊ����ֵ�ı�����ȱʡֵNULL��� 
+void Table::default_fill() { //给为被赋值的变量用缺省值NULL填充 
 	int len = (*this)[primary_key]->getsize();
 	for (auto t=tvalue.begin();t!=tvalue.end();t++) {
 		if ((*t)->getsize()<len) ((*t)->insert("NULL"));
 	}
 }
 
-void Table::del_row(const vector<bool>& check) { //ɾ������whereclauses���� 
+void Table::del_row(const vector<bool>& check) { //删除满足whereclauses的行 
 	int len = check.size(); int p = 0;
 	for (int i=0; i<len; i++) {
 		if (check[i]) {
@@ -141,7 +141,7 @@ void Table::del_row(const vector<bool>& check) { //ɾ������whereclau
 	}
 }
 
-void Table::update_row(string cname,string value,const vector<bool>& check) { //�޸�����whereclauses���� 
+void Table::update_row(string cname,string value,const vector<bool>& check) { //修改满足whereclauses的行 
 	int len = check.size();
 	for (int i=0; i<len; i++) {
 		if (check[i]) {
@@ -151,7 +151,7 @@ void Table::update_row(string cname,string value,const vector<bool>& check) { //
 	sort_prime();
 }
 
-void Table::swap_row(int a,int b) { //���������кţ����������е����� 
+void Table::swap_row(int a,int b) {//给定两个行号，交换这两行的数据 
 	string temp;
 	for (int i=0; i<tvalue.size(); i++) {
 		temp = (*(tvalue[i]))[a];
@@ -172,7 +172,7 @@ bool cmp_double(const string& a,const string& b) {
 	return stod(a) > stod(b);
 }
 
-void Table::sort_prime() { //������������������ 
+void Table::sort_prime() {  //根据主键给各行排序 
 	int len = (*this)[primary_key]->getsize(); bool cc;
 	string ctype = (*this)[primary_key]->gettype();
 	for (int i=0; i<len-1; i++) {
@@ -185,7 +185,7 @@ void Table::sort_prime() { //�����������������
 	}
 }
 
-vector<bool> Table::whereClauses(const string& str) { //whereclauses���жϣ�����һ��vector����ʾ��Щ��true����Щ��false
+vector<bool> Table::whereClauses(const string& str) { //whereclauses的判断，返回一个vector，表示那些是true，那些是false
 	int len = (*this)[primary_key]->getsize();
 	vector<bool> check(len,true);
 	if (str=="") return check;
@@ -201,36 +201,36 @@ vector<bool> Table::whereClauses(const string& str) { //whereclauses���ж�
 	}
 }
 
-bool Table::whereclauses_work(const int& i, const string& str) { //�Ե���(��i��)�����ж��Ƿ����whereclause��Ҫ�󣬲��õݹ����ֶδ��������ָ����ʣһ���Ƚ������ʱ�ٽ��бȽϣ�������н�������߼���������ӵõ����
+bool Table::whereclauses_work(const int& i, const string& str) { //对单行(第i行)进行判断是否符合whereclause的要求，采用递归来分段处理，层层分割，到仅剩一个比较运算符时再进行比较，最后将所有结果采用逻辑运算符连接得到结果
     bool ans = true;
     const bool default_ans = false;
     int now_space=0, f=0;
-    now_space = str.find(" OR "); //�������ȼ��ȴ���OR
+    now_space = str.find(" OR "); //按照优先级先处理OR
     if (now_space == -1) now_space = str.find(" or ");
     if (!f && now_space != -1) {
         f = 1;
         ans = whereclauses_work(i, str.substr(0, now_space)) || whereclauses_work(i, str.substr(now_space+4, str.length()-now_space-4));
     }
-	now_space = str.find(" XOR "); //�������ȼ��ȴ���OR
+	now_space = str.find(" XOR ");
     if (now_space == -1) now_space = str.find(" xor ");
     if (!f && now_space != -1) {
         f = 1;
         ans = (whereclauses_work(i, str.substr(0, now_space))== whereclauses_work(i, str.substr(now_space+4, str.length()-now_space-4)) ? false : true);
     }
-    now_space = str.find(" AND "); //�ٴ���AND
+    now_space = str.find(" AND "); 
     if (now_space == -1) now_space = str.find(" and ");
     if (!f && now_space != -1) {
         f = 1;
         ans = whereclauses_work(i, str.substr(0, now_space)) && whereclauses_work(i, str.substr(now_space+5, str.length()-now_space-5));
     }
-	now_space = str.find(" NOT "); //�ٴ���AND
+	now_space = str.find(" NOT "); 
     if (now_space == -1) now_space = str.find(" not ");
     if (!f && now_space != -1) {
         f = 1;
         ans = whereclauses_work(i, str.substr(0, now_space)) && ! (whereclauses_work(i, str.substr(now_space+5, str.length()-now_space-5)));
     }
-    if (!f) { //����ڴ�����Ƭ����û��OR����AND����û�еݹ������������>��<��=���жϣ����������жϴ���������˼·Ϊ�ҵ��Ƚ��������λ�ã�Ȼ����ǰ��ָ��ת��Ϊ���ԱȽϵ����ͣ������бȽϣ������������
-        //������޸Ĳ�δӰ�칦�ܣ�ֻ��Ϊ�����ӶԸ����������֧�֣�����like,==��
+    if (!f) { //如果在处理的片段中没有OR或者AND，即没有递归过，仅仅含有>、<、=的判断，则对其进行判断处理；处理思路为找到比较运算符的位置，然后将其前后分割，并转化为可以比较的类型，最后进行比较，并将结果返回
+        //这里的修改并未影响功能，只是为了增加对更多操作符的支持，比如like,==等
 		
 		auto t=cut(str);string opt;
 		int x=str.find("=");int y=x+1;opt="=";
@@ -292,11 +292,11 @@ bool Table::whereclauses_work(const int& i, const string& str) { //�Ե���
 
 
 		//above handle
-		else if((*this)[data1]!=NULL){//������
+		else if((*this)[data1]!=NULL){//是属性
 			type1=(*this)[data1]->gettype();
 			data1=(*(*this)[data1])[i];
 		}
-		else {//�ǳ���
+		else {//是常数
 			if(isdigit(data1[0])){
 				if(data1.find(".")!=-1){
 					type1="int(11)";
@@ -347,11 +347,11 @@ bool Table::whereclauses_work(const int& i, const string& str) { //�Ե���
 		}
 
 
-		else if((*this)[data2]!=NULL){//������
+		else if((*this)[data2]!=NULL){//是属性
 			type2=(*this)[data2]->gettype();
 			data2=(*(*this)[data2])[i];
 		}
-		else {//�ǳ���
+		else {//是常数
 			if(isdigit(data2[0])){
 				if(data2.find(".")!=-1){
 					type2="int(11)";

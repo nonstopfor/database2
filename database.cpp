@@ -2,36 +2,36 @@
 #include <iostream>
 using namespace std;
 
-bool com(Table* t1,Table* t2) { //Ϊ��dvalueʹ��sort��д�ıȽϺ��� 
+bool com(Table* t1,Table* t2) { //为对dvalue使用sort而写的比较函数 
 	return (t1->getname()) < (t2->getname());
 }
 
 Database::Database(string a): dname(a) {}
 
-Database::~Database() { //���������ͷ��ڴ� 
+Database::~Database() { //析构函数释放内存 
 	for (auto t=dvalue.begin();t!=dvalue.end();t++) {
 		if ((*t)) delete (*t);
 	}
 }
 
-Table* Database::operator[] (const string& a) { //����[]�Է����ñ��������ʱ���ָ�� 
+Table* Database::operator[] (const string& a) { //重载[]以方便用表格名访问表格指针
 	for (auto t=dvalue.begin();t!=dvalue.end();t++) {
 		if ((*t)->getname()==a) return (*t);
 	}
 	return NULL;
 }
 
-string Database::getname() const {return dname;} //������ݿ����Ľӿ� 
+string Database::getname() const {return dname;} //获得数据库名的接口 
 
-int Database::getsize() {return dvalue.size();} //������ݿ��ڱ��������Ľӿ� 
+int Database::getsize() {return dvalue.size();} //获得数据库内表格数量的接口 
 
-void Database::create(const string& a,const string& b) { //�ڿ����½�����Ľӿ� 
+void Database::create(const string& a,const string& b) { //在库里新建表格的接口 
 	dvalue.push_back(new Table(a,b));
-	sort(dvalue.begin(),dvalue.end(),com); //�����ֵ������� 
+	sort(dvalue.begin(),dvalue.end(),com); //表格按字典序排序 
 }
 
-void Database::show() { //��ӡ���ݿ�����ı��� 
-	if (!dvalue.empty()) { //���ݿ�Ϊ������� 
+void Database::show() { //打印数据库包含的表格 
+	if (!dvalue.empty()) { //数据库为空则不输出 
 		cout << "Tables_in_" << dname << endl;
 		for (auto t=dvalue.begin();t!=dvalue.end();t++) {
 			cout << ((*t)->getname()) << endl;
@@ -39,7 +39,7 @@ void Database::show() { //��ӡ���ݿ�����ı���
 	}
 }
 
-bool Database::find_table(const string& a) { //�����������жϿ����Ƿ���������� 
+bool Database::find_table(const string& a) { //给出表格名判断库里是否有这个表格
 	for (auto t=dvalue.begin();t!=dvalue.end();t++) {
 		if ((*t)->getname()==a) return true;
 	}
@@ -47,14 +47,14 @@ bool Database::find_table(const string& a) { //�����������
 	
 }
 
-Table* Database::get_table(const string& a){//ͨ�������������Ӧ�����ָ��
+Table* Database::get_table(const string& a){//通过表格名获得相应表格的指针
 	for(auto t=dvalue.begin();t!=dvalue.end();t++){
 		if((*t)->getname()==a) return *t;
 	}
 	//return nullptr;
 }
 
-void Database::del(const string& a) { //����������ɾ������ 
+void Database::del(const string& a) { //给出表格名删除表格 
 	for (auto t=dvalue.begin();t!=dvalue.end();t++) {
 		if ((*t)->getname()==a) {
 			delete (*t);
@@ -83,7 +83,7 @@ void Database::enumerate(int& num_table,int step,vector<int>v,vector<string>& ta
 vector<vector<int>> Database::where_multiple(vector<string>& tablename,string condition){
 	vector<vector<int>> result;
 	int num_table=tablename.size();
-	//���ڱ�����Ŀ��ȷ��������forѭ��������ȷ�����ʿ����õݹ�ö��
+	//由于表的数目不确定，导致for循环层数不确定，故考虑用递归枚举
 	vector<int>temp;
 	enumerate(num_table,1,temp,tablename,result,condition);
 	return result;
@@ -94,7 +94,7 @@ bool Database::where_multiple_work(vector<string>& tablename, vector<int>&data, 
 	bool ans = true;
     const bool default_ans = false;
     int this_space=0, f=0;
-    this_space = condition.find(" OR "); //�������ȼ��ȴ���OR
+    this_space = condition.find(" OR "); //按照优先级先处理OR
     if (this_space == -1) this_space = condition.find(" or ");
     if (!f && this_space != -1) {
         f = 1;
@@ -106,19 +106,19 @@ bool Database::where_multiple_work(vector<string>& tablename, vector<int>&data, 
         f = 1;
         return ans = (where_multiple_work(tablename,data, condition.substr(0, this_space))==where_multiple_work(tablename, data,condition.substr(this_space+4, condition.length()-this_space-4)) ? false : true);
     }
-    this_space = condition.find(" AND "); //�ٴ���AND
+    this_space = condition.find(" AND "); //再处理AND
     if (this_space == -1) this_space = condition.find(" and ");
     if (!f && this_space != -1) {
         f = 1;
 		return ans = where_multiple_work(tablename,data, condition.substr(0, this_space)) && where_multiple_work(tablename, data,condition.substr(this_space+4, condition.length()-this_space-4));
     }
-	this_space = condition.find(" NOT "); //�ٴ���AND
+	this_space = condition.find(" NOT "); 
     if (this_space == -1) this_space = condition.find(" not ");
     if (!f && this_space != -1) {
         f = 1;
 		return ans = where_multiple_work(tablename,data, condition.substr(0, this_space)) && ! (where_multiple_work(tablename, data,condition.substr(this_space+4, condition.length()-this_space-4)));
     }
-	//�Ȼ����Ҫ�Ƚϵ�����
+	//先获得需要比较的数据
 	vector<string>t;
 	string tablename1,tablename2,columnname1,columnname2;
 	int x=condition.find('=');
@@ -134,10 +134,10 @@ bool Database::where_multiple_work(vector<string>& tablename, vector<int>&data, 
 	string u="";u+=condition[x];
 	t.push_back(u);
 	t.push_back(condition.substr(rx,rr+1-rx));
-	//����и�
+	//完成切割
 
 	int i;
-	bool c1=false,c2=false;//��һ�����ݺ͵ڶ��������Ƿ��ǳ���
+	bool c1=false,c2=false;//第一个数据和第二个数据是否是常数
 	for(i=0;i<t[0].size();++i){
 		if(t[0][i]=='.'){
 			tablename1=t[0].substr(0,i);
@@ -213,7 +213,7 @@ bool Database::where_multiple_work(vector<string>& tablename, vector<int>&data, 
 
 vector<vector<string>> Database::simple_select(string todo){
 	vector<vector<string>>result;
-	todo+=';';//Ϊ����Ӧ֮ǰ��Ĵ���
+	todo+=';';//为了适应之前组的代码
 	int p = todo.find(' ',7);
 	int q = todo.find(' ',p+6);
 	if (q==-1) q = todo.length()-1;
