@@ -87,7 +87,7 @@ vector<string> cut(const string& s) {
 }
 
 bool compare(string data1,string data2,string type1,string type2,string opt){
-	if(opt=="like"){
+	if(Tolower(opt)=="like"){
 		bool front=false,back=false;//记录最前面和最后面是否有%
 		if(data2[0]=='%') front=true;
 		if(data2.back()=='%') back=true;
@@ -126,7 +126,30 @@ bool compare(string data1,string data2,string type1,string type2,string opt){
 		return true;
 	}
 	else{
-		if(type1!="char(1)"){
+		if(type1=="char(1)"){
+			if(opt=="<") return data1<data2;
+			else if(opt==">") return data1>data2;
+			else if(opt=="=") return data1==data2;
+			else if(opt==">=") return data1>=data2;
+			else if(opt=="<=") return data1<=data2;
+			else if(opt=="!=") return data1!=data2;
+			else{
+				cout<<"wrong!";return false;
+			}
+		}
+		else{
+			data1=stof(data1);data2=stof(data2);
+			if(opt=="<") return data1<data2;
+			else if(opt==">") return data1>data2;
+			else if(opt=="=") return data1==data2;
+			else if(opt==">=") return data1>=data2;
+			else if(opt=="<=") return data1<=data2;
+			else if(opt=="!=") return data1!=data2;
+			else{
+				cout<<"wrong!";return false;
+			}
+		}
+		/*if(type1!="char(1)"){
 			if(type1=="int(11)"){
 				int x=atoi(data1.c_str());
 				if(type2=="int(11)"){
@@ -194,7 +217,7 @@ bool compare(string data1,string data2,string type1,string type2,string opt){
 				return data1<data2;
 			}
 			return false;
-		}
+		}*/
 	}
 }
 
@@ -205,4 +228,83 @@ void clear_space(string& data){
 	while(data.back()==' '){
 		data.erase(data.begin()+data.size()-1);
 	}
+}
+
+void clear_qua(string& data){
+	while(data.front()=='"'){
+		data.erase(data.begin());
+	}
+	while(data.back()=='"'){
+		data.erase(data.begin()+data.size()-1);
+	}
+}
+
+int find_pos(const vector<string>& t,string need,bool care_big_small){
+	for(int i=0;i<t.size();++i){
+		if(!care_big_small){
+			if(Tolower(t[i]).find(need)==0){
+				return i;
+			}
+		}
+	}
+	return -1;
+}
+
+string getvalid_string(string t){
+	clear_space(t);
+	if(t.back()==',') t.erase(t.size()-1);
+	return t;
+}
+
+vector<string> get_show_columnname(vector<string>& t){
+	vector<string>result;
+	for(int i=1;i<t.size();++i){
+		if(Tolower(t[i])=="from") break;
+		result.push_back(getvalid_string(t[i]));
+	}
+	return result;
+}
+vector<string> split_string(string s){
+	vector<string>result;
+	string u="";
+	for(int i=0;i<s.size();++i){
+		if(s[i]==' ') {
+			if(u!="") result.push_back(u);
+			u="";
+		}
+		else if(isopt(s[i])){
+			if(u!="") result.push_back(u);
+			u="";u.push_back(s[i]);
+			if(isopt(s[i+1])){
+				u.push_back(s[i+1]);
+				result.push_back(u);
+				++i;u="";
+			}
+			else{
+				result.push_back(u);u="";
+			}
+		}
+		else{
+			u.push_back(s[i]);
+
+		}
+		if(i==s.size()-1){
+			if(u!="") result.push_back(u);
+		}
+	}
+	return result;
+}
+bool isopt(char c){
+	if(c=='<'||c=='>'||c=='='||c=='!'||c=='+'||c=='-'||c=='*'||c=='/'||c=='%') return true;
+	return false;
+}
+
+bool iscmp(string x){
+	if(x==">"||x=="<"||x=="="||x=="!="||x=="<="||x==">="||Tolower(x)=="like") return true;
+	return false;
+}
+
+bool iscountopt(string x){
+	if(x=="+"||x=="-"|x=="*"||x=="/"||x=="%") return true;
+	return false;
 }
