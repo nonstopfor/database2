@@ -616,3 +616,28 @@ bool Table::cmp_vector_string(const vector<string>&t,const vector<string>&u){
 bool Table::equal(const vector<string>&t,const vector<string>&u){
 	return (!cmp_vector_string(t,u))&&(!cmp_vector_string(u,t));
 }
+
+vector<vector<string>> Table::combine(vector<string>columnname,vector<vector<string>> a,vector<vector<string>> b,int mode){
+	vector<vector<string>>result;
+	if(!mode){
+		a.insert(a.end(),b.begin(),b.end());
+		return a;
+	}
+	else{
+		vector<forsort>u;vector<string>want;
+		for(int i=0;i<columnname.size();++i) want.push_back(columnname[i]);
+		for(int i=0;i<a.size();++i){
+			u.push_back(forsort(columnname,this,a[i],want,"string"));
+		}
+		for(int i=0;i<b.size();++i){
+			u.push_back(forsort(columnname,this,b[i],want,"string"));
+		}
+		sort(u.begin(),u.end());
+		auto new_end=unique(u.begin(),u.end());
+		u.erase(new_end,u.end());
+		for(int i=0;i<u.size();++i){
+			result.push_back(u[i].data);
+		}
+		return result;
+	}
+}	

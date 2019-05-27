@@ -45,13 +45,16 @@ public:
 	//need_group第一行为要展示的列名，下面的行为数据（每行数据最后为行号）
 	//orderit中默认count已经计算完毕
 	//order为order by之后的指标
+	//返回值第一行是表头，下面的行是数据（带有行号）
 	vector<vector<string>> takeout(vector<vector<string>>& need_group,vector<int>& want);//返回取完特定列之后的结果，只有数据与行号，无表名
 	//need_group第一行为要展示的列名，下面的行为数据（每行数据最后为行号）
 	//want是想要的列对应的下标
 
 	static bool cmp_vector_string(const vector<string>&t,const vector<string>&u);
 	bool equal(const vector<string>&t,const vector<string>&u);
-	
+	vector<vector<string>> combine(vector<string>columnname,vector<vector<string>> a,vector<vector<string>> b,int mode);
+	//mode=1表示需要去重，mode=0表示不需要去重
+	//传进来的数据无表头，但每行最后有行号
 };
 
 struct forsort{

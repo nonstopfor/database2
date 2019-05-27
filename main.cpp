@@ -382,7 +382,54 @@ int main() {
 			else if(Tolower(todo).find("union")!=-1){//实现union操作符
 				//先实现UNION连接两个结果集，有需要再改进
 				//之前组只实现了select之后有一个属性，这里已改进为可以有多个属性（单表）
-				int pos_union=Tolower(todo).find("union");
+				auto columnname=get_show_columnname(t);
+				vector<string>selects,unions;int last_pos=0;
+				int pos_order=find_pos(t,"order");
+				string ordername="";
+				vector<vector<vector<string>>>results;
+				
+				for(int i=0;i<l;++i){
+					if(Tolower(t[i])=="union"){
+						selects.push_back(putvector_tostring(t,last_pos,i-1));
+						if(Tolower(t[i+1])=="all"){
+							unions.push_back("union all");
+							last_pos=i+2;++i;
+						}
+						else{
+							unions.push_back("union");
+							last_pos=i+1;
+						}
+					}
+					else if(Tolower(t[i])=="order"){
+						selects.push_back(putvector_tostring(t,last_pos,i-1));
+						ordername=t[i+2];break;
+					}
+					if(i==l-1){
+						selects.push_back(putvector_tostring(t,last_pos,i));
+					}
+				}
+				for(int i=0;i<selects.size();++i){
+					results.push_back(now->multiple_select(selects[i]));
+				}
+				vector<vector<string>>result=results[0];
+				int pos_start;//在unions中"union"第一次出现的位置
+				for(pos_start=unions.size()-1;pos_start>=0;pos_start--){
+					if(unions[pos_start]=="union") break;
+				}
+				for(int i=0;i<=pos_start;++i){
+					result=(*now)[0]->combine(columnname,result,results[i+1],1);
+				}
+				for(int i=pos_start+1;i<unions.size();++i){
+					result=(*now)[0]->combine(columnname,result,results[i+1],0);
+				}
+				result.insert(result.begin(),columnname);
+				auto final_result=result;
+				if(pos_order!=-1){
+					final_result=(*now)[0]->orderit(result,ordername);
+				}
+				print_result(final_result);
+				
+				/*int pos_union=Tolower(todo).find("union");
 				int pos_select2=Tolower(todo).find("select",pos_union);
 				int pos_order=Tolower(todo).find("order");
 
@@ -444,7 +491,7 @@ int main() {
 						cout<<result[i][j]<<'\t';
 					}
 					cout<<endl;
-				}
+				}*/
 				
 			}
 			else if(Tolower(todo).find("order by")!=-1){//排序语句
@@ -723,12 +770,7 @@ int main() {
 					if(t[1]!="*"){
 						
 						for(int i=1;i<pos_from;++i){
-							if(i==pos_from-1){
-								columnname.push_back(t[i]);
-							}
-							else {
-								columnname.push_back(t[i].substr(0,t[i].size()-1));
-							}
+							columnname.push_back(getvalid_string(t[i]));
 						}
 					}
 					else{
@@ -741,6 +783,7 @@ int main() {
 					
 					auto u=now->multiple_select(todo);	
 					u.insert(u.begin(),columnname);
+
 					print_result(u);	
 					/*for(int i=0;i<columnname.size();++i){
 						cout<<columnname[i]<<'\t';

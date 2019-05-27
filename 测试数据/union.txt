@@ -8,5 +8,12 @@ CREATE TABLE oop_score(stu_id INT NOT NULL, PRIMARY KEY(stu_id), stu_score INT, 
 INSERT INTO oop_score(stu_id, stu_score, exam_year, gender) VALUES (2018011243, 91, 2008, "m");
 INSERT INTO oop_score(stu_id, stu_score, exam_year, gender) VALUES (2018011344, 92, 2009, "w");
 INSERT INTO oop_score(stu_id, stu_score, exam_year, gender) VALUES (2018011445, 95, 2011, "m");
+CREATE TABLE fop(stu_id INT NOT NULL, PRIMARY KEY(stu_id), stu_score INT, exam_year INT, gender CHAR);
+INSERT INTO fop(stu_id, stu_score, exam_year, gender) VALUES (2018011243, 91, 2008, "m");
+INSERT INTO fop(stu_id, stu_score, exam_year, gender) VALUES (2018011344, 92, 2009, "w");
+INSERT INTO fop(stu_id, stu_score, exam_year, gender) VALUES (2018011445, 95, 2011, "m");
+SELECT stu_id FROM oop_info UNION SELECT stu_id FROM oop_score UNION SELECT stu_id FROM fop ORDER BY stu_id;
+SELECT stu_id FROM oop_info UNION SELECT stu_id FROM oop_score UNION ALL SELECT stu_id FROM fop ORDER BY stu_id;
+SELECT stu_id FROM oop_info UNION ALL SELECT stu_id FROM oop_score UNION SELECT stu_id FROM fop;
 SELECT stu_id, gender FROM oop_info UNION SELECT stu_id, gender FROM oop_score ORDER BY stu_id;
 SELECT stu_id, gender FROM oop_info UNION ALL SELECT stu_id, gender FROM oop_score ORDER BY stu_id;

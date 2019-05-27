@@ -21,6 +21,13 @@ Table* Database::operator[] (const string& a) { //重载[]以方便用表格名�
 	return NULL;
 }
 
+Table* Database::operator[] (const int& i){
+	if(i>=dvalue.size()) return nullptr;
+	else{
+		return dvalue[i];
+	}
+}
+
 string Database::getname() const {return dname;} //获得数据库名的接口 
 
 int Database::getsize() {return dvalue.size();} //获得数据库内表格数量的接口 
@@ -316,6 +323,7 @@ vector<vector<string>> Database::multiple_select(string todo){
 	}
 	return result;
 }
+
 
 void Database::keep_data(string filename,fstream& fout){
 	fout<<"database: "<<dname<<endl;

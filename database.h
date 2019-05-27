@@ -14,6 +14,7 @@ public:
 	Database(string a); //初始化列表，字符串a为数据库名
 	~Database(); //析构函数，删除dvalue中的指针释放内存
 	Table* operator[] (const string& a); //[]的重载，用表格名访问表格指针
+	Table* operator[] (const int& i);//[]的重载，用表格下标访问表格指针
 	string getname() const; //获得数据库名的接口
 	int getsize(); //获得数据库里表格数的接口
 	void create(const string& a,const string& b); //在库里创建表格的函数，a表示表格名，b为表格的主键
@@ -32,7 +33,10 @@ public:
 	vector<vector<string>> multiple_select(string todo);//select后面有多/1个属性，单表，返回值是所有符合条件的数据（不包括表头）
 	//todo末尾无分号，无空格,属性后面是否带逗号没有关系
 	//返回的数据每一行最后是行号
+	//todo不含有group或者order
+	
 	void keep_data(string filename,fstream& fout);
+	
 };
 
 #endif

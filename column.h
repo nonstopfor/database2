@@ -44,4 +44,5 @@ vector<string> split_string(string s);//¸ù¾İÔËËã·û»òÕß>,<,=¶Ôstring½øĞĞ·Ö¸î£¬Í¬Ê
 bool isopt(char c);
 bool iscmp(string x);//ÊÇ·ñÊÇ±È½Ï·û
 bool iscountopt(string x);//ÊÇ·ñÊÇÔËËã·û
+string putvector_tostring(vector<string>& t,int start,int end);
 #endif
