@@ -19,7 +19,7 @@ string CAA(vector<string> & hold_strs){
     //correct datas and do goods
     bool wrong_flag=false;
     for(auto & i : hold_strs){
-        if(i!="+"&&i!="-"&&i!="*"&&i!="/"&&i!="%%"){
+        if(i!="+"&&i!="-"&&i!="*"&&i!="/"&&i!="%"){
             if(typeid(TY)==typeid(int)){
                 data_stack.push_back(atoi(i.c_str()));
             }
@@ -47,7 +47,7 @@ string CAA(vector<string> & hold_strs){
                         if(op2==0)return "NULL";
                         else data_stack.push_back((TY)op1/(TY)op2);
                     }
-                    else if(op_hold=="%%"){
+                    else if(op_hold=="%"){
                         if(typeid(TY)==typeid(int)&&op2!=0){
                             data_stack.push_back((int)op1%(int)op2);
                         }else return "NULL";
@@ -58,7 +58,7 @@ string CAA(vector<string> & hold_strs){
                 oper_stack.push_back(i);
                 if(data_stack.size()!=1)return "NULL";
             }
-            else if(i=="*"||i=="/"||i=="%%"){
+            else if(i=="*"||i=="/"||i=="%"){
                 while(oper_stack.size()>0&&oper_stack[oper_stack.size()-1]!="+"&&oper_stack[oper_stack.size()-1]!="-"){
                     string op_hold=oper_stack[oper_stack.size()-1];
                     oper_stack.pop_back();
@@ -72,7 +72,7 @@ string CAA(vector<string> & hold_strs){
                         if(op2==0)return "NULL";
                         else data_stack.push_back((TY)op1/(TY)op2);
                     }
-                    else if(op_hold=="%%"){
+                    else if(op_hold=="%"){
                         if(typeid(TY)==typeid(int)&&op2!=0){
                             data_stack.push_back((int)op1%(int)op2);
                         }else return "NULL";
@@ -108,7 +108,7 @@ string CAA(vector<string> & hold_strs){
                 if(op2==0)return "NULL";
                 else data_stack.push_back((TY)op1/(TY)op2);
             }
-            else if(op_hold=="%%"){
+            else if(op_hold=="%"){
                 if(typeid(TY)==typeid(int)&&op2!=0){
                     data_stack.push_back((int)op1%(int)op2);
                 }else return "NULL";
@@ -130,5 +130,7 @@ string CAA(vector<string> & hold_strs){
 
 
 string CAL_alg(vector<string> &hold_strs, string type);
+
+string CAA_2(vector<string> & hold_strs);
 
 #endif
