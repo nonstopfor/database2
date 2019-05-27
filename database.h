@@ -29,8 +29,9 @@ public:
 	void enumerate(int& num_table,int step,vector<int>v,vector<string>& tablename,
 	vector<vector<int>>& result,string condition);//辅助进行---行组合的枚举
 	vector<vector<string>> simple_select(string todo);//select后面有一个属性，单表，todo末尾无分号，无空格
-	vector<vector<string>> multiple_select(string todo);//select后面有多/1个属性，单表
-	//todo末尾无分号，无空格
+	vector<vector<string>> multiple_select(string todo);//select后面有多/1个属性，单表，返回值是所有符合条件的数据（不包括表头）
+	//todo末尾无分号，无空格,属性后面是否带逗号没有关系
+	//返回的数据每一行最后是行号
 	void keep_data(string filename,fstream& fout);
 };
 

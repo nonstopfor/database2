@@ -2,7 +2,6 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
-#include "math_cal.h"
 using namespace std;
 
 Table::Table(string a,string b): tname(a),primary_key(b) {}
@@ -35,7 +34,17 @@ int Table::count(string& s){
 		return result;
 	}
 }
-
+int Table::count(int i,string& s){
+	if(s=="") return 0;
+	if(Tolower(s)=="count(*)") return 1;
+	else{
+		string columnname=s.substr(6,s.size()-7);
+		if((*(*this)[columnname])[i]!="NULL"){
+			return 1;
+		}
+		else return 0;
+	}
+}
 Column* Table::operator[](const int i){
 	return tvalue[i];
 }
@@ -232,7 +241,17 @@ bool Table::whereclauses_work(const int& i, const string& str) { //对单行(第
     if (!f) { //如果在处理的片段中没有OR或者AND，即没有递归过，仅仅含有>、<、=的判断，则对其进行判断处理；处理思路为找到比较运算符的位置，然后将其前后分割，并转化为可以比较的类型，最后进行比较，并将结果返回
         //这里的修改并未影响功能，只是为了增加对更多操作符的支持，比如like,==等
 		
-		auto t=cut(str);string opt;
+		vector<string>sstr=split_string(str);
+		int pos_cmp;//比较运算符的位置
+		for(pos_cmp=0;pos_cmp<sstr.size();++pos_cmp) if(iscmp(sstr[pos_cmp])) break;
+		vector<string>exp1,exp2;string opt=sstr[pos_cmp];
+		for(int i=0;i<pos_cmp;++i) exp1.push_back(sstr[i]);		
+		for(int i=pos_cmp+1;i<sstr.size();++i) exp2.push_back(sstr[i]);
+		string tp1=gettype(exp1),tp2=gettype(exp2);
+		vector<string> _data1=getdata(i,exp1),_data2=getdata(i,exp2);
+		string data1=CAL_alg(_data1,tp1),data2=CAL_alg(_data2,tp2);
+
+		/*auto t=cut(str);string opt;
 		int x=str.find("=");int y=x+1;opt="=";
 		if(x==-1) x=str.find("<"),y=x+1,opt="<";
 		if(x==-1) x=str.find(">"),y=x+1,opt=">";
@@ -363,87 +382,237 @@ bool Table::whereclauses_work(const int& i, const string& str) { //对单行(第
 			else{
 				type2="char(1)";
 			}
-		}
+		}*/
 		
-		ans=compare(data1,data2,type1,type2,opt);
-		/*now_space = str.find(">"); //����>
-        if (now_space != -1) {
-            string l_string = str.substr(0, now_space);
-            string r_string = str.substr(now_space+1, str.length()-now_space-1);
-            string str_type = ((*this)[l_string])->gettype();
-            if (str_type == "int(11)") {
-                if ((*this)[l_string] != NULL) l_string = (((*this)[l_string])->cvalue[i]);
-                else r_string = (((*this)[r_string])->cvalue[i]);
-                if ((l_string != "NULL") && (r_string != "NULL")) ans = stoi(l_string) > stoi(r_string);
-                else ans = default_ans;
-            }
-            if (str_type == "char(1)") {
-                if ((*this)[l_string] != NULL) l_string = (((*this)[l_string])->cvalue[i]);
-                else r_string = (((*this)[r_string])->cvalue[i]);
-                if (l_string[0] == '\"') l_string = l_string[1];
-                if (r_string[0] == '\"') r_string = r_string[1];
-                if ((l_string != "NULL") && (r_string != "NULL")) ans = l_string > r_string;
-                else ans = default_ans;
-            }
-            if (str_type == "double") {
-                if ((*this)[l_string] != NULL) l_string = (((*this)[l_string])->cvalue[i]);
-                else r_string = (((*this)[r_string])->cvalue[i]);
-                if ((l_string != "NULL") && (r_string != "NULL")) ans = stod(l_string) > stod(r_string);
-                else ans = default_ans;
-            }
-        }
-        now_space = str.find("<"); //����<
-        if (now_space != -1) {
-            string l_string = str.substr(0, now_space);
-            string r_string = str.substr(now_space+1, str.length()-now_space-1);
-            string str_type = ((*this)[l_string])->gettype();
-            if (str_type == "int(11)") {
-                if ((*this)[l_string] != NULL) l_string = (((*this)[l_string])->cvalue[i]);
-                else r_string = (((*this)[r_string])->cvalue[i]);
-                if ((l_string != "NULL") && (r_string != "NULL")) ans = stoi(l_string) < stoi(r_string);
-                else ans = default_ans;
-            }
-            if (str_type == "char(1)") {
-                if ((*this)[l_string] != NULL) l_string = (((*this)[l_string])->cvalue[i]);
-                else r_string = (((*this)[r_string])->cvalue[i]);
-                if (l_string[0] == '\"') l_string = l_string[1];
-                if (r_string[0] == '\"') r_string = r_string[1];
-                if ((l_string != "NULL") && (r_string != "NULL")) ans = l_string < r_string;
-                else ans = default_ans;
-            }
-            if (str_type == "double") {
-                if ((*this)[l_string] != NULL) l_string = (((*this)[l_string])->cvalue[i]);
-                else r_string = (((*this)[r_string])->cvalue[i]);
-                if ((l_string != "NULL") && (r_string != "NULL")) ans = stod(l_string) < stod(r_string);
-                else ans = default_ans;
-            }
-        }
-        now_space = str.find("="); //����=
-        if (now_space != -1) {
-            string l_string = str.substr(0, now_space);
-            string r_string = str.substr(now_space+1, str.length()-now_space-1);
-            string str_type = ((*this)[l_string])->gettype();
-            if (str_type == "int(11)") {
-                if ((*this)[l_string] != NULL) l_string = (((*this)[l_string])->cvalue[i]);
-                else r_string = (((*this)[r_string])->cvalue[i]);
-                if ((l_string != "NULL") && (r_string != "NULL")) ans = stoi(l_string) == stoi(r_string);
-                else ans = default_ans;
-            }
-            if (str_type == "char(1)") {
-                if ((*this)[l_string] != NULL) l_string = (((*this)[l_string])->cvalue[i]);
-                else r_string = (((*this)[r_string])->cvalue[i]);
-                if (l_string[0] == '\"') l_string = l_string[1];
-                if (r_string[0] == '\"') r_string = r_string[1];
-                if ((l_string != "NULL") && (r_string != "NULL")) ans = l_string == r_string;
-                else ans = default_ans;
-            }
-            if (str_type == "double") {
-                if ((*this)[l_string] != NULL) l_string = (((*this)[l_string])->cvalue[i]);
-                else r_string = (((*this)[r_string])->cvalue[i]);
-                if ((l_string != "NULL") && (r_string != "NULL")) ans = stod(l_string) == stod(r_string);
-                else ans = default_ans;
-            }
-        }*/
+		ans=compare(data1,data2,tp1,tp2,opt);
+		
     }
     return ans;
+}
+string Table::gettype(vector<string>& t){
+	for(int i=0;i<t.size();++i){
+		if(iscountopt(t[i])) continue;
+		if(find_column(t[i])) return (*this)[t[i]]->gettype();
+		if(isdigit(t[i][0])) {
+			if(t[i].find(".")!=-1) return "double";
+			return "int(11)";
+		}
+		else return "char(1)";
+	}
+	return "NULL";
+}
+vector<string> Table::getdata(int i,vector<string>& t){
+	vector<string>result;
+	for(int j=0;j<t.size();++j){
+		if(this->find_column(t[j])) {
+			result.push_back((*(*this)[t[j]])[i]);
+		}
+		else{
+			clear_qua(t[j]);
+			result.push_back(t[j]);
+		}
+	}
+	return result;
+}
+vector<vector<string>> Table::groupit(vector<vector<string>>& need_group,vector<string>& group){
+	bool needcount;
+	int pos_count=find_pos(need_group[0],"count");
+	if(pos_count==-1) needcount=false;
+	else needcount=true;
+	string count_thing="";
+	if(needcount) count_thing=need_group[0][pos_count];
+	/*vector<int>want;
+	for(int i=0;i<group.size();++i){
+		int o=find_pos(need_group[0],group[i]);
+		want.push_back(o);
+	}
+	want.push_back(need_group[1].size()-1);*/
+	
+
+	/*auto _takeout=takeout(need_group,want);
+	sort(_takeout.begin(),_takeout.end(),cmp_vector_string);*/
+	vector<vector<string>>result;
+	result.push_back(need_group[0]);
+	vector<forsort>u;
+	vector<string>selected=need_group[0];
+	for(int i=1;i<need_group.size();++i){
+		u.push_back(forsort(selected,this,need_group[i],group,"string"));
+	}
+	sort(u.begin(),u.end());
+	int _count=0;
+	for(int i=0;i<u.size();++i){
+		int j=i;_count=0;
+		while(j<u.size()&&u[j]==u[i]) {
+			if(needcount) _count+=count(u[j].row,count_thing);
+			++j;
+		}
+		vector<string>temp;
+		if(!needcount) temp=u[i].data;
+		else{
+			for(int q=0;q<pos_count;++q) temp.push_back(u[i].data[q]);
+			temp.push_back(to_string(_count));
+			for(int q=pos_count;q<u[i].data.size();++q) temp.push_back(u[i].data[q]);
+		}
+		result.push_back(temp);
+		i=j-1;
+	}
+	/*int _count=0;
+	for(int i=0;i<_takeout.size();++i){
+		if(!i){
+			_count+=count(stoi(_takeout[i].back()),count_thing);
+			if(i==_takeout.size()-1){
+				int sub=0;//对应到need_group中的下标
+				for(sub=1;sub<need_group.size();++sub){
+					if(need_group[sub].back()==_takeout[i].back()){
+						break;
+					}
+				}
+				if(!needcount) {
+					result.push_back(need_group[sub]);
+				}
+				else{
+					vector<string>temp;
+					for(int o=0;o<count_pos;++o){
+						temp.push_back(need_group[sub][o]);
+					}
+					temp.push_back(to_string(_count));
+					for(int o=count_pos;o<need_group[sub].size();++o){
+						temp.push_back(need_group[sub][o]);
+					}
+					result.push_back(temp);
+				}
+			}
+		}
+		else{
+			if(equal(_takeout[i],_takeout[i-1])){
+				_count+=count(stoi(_takeout[i].back()),count_thing);
+				if(i==_takeout.size()-1){
+					int sub=0;//对应到need_group中的下标
+					for(sub=1;sub<need_group.size();++sub){
+						if(need_group[sub].back()==_takeout[i].back()){
+							break;
+						}
+					}
+					if(!needcount) {
+						result.push_back(need_group[sub]);
+					}
+					else{
+						vector<string>temp;
+						for(int o=0;o<count_pos;++o){
+							temp.push_back(need_group[sub][o]);
+						}
+						temp.push_back(to_string(_count));
+						for(int o=count_pos;o<need_group[sub].size();++o){
+							temp.push_back(need_group[sub][o]);
+						}
+						result.push_back(temp);
+					}
+				}
+			}
+			else{
+				int sub=0;//对应到need_group中的下标
+				for(sub=1;sub<need_group.size();++sub){
+					if(need_group[sub].back()==_takeout[i-1].back()){
+						break;
+					}
+				}
+				if(!needcount) {
+					result.push_back(need_group[sub]);
+				}
+				else{
+					vector<string>temp;
+					for(int o=0;o<count_pos;++o){
+						temp.push_back(need_group[sub][o]);
+					}
+					temp.push_back(to_string(_count));
+					for(int o=count_pos;o<need_group[sub].size();++o){
+						temp.push_back(need_group[sub][o]);
+					}
+					result.push_back(temp);
+					
+				}
+				_count=0;
+				_count+=count(stoi(_takeout[i].back()),count_thing);
+				if(i==_takeout.size()-1){
+					int sub=0;//对应到need_group中的下标
+					for(sub=1;sub<need_group.size();++sub){
+						if(need_group[sub].back()==_takeout[i].back()){
+							break;
+						}
+					}
+					if(!needcount) {
+						result.push_back(need_group[sub]);
+					}
+					else{
+						vector<string>temp;
+						for(int o=0;o<count_pos;++o){
+							temp.push_back(need_group[sub][o]);
+						}
+						temp.push_back(to_string(_count));
+						for(int o=count_pos;o<need_group[sub].size();++o){
+							temp.push_back(need_group[sub][o]);
+						}
+						result.push_back(temp);
+					}
+				}
+			}
+		}
+	}*/
+	return result;
+}
+vector<vector<string>> Table::orderit(vector<vector<string>>& need_order,string order){
+	vector<vector<string>>result;
+	result.push_back(need_order[0]);
+	string cmp_type;
+	if(Tolower(order).find("count(")!=-1) cmp_type="int(11)";
+	else{
+		cmp_type=(*this)[order]->gettype();
+	}
+	vector<string>selected=need_order[0];
+	vector<string>want;want.push_back(order);
+	vector<forsort>u;
+	if(cmp_type=="char(1)"){
+		for(int i=1;i<need_order.size();++i){
+			u.push_back(forsort(selected,this,need_order[i],want,"string"));
+		}
+		sort(u.begin(),u.end());
+	}
+	else if(cmp_type=="int(11)"){
+		for(int i=1;i<need_order.size();++i){
+			u.push_back(forsort(selected,this,need_order[i],want,"int"));
+		}
+		sort(u.begin(),u.end());
+	}
+	else if(cmp_type=="double"){
+		for(int i=1;i<need_order.size();++i){
+			u.push_back(forsort(selected,this,need_order[i],want,"double"));
+		}
+		sort(u.begin(),u.end());
+	}
+
+	for(int i=0;i<u.size();++i){
+		result.push_back(u[i].data);
+	}
+	return result;
+}
+vector<vector<string>> Table::takeout(vector<vector<string>>& need_group,vector<int>& want){
+	vector<vector<string>> result;
+	for(int i=1;i<need_group.size();++i){
+		vector<string>temp;
+		for(int j=0;j<want.size();++j){
+			temp.push_back(need_group[i][j]);
+		}
+		result.push_back(temp);
+	}
+	return result;
+}
+bool Table::cmp_vector_string(const vector<string>&t,const vector<string>&u){
+	for(int i=0;i<min(t.size(),u.size())-1;++i){
+		if(t[i]<u[i]) return true;
+		if(t[i]>u[i]) return false;
+	}
+	return false;
+}
+bool Table::equal(const vector<string>&t,const vector<string>&u){
+	return (!cmp_vector_string(t,u))&&(!cmp_vector_string(u,t));
 }

@@ -4,6 +4,9 @@
 #include <string>
 #include<fstream>
 #include <cctype>
+#include<algorithm>
+#include"math_cal.h"
+
 using namespace std;
 
 
@@ -26,9 +29,19 @@ public:
 	string& operator[] (int s); //重载[]，便于用Column对象+[行数]访问相应位置的元素
 };
 
+
+
 bool str_com(const string& a,const string& b);
 string Tolower(string x);
 vector<string> cut(const string& s);
 bool compare(string data1,string data2,string type1,string type2,string opt);
 void clear_space(string& data);//除去data前后的空格
+void clear_qua(string& data);//除去data前后的双引号
+int find_pos(const vector<string>& t,string need,bool care_big_small=false);
+string getvalid_string(string t);//去除该string的前后空格或者逗号
+vector<string> get_show_columnname(vector<string>& t);//从select...from...语句中得到需要展示的列名(包括count)
+vector<string> split_string(string s);//根据运算符或者>,<,=对string进行分割，同时除去空格
+bool isopt(char c);
+bool iscmp(string x);//是否是比较符
+bool iscountopt(string x);//是否是运算符
 #endif

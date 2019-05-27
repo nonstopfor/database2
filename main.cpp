@@ -74,7 +74,19 @@ void read_data(map<string,Database*>& database,vector<string>& all_database){
 	}
 	fin.close();
 }
-
+void print_result(vector<vector<string>>& result){
+	if(result.size()<2) return;
+	for(int i=0;i<result[0].size();++i){
+		cout<<result[0][i]<<'\t';
+	}
+	cout<<endl;
+	for(int i=1;i<result.size();++i){
+		for(int j=0;j<result[i].size()-1;++j){
+			cout<<result[i][j]<<'\t';
+		}
+		cout<<endl;
+	}
+}
 int main() {
 	
     string todo; Database* now = NULL; //now表示现在正在使用的数据库，便于切换操作 
@@ -444,8 +456,39 @@ int main() {
 						break;
 					}
 				}
-				vector<string>group;
-				
+				int pos_count,pos_group,pos_order;//记录count和group在t中的下标
+				pos_count=find_pos(t,"count");
+				pos_group=find_pos(t,"group");
+				pos_order=find_pos(t,"order");
+				string todo="";
+				for(int i=0;i<(pos_group==-1?pos_order:pos_group);++i){
+					if(!i) todo+=t[i];
+					else{
+						if(i==pos_count) continue;
+						todo+=' ';todo+=t[i];
+					}
+				}
+				auto need_group=now->multiple_select(todo);
+				auto columnname=get_show_columnname(t);
+				need_group.insert(need_group.begin(),columnname);
+				vector<vector<string>>need_order;
+				if(pos_group!=-1){
+					vector<string>group;
+					for(int i=pos_group+2;i<pos_order;++i){
+						group.push_back(getvalid_string(t[i]));
+					}
+					need_order=ptable->groupit(need_group,group);
+				}
+				else{
+					need_order=need_group;
+				}
+				string order=t[pos_order+2];
+
+				auto result=ptable->orderit(need_order,order);
+				print_result(result);
+
+
+				/*vector<string>group;
 				vector<vector<string>>result;
 				string countname="*";
 				int mode=0;
@@ -508,10 +551,10 @@ int main() {
 					}
 					if(mode) cout<<mcount[result[i]];
 					cout<<endl;
-				}
+				}*/
 			}
 			else if(Tolower(todo).find("group by")!=-1){//分组语句
-				Table* ptable;
+				Table* ptable=nullptr;
 				int i;//i对应from出现的下标
 				for(i=0;i<t.size();++i){
 					if(Tolower(t[i])=="from"){
@@ -519,11 +562,33 @@ int main() {
 						break;
 					}
 				}
+				if(ptable==nullptr) continue;
+				int pos_count,pos_group;//记录count和group在t中的下标
+				pos_count=find_pos(t,"count");
+				pos_group=find_pos(t,"group");
+				string todo="";
+				for(int i=0;i<pos_group;++i){
+					if(!i) todo+=t[i];
+					else{
+						if(i==pos_count) continue;
+						todo+=' ';todo+=t[i];
+					}
+				}
+				auto need_group=now->multiple_select(todo);
+				auto columnname=get_show_columnname(t);
+				need_group.insert(need_group.begin(),columnname);
 				vector<string>group;
+				for(int i=pos_group+2;i<l;++i){
+					group.push_back(getvalid_string(t[i]));
+				}
+				auto result=ptable->groupit(need_group,group);
+				print_result(result);
+				
+				/*vector<string>group;
 				
 				vector<vector<string>>result;
 				string countname="*";
-				int mode=0;
+				int mode=0;//mode=1表示有count,mode=0表示无count
 				map<vector<string>,int>m;//计算出现的次数
 				map<vector<string>,int>mcount;//计算count值
 				if(Tolower(todo).find("count")!=-1){
@@ -576,7 +641,7 @@ int main() {
 					}
 					if(mode) cout<<mcount[result[i]];
 					cout<<endl;
-				}
+				}*/
 			}
 			else if(Tolower(todo).find("count")!=-1){//实现COUNT()函数
 				cout<<t[1]<<endl;
@@ -674,17 +739,19 @@ int main() {
 						}
 					}
 					
-					auto u=now->multiple_select(todo);		
-					for(int i=0;i<columnname.size();++i){
+					auto u=now->multiple_select(todo);	
+					u.insert(u.begin(),columnname);
+					print_result(u);	
+					/*for(int i=0;i<columnname.size();++i){
 						cout<<columnname[i]<<'\t';
 					}			
 					cout<<endl;
 					for(int i=0;i<u.size();++i){
-						for(int j=0;j<u[i].size();++j){
+						for(int j=0;j<u[i].size()-1;++j){
 							cout<<u[i][j]<<'\t';
 						}
 						cout<<endl;
-					}
+					}*/
 				}
 			}
 			

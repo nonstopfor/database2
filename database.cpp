@@ -288,12 +288,13 @@ vector<vector<string>> Database::multiple_select(string todo){
 	}
 	vector<string>columnname;
 	for(int i=1;i<pos_from;++i){
-		if(i!=pos_from-1){
+		columnname.push_back(getvalid_string(t[i]));
+		/*if(i!=pos_from-1){
 			columnname.push_back(t[i].substr(0,t[i].size()-1));
 		}
 		else{
 			columnname.push_back(t[i]);
-		}
+		}*/
 	}
 	auto check=(*this)[tablename]->whereClauses(clause);
 	for(int i=0;i<check.size();++i){
@@ -309,6 +310,7 @@ vector<vector<string>> Database::multiple_select(string todo){
 					temp.push_back((*(*(*this)[tablename])[j])[i]);
 				}
 			}
+			temp.push_back(to_string(i));
 			result.push_back(temp);
 		}
 	}
