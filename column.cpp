@@ -138,13 +138,65 @@ bool compare(string data1,string data2,string type1,string type2,string opt){
 			}
 		}
 		else{
-			data1=stof(data1);data2=stof(data2);
-			if(opt=="<") return data1<data2;
-			else if(opt==">") return data1>data2;
-			else if(opt=="=") return data1==data2;
-			else if(opt==">=") return data1>=data2;
-			else if(opt=="<=") return data1<=data2;
-			else if(opt=="!=") return data1!=data2;
+			if(type1=="int(11)") {
+				if(type2=="int(11)") {
+					int d1=stoi(data1),d2=stoi(data2);
+					if(opt=="<") return d1<d2;
+					else if(opt==">") return d1>d2;
+					else if(opt=="=") return d1==d2;
+					else if(opt==">=") return d1>=d2;
+					else if(opt=="<=") return d1<=d2;
+					else if(opt=="!=") return d1!=d2;
+					else{
+						cout<<"wrong!";return false;
+					}
+				}
+				else if(type2=="double"){
+					int d1=stoi(data1);double d2=stof(data2);
+					if(opt=="<") return d1<d2;
+					else if(opt==">") return d1>d2;
+					else if(opt=="=") return d1==d2;
+					else if(opt==">=") return d1>=d2;
+					else if(opt=="<=") return d1<=d2;
+					else if(opt=="!=") return d1!=d2;
+					else{
+						cout<<"wrong!";return false;
+					}
+				}
+			}
+			else if(type1=="double"){
+				if(type2=="double"){
+					double d1=stof(data1),d2=stof(data2);
+					if(opt=="<") return d1<d2;
+					else if(opt==">") return d1>d2;
+					else if(opt=="=") return d1==d2;
+					else if(opt==">=") return d1>=d2;
+					else if(opt=="<=") return d1<=d2;
+					else if(opt=="!=") return d1!=d2;
+					else{
+						cout<<"wrong!";return false;
+					}
+				}
+				else if(type2=="int(11)"){
+					double d1=stof(data1);int d2=stoi(data2);
+					if(opt=="<") return d1<d2;
+					else if(opt==">") return d1>d2;
+					else if(opt=="=") return d1==d2;
+					else if(opt==">=") return d1>=d2;
+					else if(opt=="<=") return d1<=d2;
+					else if(opt=="!=") return d1!=d2;
+					else{
+						cout<<"wrong!";return false;
+					}
+				}
+			}
+			double d1=stof(data1),d2=stof(data2);
+			if(opt=="<") return d1<d2;
+			else if(opt==">") return d1>d2;
+			else if(opt=="=") return d1==d2;
+			else if(opt==">=") return d1>=d2;
+			else if(opt=="<=") return d1<=d2;
+			else if(opt=="!=") return d1!=d2;
 			else{
 				cout<<"wrong!";return false;
 			}
@@ -242,14 +294,18 @@ void clear_qua(string& data){
 int find_pos(const vector<string>& t,string need,bool care_big_small){
 	for(int i=0;i<t.size();++i){
 		if(!care_big_small){
-			if(Tolower(t[i]).find(need)==0){
+			if(Tolower(t[i]).find(Tolower(need))==0){
 				return i;
 			}
 		}
 	}
 	return -1;
 }
-
+/*vector<string> get_vecstr(vector<string>u,int x,int y){
+	vector<string>result;
+	for(int q=x;q<=y;++q) result.push_back(u[q]);
+	return result;
+}*/
 string getvalid_string(string t){
 	clear_space(t);
 	if(t.back()==',') t.erase(t.size()-1);
@@ -307,4 +363,36 @@ bool iscmp(string x){
 bool iscountopt(string x){
 	if(x=="+"||x=="-"|x=="*"||x=="/"||x=="%") return true;
 	return false;
+}
+
+string putvector_tostring(vector<string>& t,int start,int end){
+	string result=t[start];
+	for(int i=start+1;i<=end;++i){
+		result+=' ';result+=t[i];
+	}
+	return result;
+}
+
+vector<string>clear_tablename(vector<string>& u){
+	vector<string>result;
+	for(int i=0;i<u.size();++i){
+		int t=u[i].find(".");string x;
+		if(t!=-1){
+			x=u[i].substr(t+1,u[i].size()-t-1);
+		}
+		else{
+			x=u[i];
+		}
+		result.push_back(x);
+	}
+	return result;
+}
+
+bool check_null(vector<string>& u){
+	if(find_pos(u,"null")!=-1) return true;
+	return false;
+}
+
+void print_vector(vector<string>& u){
+	for(int i=0;i<u.size();++i) cout<<u[i]<<endl;
 }
