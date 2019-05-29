@@ -323,8 +323,140 @@ vector<vector<string>> Database::multiple_select(string todo){
 	}
 	return result;
 }
+vector<vector<pair<int,bool>>> Database::join_it(vector<vector<pair<int,bool>>>r,vector<string>tablename,vector<string>need,string join){
+	string _table=need[0];
+	Table* table=(*this)[_table];
+	need.erase(need.begin());need.erase(need.begin());
+	vector<vector<pair<int,bool>>> result;
+	map<vector<pair<int,bool>>,int>m;
+	for(int i=0;i<r.size();++i){
+		for(int j=0;j<table->getrowsize();++j){
+			r[i].push_back(make_pair(j,true));
+			if(join_ok(tablename,r[i],need)){
+				result.push_back(r[i]);
+				m[get_vecstr(r[i],0,r[i].size()-2)]++;
+				m[get_vecstr(r[i],r[i].size()-1,r[i].size()-1)]++;
+				r[i].pop_back();
+			}
+			else{
+				r[i].pop_back();
+				/*if(join=="inner join"){
+					r[i].pop_back();
+				}
+				else if(join=="left join"){
+					r[i].back().second=false;
+					if(!m[get_vecstr(r[i],0,r[i].size()-2)])
+					{result.push_back(r[i]);m[get_vecstr(r[i],0,r[i].size()-2)]++;}
+					r[i].pop_back();
+				}
+				else if(join=="right join"){
+					auto temp=r[i];
+					for(int i=0;i<temp.size()-1;++i) temp[i].second=false;
+					if(!m[get_vecstr(temp,temp.size()-1,temp.size()-1)])
+					{result.push_back(temp);m[get_vecstr(temp,temp.size()-1,temp.size()-1)]++;}
+					r[i].pop_back();
+				}
+				else {
+					cout<<"wrong!"<<endl;
+				}*/
+			}
+		}
+		if(join=="left join"){
+			if(!m[r[i]]){
+				r[i].push_back(make_pair(0,false));
+				result.push_back(r[i]);
+				r[i].pop_back();
+			}
+		}
+	}
+	if(join=="right join"){
+		for(int j=0;j<table->getrowsize();++j){
+			auto u=make_pair(j,true);
+			vector<pair<int,bool>>temp;temp.push_back(u);
+			if(!m[temp]){
+				vector<pair<int,bool>>q;
+				for(int i=0;i<r[0].size();++i){
+					auto o=r[0][i];o.second=false;
+					q.push_back(o);
+				}
+				q.push_back(u);
+				result.push_back(q);
+			}
+		}
+	}
+	return result;
+}
+bool Database::join_ok(const vector<string>&tablename,const vector<pair<int,bool>>& r,vector<string>need){
+	if(find_pos(need,"or")!=-1){
+		return join_ok(tablename,r,get_vecstr(need,0,find_pos(need,"or")-1)) || join_ok(tablename,r,get_vecstr(need,find_pos(need,"or")+1,need.size()-1));
+	}
+	if(find_pos(need,"xor")!=-1){
+		return !(join_ok(tablename,r,get_vecstr(need,0,find_pos(need,"xor")-1)) == join_ok(tablename,r,get_vecstr(need,find_pos(need,"xor")+1,need.size()-1)));
+	}
+	if(find_pos(need,"and")!=-1){
+		return join_ok(tablename,r,get_vecstr(need,0,find_pos(need,"and")-1)) && join_ok(tablename,r,get_vecstr(need,find_pos(need,"and")+1,need.size()-1));
+	}
+	if(find_pos(need,"not")!=-1){
+		return join_ok(tablename,r,get_vecstr(need,0,find_pos(need,"not")-1)) && !join_ok(tablename,r,get_vecstr(need,find_pos(need,"not")+1,need.size()-1));
+	}
+	string temp=putvector_tostring(need,0,need.size()-1);
+	//cout<<temp<<endl;
+	vector<string>sstr=split_string(temp);
+	//print_vector(sstr);
+	int pos_cmp;//比较运算符的位置
+	for(pos_cmp=0;pos_cmp<sstr.size();++pos_cmp) if(iscmp(sstr[pos_cmp])) break;
+	vector<string>exp1=get_vecstr(sstr,0,pos_cmp-1),exp2=get_vecstr(sstr,pos_cmp+1,sstr.size()-1);string opt=sstr[pos_cmp];
+	string tp1=gettype(tablename,exp1,r),tp2=gettype(tablename,exp2,r);
+	if(tp1=="NULL"||tp2=="NULL") return false;
+	vector<string> _data1=getdata(tablename,exp1,r),_data2=getdata(tablename,exp2,r);
+	if(check_null(_data1)||check_null(_data2)) return false;
+	string data1=CAL_alg(_data1,tp1),data2=CAL_alg(_data2,tp2);
+	bool ans=compare(data1,data2,tp1,tp2,opt);
+	return ans;
+}
+string Database::gettype(const vector<string>&tablename,const vector<string>&t,const vector<pair<int,bool>>& r){
+	for(int i=0;i<t.size();++i){
+		if(iscountopt(t[i])) continue;
+		int u=t[i].find(".");
+		if(u==-1){
+			if(isdigit(t[i][0])) return "int(11)";
+			else return "char(1)";
+		}
+		else{
+			string x=t[i].substr(0,u);
+			if(find_table(x)){
+				string y=t[i].substr(u+1,t[i].size()-u-1);
+				int pos_table=find_pos(tablename,x);
+				if(r[pos_table].second==false) return "NULL";
+				return (*(*this)[x])[y]->gettype();
+			}
+			else{
+				return "double";
+			}
+		}
+		
+	}
+	return "NULL";
+}
+vector<string> Database::getdata(const vector<string>&tablename,const vector<string>&t,const vector<pair<int,bool>>& r){
+	vector<string>result;
+	for(int i=0;i<t.size();++i){
+		if(t[i].find(".")!=-1 && this->find_table(t[i].substr(0,t[i].find(".")))){
+			int u=t[i].find(".");
+			string x=t[i].substr(0,u);
+			int pos_table=find_pos(tablename,x);
 
-
+			string y=t[i].substr(u+1,t[i].size()-u-1);
+			result.push_back((*(*(*this)[x])[y])[r[pos_table].first]);
+		}
+		else{
+			string x=t[i];
+			clear_qua(x);
+			result.push_back(x);
+		}
+	}
+	return result;
+}
 void Database::keep_data(string filename,fstream& fout){
 	fout<<"database: "<<dname<<endl;
 	for(int i=0;i<dvalue.size();++i){

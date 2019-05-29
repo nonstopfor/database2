@@ -34,7 +34,10 @@ public:
 	//todo末尾无分号，无空格,属性后面是否带逗号没有关系
 	//返回的数据每一行最后是行号
 	//todo不含有group或者order
-	
+	vector<vector<pair<int,bool>>> join_it(vector<vector<pair<int,bool>>>r,vector<string>tablename,vector<string>need,string join);
+	bool join_ok(const vector<string>&tablename,const vector<pair<int,bool>>& r,vector<string>need);
+	string gettype(const vector<string>&tablename,const vector<string>&t,const vector<pair<int,bool>>& r);
+	vector<string>getdata(const vector<string>&tablename,const vector<string>&t,const vector<pair<int,bool>>& r);
 	void keep_data(string filename,fstream& fout);
 	
 };

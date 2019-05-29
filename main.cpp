@@ -87,6 +87,19 @@ void print_result(vector<vector<string>>& result){
 		cout<<endl;
 	}
 }
+void print_result_norows(vector<vector<string>>& result){
+	if(result.size()<2) return;
+	for(int i=0;i<result[0].size();++i){
+		cout<<result[0][i]<<'\t';
+	}
+	cout<<endl;
+	for(int i=1;i<result.size();++i){
+		for(int j=0;j<result[i].size();++j){
+			cout<<result[i][j]<<'\t';
+		}
+		cout<<endl;
+	}
+}
 int main() {
 	
     string todo; Database* now = NULL; //now表示现在正在使用的数据库，便于切换操作 
@@ -379,8 +392,117 @@ int main() {
 				}
 				fin.close();
 			}
+			else if(Tolower(todo).find("join")!=-1){//实现join功能
+
+				int pos_from=find_pos(t,"from");
+				vector<string>joins,alltable;
+				vector<vector<string>>needs;
+				vector<string>temp;
+				vector<string>nowtables;
+				for(int i=pos_from+1;i<l;++i){
+					string x=Tolower(t[i]);
+					if(x=="inner"||x=="left"||x=="right"){
+						string u=x+' ';
+						u+="join";++i;
+						joins.push_back(u);
+						needs.push_back(temp);
+						temp.clear();
+					}
+					else if(x=="join"){
+						string u="inner join";
+						joins.push_back(u);
+						needs.push_back(temp);
+						temp.clear();
+					}
+					else{
+						if(temp.empty()) alltable.push_back(t[i]);
+						temp.push_back(t[i]);
+						if(i==l-1) needs.push_back(temp);
+					}
+				}
+				vector<vector<pair<int,bool>>>r;//bool为true表示需要显示，否则为NULL
+				for(int i=0;i<(*now)[needs[0][0]]->getrowsize();++i){
+					vector<pair<int,bool>>temp;
+					temp.push_back(make_pair(i,true));
+					r.push_back(temp);
+				}
+				nowtables.push_back(needs[0][0]);
+				for(int i=0;i<joins.size();++i){
+					nowtables.push_back(needs[i+1][0]);
+					r=now->join_it(r,nowtables,needs[i+1],joins[i]);
+				}
+				vector<string>_columnname=get_show_columnname(t);
+				map<string,int>sub_table;
+				for(int i=0;i<alltable.size();++i) sub_table[alltable[i]]=i;
+				vector<vector<string>>result;result.push_back(clear_tablename(_columnname));
+				for(int i=0;i<r.size();++i){
+					vector<string>temp;
+					for(int j=0;j<_columnname.size();++j){
+						int u=_columnname[j].find(".");
+						string x=_columnname[j].substr(0,u);
+						string y=_columnname[j].substr(u+1,_columnname[j].size()-u-1);
+						int o=sub_table[x];
+						string str="NULL";
+						if(r[i][o].second){
+							str=(*(*(*now)[x])[y])[r[i][o].first];
+						}
+						temp.push_back(str);
+					}
+					result.push_back(temp);
+				}
+				print_result_norows(result);
+
+
+
+				/*int pos_join=find_pos(t,"join");
+				string mode=Tolower(t[pos_join-1]);//left\right\inner
+				int pos_on=find_pos(t,"on");
+				int pos_from=find_pos(t,"from");
+
+
+
+				/*vector<string>columnname,ltable,rtable,alltable;
+				for(int i=pos_from;i<pos_join-1;++i) ltable.push_back(getvalid_string(t[i]));
+				for(int i=pos_join+1;i<pos_on;++i) rtable.push_back(getvalid_string(t[i]));
+				for(int i=0;i<ltable.size();++i) alltable.push_back(ltable[i]);
+				for(int i=0;i<rtable.size();++i) alltable.push_back(rtable[i]);
+				if(t[1]=="*"){
+					for(int i=0;i<alltable.size();++i){
+						vector<string>temp=(*now)[alltable[i]]->getall_columnname();
+						for(int j=0;j<temp.size();++j) {
+							string u=alltable[i]+".";u+=temp[j];
+							columnname.push_back(u);
+						}
+					}
+				}
+				else{
+					for(int i=1;i<pos_from;++i) columnname.push_back(t[i]);
+				}
+				/*string condition="";
+				if(pos_on!=-1) condition=putvector_tostring(t,pos_on+1,l-1);
+				map<string,int>sub_table;
+				for(int i=0;i<alltable.size();++i) sub_table[alltable[i]]=i;
+				vector<vector<int>>rows=now->where_multiple(alltable,condition);
+				vector<vector<string>>result;
+				result.push_back(clear_tablename(columnname));
+				for(int i=0;i<rows.size();++i){
+					vector<string>temp;
+					for(int j=0;j<columnname.size();++j){
+						int t=columnname[j].find(".");
+						string _tablename=columnname[j].substr(0,t);
+						string _columnname=columnname[j].substr(t+1,columnname[j].size()-t-1);
+						temp.push_back((*(*(*now)[_tablename])[_columnname])[rows[i][sub_table[_tablename]]]);
+					}
+					result.push_back(temp);
+				}
+				if(mode=="left"){
+
+				}*/
+
+
+			}
 			else if(Tolower(todo).find("union")!=-1){//实现union操作符
-				//先实现UNION连接两个结果集，有需要再改进
+				//先实现UNION连接两个结果集，有需要再改进(已实现连接多个结果集)
 				//之前组只实现了select之后有一个属性，这里已改进为可以有多个属性（单表）
 				auto columnname=get_show_columnname(t);
 				vector<string>selects,unions;int last_pos=0;

@@ -19,6 +19,7 @@ public:
 	int getrowsize();//获得表格行数的接口
 	int count(string& s);//获得所有行的count
 	int count(int i,string& s);//获得某一行的count
+	vector<string> getall_columnname();
 	Column* operator[](const int i);//重载[]，便于以列指标访问列的指针
 	friend class Database; //方便Database类访问Table数据
 	Column* operator[] (const string& a); //重载[]，便于以列名访问列的指针

@@ -6,6 +6,8 @@
 #include <cctype>
 #include<algorithm>
 #include"math_cal.h"
+#include<utility>
+#include<map>
 
 using namespace std;
 
@@ -38,6 +40,12 @@ bool compare(string data1,string data2,string type1,string type2,string opt);
 void clear_space(string& data);//除去data前后的空格
 void clear_qua(string& data);//除去data前后的双引号
 int find_pos(const vector<string>& t,string need,bool care_big_small=false);
+template<class T>
+vector<T> get_vecstr(vector<T>u,int x,int y){
+	vector<T>result;
+	for(int i=x;i<=y;++i) result.push_back(u[i]);
+	return result;
+}
 string getvalid_string(string t);//去除该string的前后空格或者逗号
 vector<string> get_show_columnname(vector<string>& t);//从select...from...语句中得到需要展示的列名(包括count)
 vector<string> split_string(string s);//根据运算符或者>,<,=对string进行分割，同时除去空格
@@ -45,4 +53,7 @@ bool isopt(char c);
 bool iscmp(string x);//是否是比较符
 bool iscountopt(string x);//是否是运算符
 string putvector_tostring(vector<string>& t,int start,int end);
+vector<string>clear_tablename(vector<string>& u);//去除表格名字
+bool check_null(vector<string>& u);
+void print_vector(vector<string>& u);
 #endif

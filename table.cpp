@@ -45,6 +45,14 @@ int Table::count(int i,string& s){
 		else return 0;
 	}
 }
+vector<string> Table::getall_columnname(){
+	vector<string>result;
+	for(int i=0;i<tvalue.size();++i){
+		result.push_back(tvalue[i]->getname());
+	}
+	return result;
+}
+
 Column* Table::operator[](const int i){
 	return tvalue[i];
 }
@@ -249,6 +257,7 @@ bool Table::whereclauses_work(const int& i, const string& str) { //对单行(第
 		for(int i=pos_cmp+1;i<sstr.size();++i) exp2.push_back(sstr[i]);
 		string tp1=gettype(exp1),tp2=gettype(exp2);
 		vector<string> _data1=getdata(i,exp1),_data2=getdata(i,exp2);
+		if(check_null(_data1)||check_null(_data2)) return false;
 		string data1=CAL_alg(_data1,tp1),data2=CAL_alg(_data2,tp2);
 
 		/*auto t=cut(str);string opt;
