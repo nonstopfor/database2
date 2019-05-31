@@ -1,0 +1,19 @@
+g++ -std=c++11 -o server_frame socket_server_frame.cpp -lpthread
+g++ -std=c++11 -o client_frame socket_client_frame.cpp -lpthread
+if [ "$1" != "" ];then
+    if [ "$1" = "server" ];then
+	shift
+	if [ "${1}" != "" ];then
+		./server_frame $1
+	else ./server_frame 5111
+	fi
+    elif [ "$1" = "client" ];then
+	shift
+	if [ "${1}" != "" ];then
+		./client_frame $1 $2	
+	else ./client_frame "127.0.0.1" 5111	
+	fi
+    else echo "wrong para"
+    fi
+else echo "specify server or client"
+fi
