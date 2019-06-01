@@ -1,4 +1,4 @@
-g++ -std=c++11 -o server_frame socket_server_frame.cpp -lpthread
+make
 g++ -std=c++11 -o client_frame socket_client_frame.cpp -lpthread
 if [ "$1" != "" ];then
     if [ "$1" = "server" ];then

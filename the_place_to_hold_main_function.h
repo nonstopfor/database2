@@ -115,6 +115,7 @@ void print_result_norows(vector<vector<string>>& result){
 //and return the reply to be printed
 //the following is an example, which should be replaced by the real function
 string miamia(string A){
+	result_out.clear();
     string todo=A;
     //stringstream ss(todo);
     string result="";
@@ -962,6 +963,8 @@ string miamia(string A){
 	}
 	string oop=result_out.str();
 	result=oop;
+	if(result=="")result="OK";
+//	else result="OK";
     return result;
 }
 

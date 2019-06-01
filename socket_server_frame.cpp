@@ -40,12 +40,14 @@ long IDS[MAX_CLIENT];
 void write_pattern(int sock,string to_write,int& ju_flag){
     pthread_mutex_lock(&lokk);
     if(to_write==""){
-        cout<<"wrong para"<<endl;
-        exit(1);
+        cout<<"wrong para, try again"<<endl;
+//        exit(1);
+        
     }
     int rt=write(sock,to_write.c_str(),sizeof(to_write));
     if(rt<0){
         cout<<"lose client!"<<endl;
+
         ju_flag=1;
     }
     pthread_mutex_unlock(&lokk);
