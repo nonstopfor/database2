@@ -10,7 +10,10 @@ if [ "$1" != "" ];then
     elif [ "$1" = "client" ];then
 	shift
 	if [ "${1}" != "" ];then
-		./client_frame $1 $2	
+		if [ "${2}" != "" ];then
+			./client_frame $1 $2
+		else ./client_frame "127.0.0.1" $1
+		fi	
 	else ./client_frame "127.0.0.1" 5111	
 	fi
     else echo "wrong para"
