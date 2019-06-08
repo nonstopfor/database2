@@ -39,12 +39,15 @@ public:
 	string gettype(vector<string>& t);//获得表达式的类型
 	vector<string> getdata(int i,vector<string>& t);//将表达式中的属性名字换成真正的值，同时去掉双引号
 	vector<vector<string>> groupit(vector<vector<string>>& need_group,vector<string>& group);//返回分组后的结果，包括表头和数据（数据最后一列为行号）
-	//need_group第一行为要展示的列名，下面的行为数据（每行数据最后为行号）
+	//need_group第一行为要展示的列名，下面的行为数据（每行数据最后为行号，如果是count等非表格中原来的列，对应的数据值为NULL）
 	//groupit同时承担对count的计算
 	//group为group by之后的各个列
 	vector<string> deal_function(const vector<string>& columnname,vector<vector<string>>&t);
+	//columnname为需要展示的列，t中含有一组的数据(若干行)
 	string num_function(const int i,string need,vector<vector<string>>&t);
+	//i为该数字函数在columnname中出现的位置,need为对应的数字函数的语句,t为一组数据
 	string judge_function(string need);
+	//判断need对应什么数字函数
 	vector<vector<string>> orderit(vector<vector<string>>& need_order,string order);//返回分组后的结果，包括表头和数据（数据最后一列为行号）
 	//need_group第一行为要展示的列名，下面的行为数据（每行数据最后为行号）
 	//orderit中默认count已经计算完毕
