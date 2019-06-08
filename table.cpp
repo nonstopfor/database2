@@ -196,7 +196,8 @@ void Table::sort_prime() {  //根据主键给各行排序
 		for (int j=0; j<len-1-i; j++) {
 			if (ctype=="int(11)") cc = cmp_int((*((*this)[primary_key]))[j],(*((*this)[primary_key]))[j+1]);
 			else if (ctype=="char(1)") cc = cmp_char((*((*this)[primary_key]))[j],(*((*this)[primary_key]))[j+1]);
-			else cc = cmp_double((*((*this)[primary_key]))[j],(*((*this)[primary_key]))[j+1]);
+			else if (ctype=="double") cc = cmp_double((*((*this)[primary_key]))[j],(*((*this)[primary_key]))[j+1]);
+            else cc = (*((*this)[primary_key]))[j] > (*((*this)[primary_key]))[j+1];
 			if (cc) swap_row(j,j+1);
 		}
 	}
@@ -248,160 +249,29 @@ bool Table::whereclauses_work(const int& i, const string& str) { //对单行(第
     }
     if (!f) { //如果在处理的片段中没有OR或者AND，即没有递归过，仅仅含有>、<、=的判断，则对其进行判断处理；处理思路为找到比较运算符的位置，然后将其前后分割，并转化为可以比较的类型，最后进行比较，并将结果返回
         //这里的修改并未影响功能，只是为了增加对更多操作符的支持，比如like,==等
-		
 		vector<string>sstr=split_string(str);
 		int pos_cmp;//比较运算符的位置
 		for(pos_cmp=0;pos_cmp<sstr.size();++pos_cmp) if(iscmp(sstr[pos_cmp])) break;
 		vector<string>exp1,exp2;string opt=sstr[pos_cmp];
-		for(int i=0;i<pos_cmp;++i) exp1.push_back(sstr[i]);		
+		for(int i=0;i<pos_cmp;++i) exp1.push_back(sstr[i]);	
 		for(int i=pos_cmp+1;i<sstr.size();++i) exp2.push_back(sstr[i]);
 		string tp1=gettype(exp1),tp2=gettype(exp2);
+        if(tp1 == "date" || tp1 == "time") tp2 = tp1;
+        if(tp2 == "date" || tp2 == "time") tp1 = tp2;
 		vector<string> _data1=getdata(i,exp1),_data2=getdata(i,exp2);
 		if(check_null(_data1)||check_null(_data2)) return false;
 		string data1=CAL_alg(_data1,tp1),data2=CAL_alg(_data2,tp2);
-
-		/*auto t=cut(str);string opt;
-		int x=str.find("=");int y=x+1;opt="=";
-		if(x==-1) x=str.find("<"),y=x+1,opt="<";
-		if(x==-1) x=str.find(">"),y=x+1,opt=">";
-		if(x==-1) x=Tolower(str).find("like"),y=x+4,opt="like";
-		string data1=str.substr(0,x);
-		string data2=str.substr(y,str.size()-y);
-		clear_space(data1);
-		clear_space(data2);
-		data2=data2.substr(1,data2.size()-2);
-		string type1,type2;
-		//temporary handle expresseions
-
-
-
-
-		if(data1.find(" ")!=-1){
-			type1="int(11)";
-			string temp=data1;
-			string tp_hold;
-			vector<string> hold_strs;
-			stringstream IN(data1);
-			bool wrong_flag=false;
-			while(IN>>tp_hold){
-				if(tp_hold=="+"||tp_hold=="-"||tp_hold=="*"||tp_hold=="/"||tp_hold=="%%")hold_strs.push_back(tp_hold);
-				else if(isdigit(tp_hold[0])){
-					hold_strs.push_back(tp_hold);
-				}
-				else{
-					if((*this)[tp_hold]==NULL){
-						wrong_flag=true;
-					}else{
-						if(type1=="char(1)")wrong_flag=true;
-						else{
-							if(type1=="double")type1="double";
-							tp_hold=(*(*this)[tp_hold])[i];
-							hold_strs.push_back(tp_hold);
-						}
-					}
-				}
-
-				if(wrong_flag){
-					data1="NULL";
-					type1="char(1)";
-					break;
-				}
-			}
-			if(data1!="NULL"){
-				data1=CAL_alg(hold_strs,type1);
-				if(data1=="NULL")type1="char(1)";
-			}
-
-		}
-
-
-
-
-
-
-		//above handle
-		else if((*this)[data1]!=NULL){//是属性
-			type1=(*this)[data1]->gettype();
-			data1=(*(*this)[data1])[i];
-		}
-		else {//是常数
-			if(isdigit(data1[0])){
-				if(data1.find(".")!=-1){
-					type1="int(11)";
-				}
-				else{
-					type1="double";
-				}
-			}
-			else{
-				type1="char(1)";
-			}
-		}
-
-
-		if(data2.find(" ")!=-1){
-			type2="int(11)";
-			string temp=data2;
-			string tp_hold;
-			vector<string> hold_strs;
-			stringstream IN(data2);
-			bool wrong_flag=false;
-			while(IN>>tp_hold){
-				if(tp_hold=="+"||tp_hold=="-"||tp_hold=="*"||tp_hold=="/"||tp_hold=="%%")hold_strs.push_back(tp_hold);
-				else if(isdigit(tp_hold[0])){
-					hold_strs.push_back(tp_hold);
-				}
-				else{
-					if((*this)[tp_hold]==NULL){
-						wrong_flag=true;
-					}else{
-						if(type2=="char(1)")wrong_flag=true;
-						else{
-							if(type2=="double")type2="double";
-							tp_hold=(*(*this)[tp_hold])[i];
-							hold_strs.push_back(tp_hold);
-						}
-					}
-				}
-
-				if(wrong_flag){
-					data2="NULL";
-					type2="char(1)";
-					break;
-				}
-			}
-			if(data2!="NULL")data2=CAL_alg(hold_strs,type2);
-
-		}
-
-
-		else if((*this)[data2]!=NULL){//是属性
-			type2=(*this)[data2]->gettype();
-			data2=(*(*this)[data2])[i];
-		}
-		else {//是常数
-			if(isdigit(data2[0])){
-				if(data2.find(".")!=-1){
-					type2="int(11)";
-				}
-				else{
-					type2="double";
-				}
-			}
-			else{
-				type2="char(1)";
-			}
-		}*/
-		
 		ans=compare(data1,data2,tp1,tp2,opt);
-		
     }
     return ans;
 }
 string Table::gettype(vector<string>& t){
 	for(int i=0;i<t.size();++i){
 		if(iscountopt(t[i])) continue;
+        clear_qua(t[i]);
 		if(find_column(t[i])) return (*this)[t[i]]->gettype();
+        if(t[i].find('-') != string::npos && t[i].find('-')>0) return "date";
+        if(t[i].find(':') != string::npos) return "time";
 		if(isdigit(t[i][0])) {
 			if(t[i].find(".")!=-1) return "double";
 			return "int(11)";
@@ -442,135 +312,10 @@ vector<vector<string>> Table::groupit(vector<vector<string>>& need_group,vector<
 		}
 		vector<string>temp;
 		temp=deal_function(selected,for_function);
-
-		/* if(!needcount) temp=u[i].data;
-		else{
-			for(int q=0;q<pos_count;++q) temp.push_back(u[i].data[q]);
-			temp.push_back(to_string(_count));
-			for(int q=pos_count;q<u[i].data.size();++q) temp.push_back(u[i].data[q]);
-		}*/
 		result.push_back(temp);
 		i=j-1;
 	}
 	return result;
-	/* bool needcount;
-	int pos_count=find_pos(need_group[0],"count");
-	if(pos_count==-1) needcount=false;
-	else needcount=true;
-	string count_thing="";
-	if(needcount) count_thing=need_group[0][pos_count];*/
-	/*vector<int>want;
-	for(int i=0;i<group.size();++i){
-		int o=find_pos(need_group[0],group[i]);
-		want.push_back(o);
-	}
-	want.push_back(need_group[1].size()-1);*/
-	/*auto _takeout=takeout(need_group,want);
-	sort(_takeout.begin(),_takeout.end(),cmp_vector_string);*/
-	
-	/*int _count=0;
-	for(int i=0;i<_takeout.size();++i){
-		if(!i){
-			_count+=count(stoi(_takeout[i].back()),count_thing);
-			if(i==_takeout.size()-1){
-				int sub=0;//对应到need_group中的下标
-				for(sub=1;sub<need_group.size();++sub){
-					if(need_group[sub].back()==_takeout[i].back()){
-						break;
-					}
-				}
-				if(!needcount) {
-					result.push_back(need_group[sub]);
-				}
-				else{
-					vector<string>temp;
-					for(int o=0;o<count_pos;++o){
-						temp.push_back(need_group[sub][o]);
-					}
-					temp.push_back(to_string(_count));
-					for(int o=count_pos;o<need_group[sub].size();++o){
-						temp.push_back(need_group[sub][o]);
-					}
-					result.push_back(temp);
-				}
-			}
-		}
-		else{
-			if(equal(_takeout[i],_takeout[i-1])){
-				_count+=count(stoi(_takeout[i].back()),count_thing);
-				if(i==_takeout.size()-1){
-					int sub=0;//对应到need_group中的下标
-					for(sub=1;sub<need_group.size();++sub){
-						if(need_group[sub].back()==_takeout[i].back()){
-							break;
-						}
-					}
-					if(!needcount) {
-						result.push_back(need_group[sub]);
-					}
-					else{
-						vector<string>temp;
-						for(int o=0;o<count_pos;++o){
-							temp.push_back(need_group[sub][o]);
-						}
-						temp.push_back(to_string(_count));
-						for(int o=count_pos;o<need_group[sub].size();++o){
-							temp.push_back(need_group[sub][o]);
-						}
-						result.push_back(temp);
-					}
-				}
-			}
-			else{
-				int sub=0;//对应到need_group中的下标
-				for(sub=1;sub<need_group.size();++sub){
-					if(need_group[sub].back()==_takeout[i-1].back()){
-						break;
-					}
-				}
-				if(!needcount) {
-					result.push_back(need_group[sub]);
-				}
-				else{
-					vector<string>temp;
-					for(int o=0;o<count_pos;++o){
-						temp.push_back(need_group[sub][o]);
-					}
-					temp.push_back(to_string(_count));
-					for(int o=count_pos;o<need_group[sub].size();++o){
-						temp.push_back(need_group[sub][o]);
-					}
-					result.push_back(temp);
-					
-				}
-				_count=0;
-				_count+=count(stoi(_takeout[i].back()),count_thing);
-				if(i==_takeout.size()-1){
-					int sub=0;//对应到need_group中的下标
-					for(sub=1;sub<need_group.size();++sub){
-						if(need_group[sub].back()==_takeout[i].back()){
-							break;
-						}
-					}
-					if(!needcount) {
-						result.push_back(need_group[sub]);
-					}
-					else{
-						vector<string>temp;
-						for(int o=0;o<count_pos;++o){
-							temp.push_back(need_group[sub][o]);
-						}
-						temp.push_back(to_string(_count));
-						for(int o=count_pos;o<need_group[sub].size();++o){
-							temp.push_back(need_group[sub][o]);
-						}
-						result.push_back(temp);
-					}
-				}
-			}
-		}
-	}*/
-	
 }
 vector<string> Table::deal_function(const vector<string>& columnname,vector<vector<string>>&t){
 	vector<string>result;
@@ -600,29 +345,100 @@ string Table::num_function(const int i,string need,vector<vector<string>>&t){
 			}
 			return to_string(count);
 		}
-	}
-	else{
-		return "NULL";
-	}
+	} else if(u=="sum"){
+        string x=need.substr(4,need.size()-5);
+        if((*this)[x]->gettype() == "int(11)"){
+            int sum = 0;
+            for(int j = 0; j < t.size(); j++) if((*(*this)[x])[stoi(t[j].back())]!="NULL") sum+=stoi((*(*this)[x])[stoi(t[j].back())]);
+            return to_string(sum);
+        } else if((*this)[x]->gettype() == "double"){
+            double sum = 0;
+            for(int j = 0; j < t.size(); j++) if((*(*this)[x])[stoi(t[j].back())]!="NULL") sum+=stoi((*(*this)[x])[stod(t[j].back())]);
+            return to_string(sum);
+        }
+    } else if(u=="max"){
+        string x=need.substr(4,need.size()-5);
+        if((*this)[x]->gettype() == "int(11)"){
+            int maxn;
+            bool p = false;
+            for(int j = 0; j < t.size(); j++) if((*(*this)[x])[stoi(t[j].back())]!="NULL"){
+                if(!p) p = true, maxn=stoi((*(*this)[x])[stoi(t[j].back())]);
+                else maxn = maxn>stoi((*(*this)[x])[stoi(t[j].back())])?maxn:stoi((*(*this)[x])[stoi(t[j].back())]);
+            }
+            if(p) return to_string(maxn);
+        } else if((*this)[x]->gettype() == "double"){
+            double maxn;
+            bool p = false;
+            for(int j = 0; j < t.size(); j++) if((*(*this)[x])[stoi(t[j].back())]!="NULL"){
+                if(!p) p = true, maxn=stoi((*(*this)[x])[stoi(t[j].back())]);
+                else maxn = maxn>stoi((*(*this)[x])[stoi(t[j].back())])?maxn:stoi((*(*this)[x])[stoi(t[j].back())]);
+            }
+            if(p) return to_string(maxn);
+        }
+    } else if(u=="min"){
+        string x=need.substr(4,need.size()-5);
+        if((*this)[x]->gettype() == "int(11)"){
+            int minn;
+            bool p = false;
+            for(int j = 0; j < t.size(); j++) if((*(*this)[x])[stoi(t[j].back())]!="NULL"){
+                if(!p) p = true, minn=stoi((*(*this)[x])[stoi(t[j].back())]);
+                else minn = minn<stoi((*(*this)[x])[stoi(t[j].back())])?minn:stoi((*(*this)[x])[stoi(t[j].back())]);
+            }
+            if(p) return to_string(minn);
+        } else if((*this)[x]->gettype() == "double"){
+            double minn;
+            bool p = false;
+            for(int j = 0; j < t.size(); j++) if((*(*this)[x])[stoi(t[j].back())]!="NULL"){
+                if(!p) p = true, minn=stoi((*(*this)[x])[stoi(t[j].back())]);
+                else minn = minn<stoi((*(*this)[x])[stoi(t[j].back())])?minn:stoi((*(*this)[x])[stoi(t[j].back())]);
+            }
+            if(p) return to_string(minn);
+        }
+    } else if(u=="ave"){
+        string x=need.substr(4,need.size()-5);
+        string cnt = num_function(i, "count(" + x + ")", t);
+        if(cnt != "NULL") return to_string(stod(num_function(i, "sum(" + x + ")", t))/stoi(cnt));
+    } else if(u=="var_samp"){
+        string x=need.substr(9,need.size()-10);
+        string ave = num_function(i, "ave(" + x + ")", t);
+        if(ave != "NULL"){
+            double var = 0;
+            int cnt = 0;
+            for(int j = 0; j < t.size(); j++) if((*(*this)[x])[stoi(t[j].back())]!="NULL"){
+                var += (stoi((*(*this)[x])[stoi(t[j].back())])-stod(ave))*(stoi((*(*this)[x])[stoi(t[j].back())])-stod(ave));
+                cnt++;
+            }
+            return to_string(var/cnt);
+        }
+    }
+	return "NULL";
 }
 string Table::judge_function(string need){
 	if(Tolower(need.substr(0,5))=="count") return "count";
-	else{
-		return "NULL";
-	}
+    if(Tolower(need.substr(0,3))=="sum") return "sum";
+    if(Tolower(need.substr(0,3))=="max") return "max";
+    if(Tolower(need.substr(0,3))=="min") return "min";
+    if(Tolower(need.substr(0,3))=="ave") return "ave";
+    if(Tolower(need.substr(0,8))=="var_samp") return "var_samp";
+	return "NULL";
 }
 vector<vector<string>> Table::orderit(vector<vector<string>>& need_order,string order){
 	vector<vector<string>>result;
 	result.push_back(need_order[0]);
 	string cmp_type;
 	if(Tolower(order).find("count(")!=-1) cmp_type="int(11)";
+    else if(Tolower(order).find("sum(")!=-1) cmp_type="double";
+    else if(Tolower(order).find("max(")!=-1) cmp_type="double";
+    else if(Tolower(order).find("min(")!=-1) cmp_type="double";
+    else if(Tolower(order).find("ave(")!=-1) cmp_type="double";
+    else if(Tolower(order).find("var_samp(")!=-1) cmp_type="double";
 	else{
 		cmp_type=(*this)[order]->gettype();
 	}
 	vector<string>selected=need_order[0];
 	vector<string>want;want.push_back(order);
 	vector<forsort>u;
-	if(cmp_type=="char(1)"){
+	if(cmp_type=="char(1)" || cmp_type=="date" || cmp_type=="time"){
 		for(int i=1;i<need_order.size();++i){
 			u.push_back(forsort(selected,this,need_order[i],want,"string"));
 		}

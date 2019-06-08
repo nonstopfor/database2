@@ -176,7 +176,12 @@ bool Database::where_multiple_work(vector<string>& tablename, vector<int>&data, 
 		}
 	}
 	else{
-		if(isdigit(t[0][0])){
+        if(!c2 && ((*(*(*this)[tablename2])[columnname2]).gettype() == "date" || (*(*(*this)[tablename2])[columnname2]).gettype() == "time")){
+            if(t[0][0] == '\'' || t[0][0] == '"'){
+                data1=t[0].substr(1,t[0].size()-2);
+            } else data1=t[0];
+            type1 = (*(*(*this)[tablename2])[columnname2]).gettype();
+        } else if(isdigit(t[0][0])){
 			data1=t[0];
 			if(t[0].find('.')!=-1){
 				type1="int(11)";
@@ -200,7 +205,12 @@ bool Database::where_multiple_work(vector<string>& tablename, vector<int>&data, 
 		}
 	}
 	else{
-		if(isdigit(t[2][0])){
+        if(!c1 && ((*(*(*this)[tablename1])[columnname1]).gettype() == "date" || (*(*(*this)[tablename1])[columnname1]).gettype() == "time")){
+            if(t[2][0] == '\'' || t[2][0] == '"'){
+                data2=t[2].substr(1,t[2].size()-2);
+            } else data2=t[2];
+            type2 = (*(*(*this)[tablename1])[columnname1]).gettype();
+        } else if(isdigit(t[2][0])){
 			data2=t[2];
 			if(t[2].find('.')!=-1){
 				type2="int(11)";
@@ -264,10 +274,6 @@ vector<vector<string>> Database::simple_select(string todo){
 		}
 	}
 	return result;
-
-
-	//if (cname=="*") (*this)[tname]->show_all((*this)[tname]->whereClauses(clause)); //��select��Ϊ * �������show_all��ʾȫ�� 
-	//else (*this)[tname]->show_one(cname,(*this)[tname]->whereClauses(clause));
 }
 
 vector<vector<string>> Database::multiple_select(string todo){
@@ -296,12 +302,6 @@ vector<vector<string>> Database::multiple_select(string todo){
 	vector<string>columnname;
 	for(int i=1;i<pos_from;++i){
 		columnname.push_back(getvalid_string(t[i]));
-		/*if(i!=pos_from-1){
-			columnname.push_back(t[i].substr(0,t[i].size()-1));
-		}
-		else{
-			columnname.push_back(t[i]);
-		}*/
 	}
 	auto check=(*this)[tablename]->whereClauses(clause);
 	for(int i=0;i<check.size();++i){
@@ -319,19 +319,6 @@ vector<vector<string>> Database::multiple_select(string todo){
 					}
 				}
 			}
-			/* if(t[1]!="*"){
-				for(int j=0;j<columnname.size();++j){
-					if((*this)[tablename]->find_column(columnname[j]))
-					temp.push_back((*(*(*this)[tablename])[columnname[j]])[i]);
-					else temp.push_back("NULL");
-				}
-			}
-			else{
-				
-				for(int j=0;j<(*this)[tablename]->getsize();++j){
-					temp.push_back((*(*(*this)[tablename])[j])[i]);
-				}
-			}*/
 			temp.push_back(to_string(i));
 			result.push_back(temp);
 		}
@@ -355,25 +342,6 @@ vector<vector<pair<int,bool>>> Database::join_it(vector<vector<pair<int,bool>>>r
 			}
 			else{
 				r[i].pop_back();
-				/*if(join=="inner join"){
-					r[i].pop_back();
-				}
-				else if(join=="left join"){
-					r[i].back().second=false;
-					if(!m[get_vecstr(r[i],0,r[i].size()-2)])
-					{result.push_back(r[i]);m[get_vecstr(r[i],0,r[i].size()-2)]++;}
-					r[i].pop_back();
-				}
-				else if(join=="right join"){
-					auto temp=r[i];
-					for(int i=0;i<temp.size()-1;++i) temp[i].second=false;
-					if(!m[get_vecstr(temp,temp.size()-1,temp.size()-1)])
-					{result.push_back(temp);m[get_vecstr(temp,temp.size()-1,temp.size()-1)]++;}
-					r[i].pop_back();
-				}
-				else {
-					cout<<"wrong!"<<endl;
-				}*/
 			}
 		}
 		if(join=="left join"){
@@ -432,6 +400,8 @@ bool Database::join_ok(const vector<string>&tablename,const vector<pair<int,bool
 string Database::gettype(const vector<string>&tablename,const vector<string>&t,const vector<pair<int,bool>>& r){
 	for(int i=0;i<t.size();++i){
 		if(iscountopt(t[i])) continue;
+        if(t[i].find("-") != string::npos && t[i].find("-")>0) return "date";
+        if(t[i].find(":") != string::npos) return "time";
 		int u=t[i].find(".");
 		if(u==-1){
 			if(isdigit(t[i][0])) return "int(11)";

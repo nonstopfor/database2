@@ -2,6 +2,7 @@
 
 string CAL_alg(vector<string> &hold_strs, string type){
 	//if any error occurs, return "NULL"
+    if(type == "date" || type == "time") return hold_strs[0];
 	if(type=="char(1)")return CAA_2(hold_strs);
 	else if(type!="int(11)"&&type!="double")return "NULL";
 	else if(type=="int(11)")return CAA<int>(hold_strs);

@@ -60,11 +60,5 @@ string putvector_tostring(vector<string>& t,int start,int end);
 vector<string>clear_tablename(vector<string>& u);//去除表格名字
 bool check_null(vector<string>& u);
 void print_vector(vector<string>& u);
-
-int floor_val(string &s);
-int ceil_val(string &s);
-double cos_val(string &s);
-double sin_val(string &s);
-double ln(string &s);
     
 #endif

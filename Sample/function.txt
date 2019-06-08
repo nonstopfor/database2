@@ -1,0 +1,10 @@
+CREATE DATABASE OOP;
+USE OOP;
+CREATE TABLE oop_info(stu_id INT NOT NULL, PRIMARY KEY(stu_id), stu_name CHAR, join_year INT, gender CHAR);
+INSERT INTO oop_info(stu_id, stu_name, join_year, gender) VALUES (2018011243, "a", 2008, "m");
+INSERT INTO oop_info(stu_id, stu_name, join_year, gender) VALUES (2018011244, "c", 2010, "m");
+INSERT INTO oop_info(stu_id, stu_name, join_year, gender) VALUES (2018011245, "b", 2007, "w");
+INSERT INTO oop_info(stu_id, stu_name, join_year, gender) VALUES (2018011246, "c", 2010, "m");
+INSERT INTO oop_info(stu_id, stu_name, join_year, gender) VALUES (2018011247, "b", 2009, "w");
+INSERT INTO oop_info(stu_id, stu_name, join_year, gender) VALUES (2018011248, "b", 2019, "w");
+SELECT stu_name, COUNT(*), max(join_year), var_samp(join_year) from oop_info GROUP BY stu_name ORDER BY COUNT(*);

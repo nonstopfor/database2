@@ -102,13 +102,13 @@ int Column::getsize() {return cvalue.size();} //获得列所存储数据的数�
 
 void Column::insert(const string& a) { //插入新数据 
 	string value = a;
-	if ((value[0]=='\"'&&value[value.length()-1]=='\"')||(value[0]=='\''&&value[value.length()-1]=='\'')) { //删除字符头尾的引号 
+	if ((value[0]=='"'&&value[value.length()-1]=='"')||(value[0]=='\''&&value[value.length()-1]=='\'')) { //删除字符头尾的引号 
 		value.erase(value.begin());
 		value.erase(value.end()-1);
 	}
     if(type == "date"){
         string t = to_date(value);
-        if(t.find('-') != 3) value = value = "NULL";
+        if(t.find('-') != 4) value = "NULL";
         else{
             int m = stoi(t.substr(5,2)), y = stoi(t.substr(0, t.find('-'))), d = stoi(t.substr(t.length() - 2));
             if(m == 2){
@@ -116,12 +116,14 @@ void Column::insert(const string& a) { //插入新数据
                 else if(d > 28) value = "NULL";
             }else if(d > monthd[m]) value = "NULL";
         }
+        if(value != "NULL") value = t;
     }else if(type == "time"){
         string t = to_time(value);
         if(t[0] != '-' && t.find(':') > 3) value = "NULL";
         else if(t[0] == '-' && t.find(':') > 4) value = "NULL";
         int m = stoi(t.substr(t.length() - 5)), s = stoi(t.substr(t.length() - 2));
         if(m > 59 || s > 59) value = "NULL";
+        if(value != "NULL") value = t;
     }
 	cvalue.push_back(value);
 }
@@ -132,7 +134,7 @@ void Column::del(int s) { //删除行
 
 void Column::update(int s,const string& a) { //修改某行数据 
 	string value = a;
-	if ((value[0]=='\"'&&value[value.length()-1]=='\"')||(value[0]=='\''&&value[value.length()-1]=='\'')) {
+	if ((value[0]=='"'&&value[value.length()-1]=='"')||(value[0]=='\''&&value[value.length()-1]=='\'')) {
 		value.erase(value.begin());
 		value.erase(value.end()-1);
 	}
@@ -323,10 +325,10 @@ void clear_space(string& data){
 }
 
 void clear_qua(string& data){
-	while(data.front()=='"'){
+	while(data.front()=='"' || data.front()=='\''){
 		data.erase(data.begin());
 	}
-	while(data.back()=='"'){
+	while(data.back()=='"' || data.back() == '\''){
 		data.erase(data.begin()+data.size()-1);
 	}
 }
@@ -356,11 +358,7 @@ int find_pos(const vector<string>& t,string need,bool strict,bool care_big_small
 	}
 	return -1;
 }
-/*vector<string> get_vecstr(vector<string>u,int x,int y){
-	vector<string>result;
-	for(int q=x;q<=y;++q) result.push_back(u[q]);
-	return result;
-}*/
+
 string getvalid_string(string t){
 	clear_space(t);
 	if(t.back()==',') t.erase(t.size()-1);
@@ -450,20 +448,4 @@ bool check_null(vector<string>& u){
 
 void print_vector(vector<string>& u){
 	for(int i=0;i<u.size();++i) cout<<u[i]<<endl;
-}
-
-int floor_val(string &s){
-    return floor(stoi(s.substr(6, s.length() - 7)));
-}
-int ceil_val(string &s){
-    return ceil(stoi(s.substr(5, s.length() - 6)));
-}
-double cos_val(string &s){
-    return cos(stoi(s.substr(4, s.length() - 5)));
-}
-double sin_val(string &s){
-    return sin(stoi(s.substr(4, s.length() - 5)));
-}
-double ln(string &s){
-    return log(stoi(s.substr(4, s.length() - 5)));
 }

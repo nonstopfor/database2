@@ -1,0 +1,11 @@
+CREATE DATABASE OOP;
+USE OOP;
+CREATE TABLE oop_info(stu_id INT NOT NULL, PRIMARY KEY(stu_id), stu_birth time, stu_name CHAR);
+INSERT INTO oop_info(stu_id, stu_name, stu_birth) VALUES (2018011243, "a", -000101);
+INSERT INTO oop_info(stu_id, stu_name, stu_birth) VALUES (2018011043, "a", 980228);
+INSERT INTO oop_info(stu_id, stu_name, stu_birth) VALUES (2018010243, "a", 000229);
+INSERT INTO oop_info(stu_id, stu_name, stu_birth) VALUES (2018001344, "b", 020115);
+INSERT INTO oop_info(stu_id, stu_name, stu_birth) VALUES (2018001394, "b", 041231);
+INSERT INTO oop_info(stu_id, stu_name, stu_birth) VALUES (2018011445, "c", 130505);
+select stu_name, stu_id, stu_birth from oop_info where stu_birth>010102;
+DROP DATABASE OOP;
