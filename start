@@ -1,0 +1,27 @@
+<<<<<<< HEAD
+g++ -std=c++14 socket_server_frame.cpp database.cpp table.cpp column.cpp math_cal.cpp -o server_frame  -lpthread
+g++ -std=c++14 socket_client_frame.cpp database.cpp table.cpp column.cpp math_cal.cpp -o client_frame  -lpthread
+=======
+make
+g++ -std=c++11 -o client_frame socket_client_frame.cpp -lpthread
+>>>>>>> 0b87a9b137417d7f7ca828a4b8bf631b20e29dee
+if [ "$1" != "" ];then
+    if [ "$1" = "server" ];then
+	shift
+	if [ "${1}" != "" ];then
+		./server_frame $1
+	else ./server_frame 5111
+	fi
+    elif [ "$1" = "client" ];then
+	shift
+	if [ "${1}" != "" ];then
+		if [ "${2}" != "" ];then
+			./client_frame $1 $2
+		else ./client_frame "127.0.0.1" $1
+		fi	
+	else ./client_frame "127.0.0.1" 5111	
+	fi
+    else echo "wrong para"
+    fi
+else echo "specify server or client"
+fi

@@ -1,0 +1,9 @@
+database: OOP
+table: oop_info stu_id
+column: stu_id int(11) 0 stu_name char(1) 1 join_year int(11) 1 gender char(1) 1 
+data: 2018011243 a 2008 m 
+data: 2018011244 c 2010 m 
+data: 2018011245 b 2009 w 
+data: 2018011246 c 2010 m 
+data: 2018011247 b 2011 w 
+data: 2018011248 b 2009 w 
