@@ -98,8 +98,8 @@ vector<vector<int>> Database::where_multiple(vector<string>& tablename,string co
 string Database::gettype(vector<string>t){
 	for(int i=0;i<t.size();++i){
 		if(iscountopt(t[i])) continue;
-		clear_qua(t[i]);
-
+		//clear_qua(t[i]);
+		if(t[i][0]=='"'||t[i][0]=='\'') return "char(1)";
 		if(t[i].find('.')!=-1) {
 			int w=t[i].find('.');
 			string tablename=t[i].substr(0,w);

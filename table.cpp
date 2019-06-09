@@ -268,7 +268,8 @@ bool Table::whereclauses_work(const int& i, const string& str) { //对单行(第
 string Table::gettype(vector<string> t){
 	for(int i=0;i<t.size();++i){
 		if(iscountopt(t[i])) continue;
-        clear_qua(t[i]);
+		if(t[i][0]=='"'||t[i][0]=='\'') return "char(1)";
+        //clear_qua(t[i]);
 		if(find_column(t[i])) return (*this)[t[i]]->gettype();
         if(t[i].find('-') != string::npos && t[i].find('-')>0) return "date";
         if(t[i].find(':') != string::npos) return "time";

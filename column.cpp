@@ -385,44 +385,53 @@ vector<string> split_string(string s){
 	vector<string>result;
 	string u="";
 	bool now_data=true;
+	bool inqua=false;
 	for(int i=0;i<s.size();++i){
-		if(s[i]==' ') {
-			if(u!="") {
-				result.push_back(u);
-				now_data=!now_data;
-			}
-			u="";
+		if(s[i]=='"'||s[i]=='\''){
+			inqua=!inqua;
 		}
-		else if(isopt(s[i])){
-			if(u!="") {
-				result.push_back(u);
-				now_data=!now_data;
-			}
-			u="";u.push_back(s[i]);
-			if(isopt(s[i+1])){
-				if(s[i+1]=='='){
-					u.push_back(s[i+1]);
+		if(inqua){
+			u.push_back(s[i]);
+		}
+		else{
+			if(s[i]==' ') {
+				if(u!="") {
 					result.push_back(u);
 					now_data=!now_data;
-					++i;u="";
+				}
+				u="";
+			}
+			else if(isopt(s[i])){
+				if(u!="") {
+					result.push_back(u);
+					now_data=!now_data;
+				}
+				u="";u.push_back(s[i]);
+				if(isopt(s[i+1])){
+					if(s[i+1]=='='){
+						u.push_back(s[i+1]);
+						result.push_back(u);
+						now_data=!now_data;
+						++i;u="";
+					}
+					else{
+						result.push_back(u);
+						now_data=!now_data;
+						u="";
+						u.push_back(s[i+1]);++i;
+					}
 				}
 				else{
-					result.push_back(u);
-					now_data=!now_data;
-					u="";
-					u.push_back(s[i+1]);++i;
+					if(!now_data){
+						result.push_back(u);now_data=!now_data;
+						u="";
+					}
+					
 				}
 			}
 			else{
-				if(!now_data){
-					result.push_back(u);now_data=!now_data;
-					u="";
-				}
-				
+				u.push_back(s[i]);
 			}
-		}
-		else{
-			u.push_back(s[i]);
 
 		}
 		if(i==s.size()-1){
