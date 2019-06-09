@@ -288,12 +288,12 @@ int main() {
 				if(now->find_table(t[l-1])){
 						Table* ptable=now->get_table(t[l-1]);
 						if(t[1]=="*"){
-							cout<<"getin";
+							//cout<<"getin";
 							for(int i=0;i<ptable->getrowsize();++i){
-								cout<<"get";
+								//cout<<"get";
 								for(int j=0;j<ptable->getsize();++j){
 									fout<<(*((*ptable)[j]))[i]<<"\t";
-									cout<<"write";
+									//cout<<"write";
 								}
 								fout<<endl;
 							}
