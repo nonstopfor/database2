@@ -8,38 +8,38 @@ using namespace std;
 
 
 class Database {
-	string dname; //Êı¾İ¿âÃû 
-	vector<Table*> dvalue; //°üº¬Êı¾İ¿âËùÓĞ±í¸ñÖ¸ÕëµÄÏòÁ¿
+	string dname; //æ•°æ®åº“å 
+	vector<Table*> dvalue; //åŒ…å«æ•°æ®åº“æ‰€æœ‰è¡¨æ ¼æŒ‡é’ˆçš„å‘é‡
 public:
-	Database(string a); //³õÊ¼»¯ÁĞ±í£¬×Ö·û´®aÎªÊı¾İ¿âÃû
-	~Database(); //Îö¹¹º¯Êı£¬É¾³ıdvalueÖĞµÄÖ¸ÕëÊÍ·ÅÄÚ´æ
-	Table* operator[] (const string& a); //[]µÄÖØÔØ£¬ÓÃ±í¸ñÃû·ÃÎÊ±í¸ñÖ¸Õë
-	Table* operator[] (const int& i);//[]µÄÖØÔØ£¬ÓÃ±í¸ñÏÂ±ê·ÃÎÊ±í¸ñÖ¸Õë
-	string getname() const; //»ñµÃÊı¾İ¿âÃûµÄ½Ó¿Ú
-	int getsize(); //»ñµÃÊı¾İ¿âÀï±í¸ñÊıµÄ½Ó¿Ú
-	void create(const string& a,const string& b); //ÔÚ¿âÀï´´½¨±í¸ñµÄº¯Êı£¬a±íÊ¾±í¸ñÃû£¬bÎª±í¸ñµÄÖ÷¼ü
-	void show(); //Õ¹Ê¾Êı¾İ¿âËù°üº¬µÄ±í¸ñ
-	bool find_table(const string& a); //´«Èë±í¸ñÃûÅĞ¶Ï¿âÀïÊÇ·ñÓĞ¸Ã±í
-	Table* get_table(const string& a);//Í¨¹ı±í¸ñÃû»ñµÃÏàÓ¦±í¸ñµÄÖ¸Õë
-	void del(const string& a); //Í¨¹ı±í¸ñÃûÉ¾³ı±í¸ñ
-	vector<vector<int>> where_multiple(vector<string>& tablename,string condition);//·µ»Ø¶à±íÖĞÄÄĞ©ĞĞ·ûºÏÌõ¼ş
+	Database(string a); //åˆå§‹åŒ–åˆ—è¡¨ï¼Œå­—ç¬¦ä¸²aä¸ºæ•°æ®åº“å
+	~Database(); //ææ„å‡½æ•°ï¼Œåˆ é™¤dvalueä¸­çš„æŒ‡é’ˆé‡Šæ”¾å†…å­˜
+	Table* operator[] (const string& a); //[]çš„é‡è½½ï¼Œç”¨è¡¨æ ¼åè®¿é—®è¡¨æ ¼æŒ‡é’ˆ
+	Table* operator[] (const int& i);//[]çš„é‡è½½ï¼Œç”¨è¡¨æ ¼ä¸‹æ ‡è®¿é—®è¡¨æ ¼æŒ‡é’ˆ
+	string getname() const; //è·å¾—æ•°æ®åº“åçš„æ¥å£
+	int getsize(); //è·å¾—æ•°æ®åº“é‡Œè¡¨æ ¼æ•°çš„æ¥å£
+	void create(const string& a,const string& b); //åœ¨åº“é‡Œåˆ›å»ºè¡¨æ ¼çš„å‡½æ•°ï¼Œaè¡¨ç¤ºè¡¨æ ¼åï¼Œbä¸ºè¡¨æ ¼çš„ä¸»é”®
+	void show(); //å±•ç¤ºæ•°æ®åº“æ‰€åŒ…å«çš„è¡¨æ ¼
+	bool find_table(const string& a); //ä¼ å…¥è¡¨æ ¼ååˆ¤æ–­åº“é‡Œæ˜¯å¦æœ‰è¯¥è¡¨
+	Table* get_table(const string& a);//é€šè¿‡è¡¨æ ¼åè·å¾—ç›¸åº”è¡¨æ ¼çš„æŒ‡é’ˆ
+	void del(const string& a); //é€šè¿‡è¡¨æ ¼ååˆ é™¤è¡¨æ ¼
+	vector<vector<int>> where_multiple(vector<string>& tablename,string condition);//è¿”å›å¤šè¡¨ä¸­å“ªäº›è¡Œç¬¦åˆæ¡ä»¶
 	string gettype(vector<string>s);
 	vector<string>getdata(vector<string>& tablename, vector<int>&data,vector<string> t);
-	bool where_multiple_work(vector<string>& tablename, vector<int>&data, string condition);
-	//¸¨Öúº¯Êı£¬ÅĞ¶ÏÄ³Ò»¸ö×éºÏÊÇ·ñÂú×ãÌõ¼ş    dataÖĞ±£´æÁË¸÷±í¶ÔÓ¦µÄĞĞÊı,±£´æË³ĞòÓëtablenameÖĞÒ»ÖÂ
-	//´ı¸Ä½ø£º1.´óÓÚĞ¡ÓÚµÈÓÚºÅÇ°ºó¿ÉÄÜÎŞ¿Õ¸ñ(ÒÑ½â¾ö)
-	//2.¿ÉÄÜ±È½Ï¶ÔÏóÎªÄ³¸ö±í¸ñÊôĞÔºÍ³£Êı(ÒÑ½â¾ö)
+	bool where_multiple_work(vector<string>& tablename, vector<int>&data, string condition,bool& NULL_flag);
+	//è¾…åŠ©å‡½æ•°ï¼Œåˆ¤æ–­æŸä¸€ä¸ªç»„åˆæ˜¯å¦æ»¡è¶³æ¡ä»¶    dataä¸­ä¿å­˜äº†å„è¡¨å¯¹åº”çš„è¡Œæ•°,ä¿å­˜é¡ºåºä¸tablenameä¸­ä¸€è‡´
+	//å¾…æ”¹è¿›ï¼š1.å¤§äºå°äºç­‰äºå·å‰åå¯èƒ½æ— ç©ºæ ¼(å·²è§£å†³)
+	//2.å¯èƒ½æ¯”è¾ƒå¯¹è±¡ä¸ºæŸä¸ªè¡¨æ ¼å±æ€§å’Œå¸¸æ•°(å·²è§£å†³)
 	
 	void enumerate(int& num_table,int step,vector<int>v,vector<string>& tablename,
-	vector<vector<int>>& result,string condition);//¸¨Öú½øĞĞ---ĞĞ×éºÏµÄÃ¶¾Ù
-	vector<vector<string>> simple_select(string todo);//selectºóÃæÓĞÒ»¸öÊôĞÔ£¬µ¥±í£¬todoÄ©Î²ÎŞ·ÖºÅ£¬ÎŞ¿Õ¸ñ
-	vector<vector<string>> multiple_select(string todo);//selectºóÃæÓĞ¶à/1¸öÊôĞÔ£¬µ¥±í£¬·µ»ØÖµÊÇËùÓĞ·ûºÏÌõ¼şµÄÊı¾İ£¨²»°üÀ¨±íÍ·£©
-	//todoÄ©Î²ÎŞ·ÖºÅ£¬ÎŞ¿Õ¸ñ,ÊôĞÔºóÃæÊÇ·ñ´ø¶ººÅÃ»ÓĞ¹ØÏµ
-	//·µ»ØµÄÊı¾İÃ¿Ò»ĞĞ×îºóÊÇĞĞºÅ
-	//todo²»º¬ÓĞgroup»òÕßorder
-	//countµÈ±¾À´²»ÔÚ±íÖĞµÄÊı¾İÓÃNULLÌî³ä
+	vector<vector<int>>& result,string condition);//è¾…åŠ©è¿›è¡Œ---è¡Œç»„åˆçš„æšä¸¾
+	vector<vector<string>> simple_select(string todo);//selectåé¢æœ‰ä¸€ä¸ªå±æ€§ï¼Œå•è¡¨ï¼Œtodoæœ«å°¾æ— åˆ†å·ï¼Œæ— ç©ºæ ¼
+	vector<vector<string>> multiple_select(string todo);//selectåé¢æœ‰å¤š/1ä¸ªå±æ€§ï¼Œå•è¡¨ï¼Œè¿”å›å€¼æ˜¯æ‰€æœ‰ç¬¦åˆæ¡ä»¶çš„æ•°æ®ï¼ˆä¸åŒ…æ‹¬è¡¨å¤´ï¼‰
+	//todoæœ«å°¾æ— åˆ†å·ï¼Œæ— ç©ºæ ¼,å±æ€§åé¢æ˜¯å¦å¸¦é€—å·æ²¡æœ‰å…³ç³»
+	//è¿”å›çš„æ•°æ®æ¯ä¸€è¡Œæœ€åæ˜¯è¡Œå·
+	//todoä¸å«æœ‰groupæˆ–è€…order
+	//countç­‰æœ¬æ¥ä¸åœ¨è¡¨ä¸­çš„æ•°æ®ç”¨NULLå¡«å……
 	vector<vector<pair<int,bool>>> join_it(vector<vector<pair<int,bool>>>r,vector<string>tablename,vector<string>need,string join);
-	bool join_ok(const vector<string>&tablename,const vector<pair<int,bool>>& r,vector<string>need);
+	bool join_ok(const vector<string>&tablename,const vector<pair<int,bool>>& r,vector<string>need,bool& NULL_flag);
 	string gettype(const vector<string>&tablename,const vector<string>&t,const vector<pair<int,bool>>& r);
 	vector<string>getdata(const vector<string>&tablename,const vector<string>&t,const vector<pair<int,bool>>& r);
 	void keep_data(string filename,fstream& fout);
