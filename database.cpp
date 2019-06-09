@@ -73,7 +73,9 @@ void Database::del(const string& a) { //给出表格名删除表格
 void Database::enumerate(int& num_table,int step,vector<int>v,vector<string>& tablename,
 	vector<vector<int>>& result,string condition){
 	if(step==num_table+1){
-		if(where_multiple_work(tablename,v,condition)){
+		bool NULL_flag=false;
+		if(where_multiple_work(tablename,v,condition,NULL_flag)){
+//cout<<"one insert!"<<endl;
 			result.push_back(v);
 		}
 
@@ -135,7 +137,8 @@ vector<string> Database::getdata(vector<string>& tablename, vector<int>&data,vec
 	}
 	return result;
 }
-bool Database::where_multiple_work(vector<string>& tablename, vector<int>&data, string condition){
+bool Database::where_multiple_work(vector<string>& tablename, vector<int>&data, string condition,bool& NULL_flag){
+	if(NULL_flag)return false;
 	if(condition=="*") return true;
 	bool ans = true;
     const bool default_ans = false;
@@ -144,25 +147,37 @@ bool Database::where_multiple_work(vector<string>& tablename, vector<int>&data, 
     if (this_space == -1) this_space = condition.find(" or ");
     if (!f && this_space != -1) {
         f = 1;
-        return ans = where_multiple_work(tablename,data, condition.substr(0, this_space)) || where_multiple_work(tablename, data,condition.substr(this_space+4, condition.length()-this_space-4));
+		where_multiple_work(tablename, data,condition.substr(this_space+4, condition.length()-this_space-4),NULL_flag);
+        ans = where_multiple_work(tablename,data, condition.substr(0, this_space),NULL_flag) || where_multiple_work(tablename, data,condition.substr(this_space+4, condition.length()-this_space-4),NULL_flag);
+		if(NULL_flag){
+//cout<<"also get a NULL flag!"<<endl;
+			return false;
+		}
+		return ans;
     }
 	this_space = condition.find(" XOR ");
 	if (this_space == -1) this_space = condition.find(" xor ");
     if (!f && this_space != -1) {
         f = 1;
-        return ans = (where_multiple_work(tablename,data, condition.substr(0, this_space))==where_multiple_work(tablename, data,condition.substr(this_space+4, condition.length()-this_space-4)) ? false : true);
+        ans = (where_multiple_work(tablename,data, condition.substr(0, this_space),NULL_flag)==where_multiple_work(tablename, data,condition.substr(this_space+4, condition.length()-this_space-4),NULL_flag) ? false : true);
+		if(NULL_flag)return false;
+		return ans;
     }
     this_space = condition.find(" AND "); //再处理AND
     if (this_space == -1) this_space = condition.find(" and ");
     if (!f && this_space != -1) {
         f = 1;
-		return ans = where_multiple_work(tablename,data, condition.substr(0, this_space)) && where_multiple_work(tablename, data,condition.substr(this_space+4, condition.length()-this_space-4));
+		ans = where_multiple_work(tablename,data, condition.substr(0, this_space),NULL_flag) && where_multiple_work(tablename, data,condition.substr(this_space+4, condition.length()-this_space-4),NULL_flag);
+		if(NULL_flag)return false;
+		return ans;
     }
 	this_space = condition.find(" NOT "); 
     if (this_space == -1) this_space = condition.find(" not ");
     if (!f && this_space != -1) {
         f = 1;
-		return ans = where_multiple_work(tablename,data, condition.substr(0, this_space)) && ! (where_multiple_work(tablename, data,condition.substr(this_space+4, condition.length()-this_space-4)));
+		ans = where_multiple_work(tablename,data, condition.substr(0, this_space),NULL_flag) && ! (where_multiple_work(tablename, data,condition.substr(this_space+4, condition.length()-this_space-4),NULL_flag));
+		if(NULL_flag)return false;
+		return ans;
     }
 	string str=condition;
 	vector<string>sstr=split_string(str);
@@ -176,7 +191,8 @@ bool Database::where_multiple_work(vector<string>& tablename, vector<int>&data, 
 	if(tp2 == "date" || tp2 == "time") tp1 = tp2;
 	vector<string> _data1=getdata(tablename,data,exp1),_data2=getdata(tablename,data,exp2);
 	if(check_null(_data1)||check_null(_data2)) return false;
-	string data1=CAL_alg(_data1,tp1),data2=CAL_alg(_data2,tp2);
+	string data1=CAL_alg(_data1,tp1,NULL_flag),data2=CAL_alg(_data2,tp2,NULL_flag);
+	if(NULL_flag)return false;
 	ans=compare(data1,data2,tp1,tp2,opt);
 	return ans;
 
@@ -389,7 +405,8 @@ vector<vector<pair<int,bool>>> Database::join_it(vector<vector<pair<int,bool>>>r
 	for(int i=0;i<r.size();++i){
 		for(int j=0;j<table->getrowsize();++j){
 			r[i].push_back(make_pair(j,true));
-			if(join_ok(tablename,r[i],need)){
+			bool NULL_flag=false;
+			if(join_ok(tablename,r[i],need,NULL_flag)){
 				result.push_back(r[i]);
 				m[get_vecstr(r[i],0,r[i].size()-2)]++;
 				m[get_vecstr(r[i],r[i].size()-1,r[i].size()-1)]++;
@@ -424,18 +441,28 @@ vector<vector<pair<int,bool>>> Database::join_it(vector<vector<pair<int,bool>>>r
 	}
 	return result;
 }
-bool Database::join_ok(const vector<string>&tablename,const vector<pair<int,bool>>& r,vector<string>need){
+bool Database::join_ok(const vector<string>&tablename,const vector<pair<int,bool>>& r,vector<string>need,bool& NULL_flag){
+	if(NULL_flag)return false;
 	if(find_pos(need,"or")!=-1){
-		return join_ok(tablename,r,get_vecstr(need,0,find_pos(need,"or")-1)) || join_ok(tablename,r,get_vecstr(need,find_pos(need,"or")+1,need.size()-1));
+		join_ok(tablename,r,get_vecstr(need,find_pos(need,"or")+1,need.size()-1),NULL_flag);
+		bool ans=join_ok(tablename,r,get_vecstr(need,0,find_pos(need,"or")-1),NULL_flag) || join_ok(tablename,r,get_vecstr(need,find_pos(need,"or")+1,need.size()-1),NULL_flag);
+		if(NULL_flag)return false;
+		return ans;
 	}
 	if(find_pos(need,"xor")!=-1){
-		return !(join_ok(tablename,r,get_vecstr(need,0,find_pos(need,"xor")-1)) == join_ok(tablename,r,get_vecstr(need,find_pos(need,"xor")+1,need.size()-1)));
+		bool ans= !(join_ok(tablename,r,get_vecstr(need,0,find_pos(need,"xor")-1),NULL_flag) == join_ok(tablename,r,get_vecstr(need,find_pos(need,"xor")+1,need.size()-1),NULL_flag));
+		if(NULL_flag)return false;
+		return ans;
 	}
 	if(find_pos(need,"and")!=-1){
-		return join_ok(tablename,r,get_vecstr(need,0,find_pos(need,"and")-1)) && join_ok(tablename,r,get_vecstr(need,find_pos(need,"and")+1,need.size()-1));
+		bool ans= join_ok(tablename,r,get_vecstr(need,0,find_pos(need,"and")-1),NULL_flag) && join_ok(tablename,r,get_vecstr(need,find_pos(need,"and")+1,need.size()-1),NULL_flag);
+		if(NULL_flag)return false;
+		return ans;
 	}
 	if(find_pos(need,"not")!=-1){
-		return join_ok(tablename,r,get_vecstr(need,0,find_pos(need,"not")-1)) && !join_ok(tablename,r,get_vecstr(need,find_pos(need,"not")+1,need.size()-1));
+		bool ans=join_ok(tablename,r,get_vecstr(need,0,find_pos(need,"not")-1),NULL_flag) && !join_ok(tablename,r,get_vecstr(need,find_pos(need,"not")+1,need.size()-1),NULL_flag);
+		if(NULL_flag)return false;
+		return ans;
 	}
 	string temp=putvector_tostring(need,0,need.size()-1);
 	//cout<<temp<<endl;
@@ -448,7 +475,8 @@ bool Database::join_ok(const vector<string>&tablename,const vector<pair<int,bool
 	if(tp1=="NULL"||tp2=="NULL") return false;
 	vector<string> _data1=getdata(tablename,exp1,r),_data2=getdata(tablename,exp2,r);
 	if(check_null(_data1)||check_null(_data2)) return false;
-	string data1=CAL_alg(_data1,tp1),data2=CAL_alg(_data2,tp2);
+	string data1=CAL_alg(_data1,tp1,NULL_flag),data2=CAL_alg(_data2,tp2,NULL_flag);
+	if(NULL_flag)return false;
 	bool ans=compare(data1,data2,tp1,tp2,opt);
 	return ans;
 }
