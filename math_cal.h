@@ -13,7 +13,8 @@ using namespace std;
 
 
 template <typename TY>
-string CAA(vector<string> & hold_strs){
+string CAA(vector<string> & hold_strs, bool& NULL_flag){
+    if(NULL_flag)return "NULL";
 	vector<string> oper_stack;
     vector<TY> data_stack;
     //correct datas and do goods
@@ -26,6 +27,7 @@ string CAA(vector<string> & hold_strs){
             else if(typeid(TY)==typeid(double)){
                 data_stack.push_back(atof(i.c_str()));
             }else{
+                NULL_flag=true;
                 return "NULL";
             }
         }
@@ -105,7 +107,10 @@ string CAA(vector<string> & hold_strs){
             else if(op_hold=="-")data_stack.push_back((TY)op1-(TY)op2);
             else if(op_hold=="*")data_stack.push_back((TY)op1*(TY)op2);
             else if(op_hold=="/"){
-                if(op2==0)return "NULL";
+                if(op2==0){
+//cout<<"typical wrong"<<endl;
+                return "NULL";
+                }
                 else data_stack.push_back((TY)op1/(TY)op2);
             }
             else if(op_hold=="%"){
@@ -129,8 +134,8 @@ string CAA(vector<string> & hold_strs){
 }
 
 
-string CAL_alg(vector<string> &hold_strs, string type);
+string CAL_alg(vector<string> &hold_strs, string type, bool& NULL_flag);
 
-string CAA_2(vector<string> & hold_strs);
+string CAA_2(vector<string> & hold_strs, bool& NULL_flag);
 
 #endif
