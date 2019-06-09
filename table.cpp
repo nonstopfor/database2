@@ -210,7 +210,8 @@ vector<bool> Table::whereClauses(const string& str) { //whereclauses的判断，
 	else {
         int i = 0;
         for (auto checking:check) {
-            if (!whereclauses_work(i, str)) checking = false;
+			bool NULL_flag=false;
+            if (!whereclauses_work(i, str,NULL_flag)) checking = false;
             //std::cout << '\n' << tvalue[0]->cvalue[i] << " " << check[i];
             ++i;
         }
@@ -219,7 +220,8 @@ vector<bool> Table::whereClauses(const string& str) { //whereclauses的判断，
 	}
 }
 
-bool Table::whereclauses_work(const int& i, const string& str) { //对单行(第i行)进行判断是否符合whereclause的要求，采用递归来分段处理，层层分割，到仅剩一个比较运算符时再进行比较，最后将所有结果采用逻辑运算符连接得到结果
+bool Table::whereclauses_work(const int& i, const string& str,bool& NULL_flag) { //对单行(第i行)进行判断是否符合whereclause的要求，采用递归来分段处理，层层分割，到仅剩一个比较运算符时再进行比较，最后将所有结果采用逻辑运算符连接得到结果
+	if(NULL_flag)return false;
     bool ans = true;
     const bool default_ans = false;
     int now_space=0, f=0;
@@ -227,25 +229,30 @@ bool Table::whereclauses_work(const int& i, const string& str) { //对单行(第
     if (now_space == -1) now_space = str.find(" or ");
     if (!f && now_space != -1) {
         f = 1;
-        ans = whereclauses_work(i, str.substr(0, now_space)) || whereclauses_work(i, str.substr(now_space+4, str.length()-now_space-4));
+		whereclauses_work(i, str.substr(now_space+4, str.length()-now_space-4),NULL_flag);
+        ans = whereclauses_work(i, str.substr(0, now_space),NULL_flag) || whereclauses_work(i, str.substr(now_space+4, str.length()-now_space-4),NULL_flag);
+		if(NULL_flag)ans=false;
     }
 	now_space = str.find(" XOR ");
     if (now_space == -1) now_space = str.find(" xor ");
     if (!f && now_space != -1) {
         f = 1;
-        ans = (whereclauses_work(i, str.substr(0, now_space))== whereclauses_work(i, str.substr(now_space+4, str.length()-now_space-4)) ? false : true);
+        ans = (whereclauses_work(i, str.substr(0, now_space),NULL_flag)== whereclauses_work(i, str.substr(now_space+4, str.length()-now_space-4),NULL_flag) ? false : true);
+		if(NULL_flag)ans=false;
     }
     now_space = str.find(" AND "); 
     if (now_space == -1) now_space = str.find(" and ");
     if (!f && now_space != -1) {
         f = 1;
-        ans = whereclauses_work(i, str.substr(0, now_space)) && whereclauses_work(i, str.substr(now_space+5, str.length()-now_space-5));
+        ans = whereclauses_work(i, str.substr(0, now_space),NULL_flag) && whereclauses_work(i, str.substr(now_space+5, str.length()-now_space-5),NULL_flag);
+		if(NULL_flag)ans=false;
     }
 	now_space = str.find(" NOT "); 
     if (now_space == -1) now_space = str.find(" not ");
     if (!f && now_space != -1) {
         f = 1;
-        ans = whereclauses_work(i, str.substr(0, now_space)) && ! (whereclauses_work(i, str.substr(now_space+5, str.length()-now_space-5)));
+        ans = whereclauses_work(i, str.substr(0, now_space),NULL_flag) && ! (whereclauses_work(i, str.substr(now_space+5, str.length()-now_space-5),NULL_flag));
+		if(NULL_flag)ans=false;
     }
     if (!f) { //如果在处理的片段中没有OR或者AND，即没有递归过，仅仅含有>、<、=的判断，则对其进行判断处理；处理思路为找到比较运算符的位置，然后将其前后分割，并转化为可以比较的类型，最后进行比较，并将结果返回
         //这里的修改并未影响功能，只是为了增加对更多操作符的支持，比如like,==等
@@ -260,7 +267,8 @@ bool Table::whereclauses_work(const int& i, const string& str) { //对单行(第
         if(tp2 == "date" || tp2 == "time") tp1 = tp2;
 		vector<string> _data1=getdata(i,exp1),_data2=getdata(i,exp2);
 		if(check_null(_data1)||check_null(_data2)) return false;
-		string data1=CAL_alg(_data1,tp1),data2=CAL_alg(_data2,tp2);
+		string data1=CAL_alg(_data1,tp1,NULL_flag),data2=CAL_alg(_data2,tp2,NULL_flag);
+		if(NULL_flag)return false;
 		ans=compare(data1,data2,tp1,tp2,opt);
     }
     return ans;
