@@ -376,28 +376,41 @@ vector<string> get_show_columnname(vector<string>& t){
 vector<string> split_string(string s){
 	vector<string>result;
 	string u="";
+	bool now_data=true;
 	for(int i=0;i<s.size();++i){
 		if(s[i]==' ') {
-			if(u!="") result.push_back(u);
+			if(u!="") {
+				result.push_back(u);
+				now_data=!now_data;
+			}
 			u="";
 		}
 		else if(isopt(s[i])){
-			if(u!="") result.push_back(u);
+			if(u!="") {
+				result.push_back(u);
+				now_data=!now_data;
+			}
 			u="";u.push_back(s[i]);
 			if(isopt(s[i+1])){
 				if(s[i+1]=='='){
 					u.push_back(s[i+1]);
 					result.push_back(u);
+					now_data=!now_data;
 					++i;u="";
 				}
 				else{
 					result.push_back(u);
+					now_data=!now_data;
 					u="";
 					u.push_back(s[i+1]);++i;
 				}
 			}
 			else{
-				result.push_back(u);u="";
+				if(!now_data){
+					result.push_back(u);now_data=!now_data;
+					u="";
+				}
+				
 			}
 		}
 		else{

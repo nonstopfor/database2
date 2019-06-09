@@ -10,4 +10,5 @@ INSERT INTO oop_info(stu_id, stu_name, join_year, gender) VALUES (2018011248, "b
 SELECT stu_name, COUNT(*) from oop_info GROUP BY stu_name;
 SELECT stu_name, join_year, COUNT(*) from oop_info GROUP BY stu_name, join_year;
 SELECT stu_id, max(stu_id) from oop_info where stu_id>-10 GROUP BY stu_id;
+SELECT stu_id, max(stu_id) from oop_info where stu_id> -10 GROUP BY stu_id;
 
