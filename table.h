@@ -7,73 +7,73 @@ using namespace std;
 
 
 class Table {
-	string tname; //±í¸ñÃû 
-	string primary_key; //±í¸ñÖ÷¼üÃû 
-	vector<Column*> tvalue; //°üº¬±í¸ñËùÓĞÁĞÖ¸ÕëµÄÏòÁ¿ 
+	string tname; //è¡¨æ ¼å 
+	string primary_key; //è¡¨æ ¼ä¸»é”®å 
+	vector<Column*> tvalue; //åŒ…å«è¡¨æ ¼æ‰€æœ‰åˆ—æŒ‡é’ˆçš„å‘é‡ 
 public:
-	Table(string a,string b); //¹¹Ôìº¯Êı£¬aÎª±íÃû£¬bÎªÖ÷¼üÃû
-	~Table(); //Îö¹¹º¯Êı£¬ÊÍ·ÅtvalueÄÚÖ¸ÕëµÄÄÚ´æ
-	string getname() const; //»ñµÃ±í¸ñÃûµÄ½Ó¿Ú
-	string getprime () const; //»ñµÃ±í¸ñÖ÷¼üÃûµÄ½Ó¿Ú
-	int getsize(); //»ñµÃ±í¸ñÁĞÊıµÄ½Ó¿Ú
-	int getrowsize();//»ñµÃ±í¸ñĞĞÊıµÄ½Ó¿Ú
-	int count(string& s);//»ñµÃËùÓĞĞĞµÄcount
-	int count(int i,string& s);//»ñµÃÄ³Ò»ĞĞµÄcount
+	Table(string a,string b); //æ„é€ å‡½æ•°ï¼Œaä¸ºè¡¨åï¼Œbä¸ºä¸»é”®å
+	~Table(); //ææ„å‡½æ•°ï¼Œé‡Šæ”¾tvalueå†…æŒ‡é’ˆçš„å†…å­˜
+	string getname() const; //è·å¾—è¡¨æ ¼åçš„æ¥å£
+	string getprime () const; //è·å¾—è¡¨æ ¼ä¸»é”®åçš„æ¥å£
+	int getsize(); //è·å¾—è¡¨æ ¼åˆ—æ•°çš„æ¥å£
+	int getrowsize();//è·å¾—è¡¨æ ¼è¡Œæ•°çš„æ¥å£
+	int count(string& s);//è·å¾—æ‰€æœ‰è¡Œçš„count
+	int count(int i,string& s);//è·å¾—æŸä¸€è¡Œçš„count
 	vector<string> getall_columnname();
-	Column* operator[](const int i);//ÖØÔØ[]£¬±ãÓÚÒÔÁĞÖ¸±ê·ÃÎÊÁĞµÄÖ¸Õë
-	friend class Database; //·½±ãDatabaseÀà·ÃÎÊTableÊı¾İ
-	Column* operator[] (const string& a); //ÖØÔØ[]£¬±ãÓÚÒÔÁĞÃû·ÃÎÊÁĞµÄÖ¸Õë
-	void create(const string& a,const string& b,bool c); //ÔÚ±í¸ñÖĞÌí¼ÓÁĞ£¬aÎªÁĞÃû£¬bÎªÁĞ±äÁ¿µÄÀàĞÍÃû£¬c±íÊ¾¸ÃÁĞÔªËØÊÇ·ñ¿ÉÎªNULL
-	void show_all(const vector<bool>& check); //Õ¹Ê¾Õû¸ö±í¸ñÊı¾İ£¬ÏòÁ¿vectorÓÉwhereClausesÉú³É£¬±íÊ¾ÄÄĞ©ÁĞ·ûºÏÌõ¼ş£¬ÏÂÍ¬
-	void show_one(const string& cname,const vector<bool>& check); //¸ø³öÁĞÃûÕ¹Ê¾Ä³Ğ©ÁĞµÄ·ûºÏÌõ¼şµÄÊı¾İ
-	void show_column(); //Õ¹Ê¾ÖÆ±íĞÅÏ¢
-	bool find_column(const string& a); //¸ø¶¨ÁĞÃûÅĞ¶ÏÒ»¸öÁĞÊÇ·ñÔÚ±íÖĞ
-	bool null_check(const string& a); //ÔÚ²åÈë²Ù×÷ÖĞ£¬¸ø¶¨Ò»¸öÁĞÃû£¬ÔÚ¸ÃÁĞÎªNot NullÊ±£¬ÅĞ¶ÏËüÊÇ·ñ±»²åÈë£¬·ñÔò±¨´í
-	void default_fill(); //ÔÚ²åÈë²Ù×÷ÖĞ£¬¶ÔÃ»ÓĞ²åÈëÊı¾İµÄÁĞÓÃÈ±Ê¡ÖµNULLÌî³ä
-	void del_row(const vector<bool>& check); //É¾³ı·ûºÏÌõ¼şµÄĞĞ
-	void swap_row(int a,int b); //¸øĞĞÊı½»»»Ä³Á½ĞĞ£¨ĞĞÊı´Ó0¿ªÊ¼£©
-	void sort_prime(); //¸ù¾İÖ÷¼ü´Ó´óµ½Ğ¡¸ø±í¸ñµÄĞĞÅÅĞò
-	void update_row(string cname,string value,const vector<bool>& check); //ĞŞ¸Ä±íÖĞÊı¾İ£¬cname±íÊ¾ÁĞÃû£¬value±íÊ¾ÒªÌîÈëµÄÖµ
-	vector<bool> whereClauses(const string& str); //°ÑÒ»¸öwherecluause´¦ÀíÎªboolÏòÁ¿£¬ÆäÖĞcheck[i]Îªtrue±íÊ¾¸ÃĞĞ·ûºÏÌõ¼ş£¬·´Ö®Í¬Àí,ÕâÀïµÄstr²»´ø·ÖºÅ
-	bool whereclauses_work(const int& i, const string& str); //ÎªÊµÏÖwhereClausesº¯Êı¶¨ÒåµÄ¸¨Öúº¯Êı£¬Ïê¼ûtable.cpp
-	string gettype(vector<string> t);//»ñµÃ±í´ïÊ½µÄÀàĞÍ
-	vector<string> getdata(int i,vector<string> t);//½«±í´ïÊ½ÖĞµÄÊôĞÔÃû×Ö»»³ÉÕæÕıµÄÖµ£¬Í¬Ê±È¥µôË«ÒıºÅ
-	vector<vector<string>> groupit(vector<vector<string>>& need_group,vector<string>& group);//·µ»Ø·Ö×éºóµÄ½á¹û£¬°üÀ¨±íÍ·ºÍÊı¾İ£¨Êı¾İ×îºóÒ»ÁĞÎªĞĞºÅ£©
-	//need_groupµÚÒ»ĞĞÎªÒªÕ¹Ê¾µÄÁĞÃû£¬ÏÂÃæµÄĞĞÎªÊı¾İ£¨Ã¿ĞĞÊı¾İ×îºóÎªĞĞºÅ£¬Èç¹ûÊÇcountµÈ·Ç±í¸ñÖĞÔ­À´µÄÁĞ£¬¶ÔÓ¦µÄÊı¾İÖµÎªNULL£©
-	//groupitÍ¬Ê±³Ğµ£¶ÔcountµÄ¼ÆËã
-	//groupÎªgroup byÖ®ºóµÄ¸÷¸öÁĞ
+	Column* operator[](const int i);//é‡è½½[]ï¼Œä¾¿äºä»¥åˆ—æŒ‡æ ‡è®¿é—®åˆ—çš„æŒ‡é’ˆ
+	friend class Database; //æ–¹ä¾¿Databaseç±»è®¿é—®Tableæ•°æ®
+	Column* operator[] (const string& a); //é‡è½½[]ï¼Œä¾¿äºä»¥åˆ—åè®¿é—®åˆ—çš„æŒ‡é’ˆ
+	void create(const string& a,const string& b,bool c); //åœ¨è¡¨æ ¼ä¸­æ·»åŠ åˆ—ï¼Œaä¸ºåˆ—åï¼Œbä¸ºåˆ—å˜é‡çš„ç±»å‹åï¼Œcè¡¨ç¤ºè¯¥åˆ—å…ƒç´ æ˜¯å¦å¯ä¸ºNULL
+	void show_all(const vector<bool>& check); //å±•ç¤ºæ•´ä¸ªè¡¨æ ¼æ•°æ®ï¼Œå‘é‡vectorç”±whereClausesç”Ÿæˆï¼Œè¡¨ç¤ºå“ªäº›åˆ—ç¬¦åˆæ¡ä»¶ï¼Œä¸‹åŒ
+	void show_one(const string& cname,const vector<bool>& check); //ç»™å‡ºåˆ—åå±•ç¤ºæŸäº›åˆ—çš„ç¬¦åˆæ¡ä»¶çš„æ•°æ®
+	void show_column(); //å±•ç¤ºåˆ¶è¡¨ä¿¡æ¯
+	bool find_column(const string& a); //ç»™å®šåˆ—ååˆ¤æ–­ä¸€ä¸ªåˆ—æ˜¯å¦åœ¨è¡¨ä¸­
+	bool null_check(const string& a); //åœ¨æ’å…¥æ“ä½œä¸­ï¼Œç»™å®šä¸€ä¸ªåˆ—åï¼Œåœ¨è¯¥åˆ—ä¸ºNot Nullæ—¶ï¼Œåˆ¤æ–­å®ƒæ˜¯å¦è¢«æ’å…¥ï¼Œå¦åˆ™æŠ¥é”™
+	void default_fill(); //åœ¨æ’å…¥æ“ä½œä¸­ï¼Œå¯¹æ²¡æœ‰æ’å…¥æ•°æ®çš„åˆ—ç”¨ç¼ºçœå€¼NULLå¡«å……
+	void del_row(const vector<bool>& check); //åˆ é™¤ç¬¦åˆæ¡ä»¶çš„è¡Œ
+	void swap_row(int a,int b); //ç»™è¡Œæ•°äº¤æ¢æŸä¸¤è¡Œï¼ˆè¡Œæ•°ä»0å¼€å§‹ï¼‰
+	void sort_prime(); //æ ¹æ®ä¸»é”®ä»å¤§åˆ°å°ç»™è¡¨æ ¼çš„è¡Œæ’åº
+	void update_row(string cname,string value,const vector<bool>& check); //ä¿®æ”¹è¡¨ä¸­æ•°æ®ï¼Œcnameè¡¨ç¤ºåˆ—åï¼Œvalueè¡¨ç¤ºè¦å¡«å…¥çš„å€¼
+	vector<bool> whereClauses(const string& str); //æŠŠä¸€ä¸ªwherecluauseå¤„ç†ä¸ºboolå‘é‡ï¼Œå…¶ä¸­check[i]ä¸ºtrueè¡¨ç¤ºè¯¥è¡Œç¬¦åˆæ¡ä»¶ï¼Œåä¹‹åŒç†,è¿™é‡Œçš„strä¸å¸¦åˆ†å·
+	bool whereclauses_work(const int& i, const string& str, bool& NULL_flag); //ä¸ºå®ç°whereClauseså‡½æ•°å®šä¹‰çš„è¾…åŠ©å‡½æ•°ï¼Œè¯¦è§table.cpp
+	string gettype(vector<string> t);//è·å¾—è¡¨è¾¾å¼çš„ç±»å‹
+	vector<string> getdata(int i,vector<string> t);//å°†è¡¨è¾¾å¼ä¸­çš„å±æ€§åå­—æ¢æˆçœŸæ­£çš„å€¼ï¼ŒåŒæ—¶å»æ‰åŒå¼•å·
+	vector<vector<string>> groupit(vector<vector<string>>& need_group,vector<string>& group);//è¿”å›åˆ†ç»„åçš„ç»“æœï¼ŒåŒ…æ‹¬è¡¨å¤´å’Œæ•°æ®ï¼ˆæ•°æ®æœ€åä¸€åˆ—ä¸ºè¡Œå·ï¼‰
+	//need_groupç¬¬ä¸€è¡Œä¸ºè¦å±•ç¤ºçš„åˆ—åï¼Œä¸‹é¢çš„è¡Œä¸ºæ•°æ®ï¼ˆæ¯è¡Œæ•°æ®æœ€åä¸ºè¡Œå·ï¼Œå¦‚æœæ˜¯countç­‰éè¡¨æ ¼ä¸­åŸæ¥çš„åˆ—ï¼Œå¯¹åº”çš„æ•°æ®å€¼ä¸ºNULLï¼‰
+	//groupitåŒæ—¶æ‰¿æ‹…å¯¹countçš„è®¡ç®—
+	//groupä¸ºgroup byä¹‹åçš„å„ä¸ªåˆ—
 	vector<string> deal_function(const vector<string>& columnname,vector<vector<string>>&t);
-	//columnnameÎªĞèÒªÕ¹Ê¾µÄÁĞ£¬tÖĞº¬ÓĞÒ»×éµÄÊı¾İ(Èô¸ÉĞĞ)
+	//columnnameä¸ºéœ€è¦å±•ç¤ºçš„åˆ—ï¼Œtä¸­å«æœ‰ä¸€ç»„çš„æ•°æ®(è‹¥å¹²è¡Œ)
 	string num_function(const int i,string need,vector<vector<string>>&t);
-	//iÎª¸ÃÊı×Öº¯ÊıÔÚcolumnnameÖĞ³öÏÖµÄÎ»ÖÃ,needÎª¶ÔÓ¦µÄÊı×Öº¯ÊıµÄÓï¾ä,tÎªÒ»×éÊı¾İ
+	//iä¸ºè¯¥æ•°å­—å‡½æ•°åœ¨columnnameä¸­å‡ºç°çš„ä½ç½®,needä¸ºå¯¹åº”çš„æ•°å­—å‡½æ•°çš„è¯­å¥,tä¸ºä¸€ç»„æ•°æ®
 	string judge_function(string need);
-	//ÅĞ¶Ïneed¶ÔÓ¦Ê²Ã´Êı×Öº¯Êı
-	vector<vector<string>> orderit(vector<vector<string>>& need_order,string order);//·µ»Ø·Ö×éºóµÄ½á¹û£¬°üÀ¨±íÍ·ºÍÊı¾İ£¨Êı¾İ×îºóÒ»ÁĞÎªĞĞºÅ£©
-	//need_groupµÚÒ»ĞĞÎªÒªÕ¹Ê¾µÄÁĞÃû£¬ÏÂÃæµÄĞĞÎªÊı¾İ£¨Ã¿ĞĞÊı¾İ×îºóÎªĞĞºÅ£©
-	//orderitÖĞÄ¬ÈÏcountÒÑ¾­¼ÆËãÍê±Ï
-	//orderÎªorder byÖ®ºóµÄÖ¸±ê
-	//·µ»ØÖµµÚÒ»ĞĞÊÇ±íÍ·£¬ÏÂÃæµÄĞĞÊÇÊı¾İ£¨´øÓĞĞĞºÅ£©
+	//åˆ¤æ–­needå¯¹åº”ä»€ä¹ˆæ•°å­—å‡½æ•°
+	vector<vector<string>> orderit(vector<vector<string>>& need_order,string order);//è¿”å›åˆ†ç»„åçš„ç»“æœï¼ŒåŒ…æ‹¬è¡¨å¤´å’Œæ•°æ®ï¼ˆæ•°æ®æœ€åä¸€åˆ—ä¸ºè¡Œå·ï¼‰
+	//need_groupç¬¬ä¸€è¡Œä¸ºè¦å±•ç¤ºçš„åˆ—åï¼Œä¸‹é¢çš„è¡Œä¸ºæ•°æ®ï¼ˆæ¯è¡Œæ•°æ®æœ€åä¸ºè¡Œå·ï¼‰
+	//orderitä¸­é»˜è®¤countå·²ç»è®¡ç®—å®Œæ¯•
+	//orderä¸ºorder byä¹‹åçš„æŒ‡æ ‡
+	//è¿”å›å€¼ç¬¬ä¸€è¡Œæ˜¯è¡¨å¤´ï¼Œä¸‹é¢çš„è¡Œæ˜¯æ•°æ®ï¼ˆå¸¦æœ‰è¡Œå·ï¼‰
 	
 
 
-	vector<vector<string>> takeout(vector<vector<string>>& need_group,vector<int>& want);//·µ»ØÈ¡ÍêÌØ¶¨ÁĞÖ®ºóµÄ½á¹û£¬Ö»ÓĞÊı¾İÓëĞĞºÅ£¬ÎŞ±íÃû
-	//need_groupµÚÒ»ĞĞÎªÒªÕ¹Ê¾µÄÁĞÃû£¬ÏÂÃæµÄĞĞÎªÊı¾İ£¨Ã¿ĞĞÊı¾İ×îºóÎªĞĞºÅ£©
-	//wantÊÇÏëÒªµÄÁĞ¶ÔÓ¦µÄÏÂ±ê
+	vector<vector<string>> takeout(vector<vector<string>>& need_group,vector<int>& want);//è¿”å›å–å®Œç‰¹å®šåˆ—ä¹‹åçš„ç»“æœï¼Œåªæœ‰æ•°æ®ä¸è¡Œå·ï¼Œæ— è¡¨å
+	//need_groupç¬¬ä¸€è¡Œä¸ºè¦å±•ç¤ºçš„åˆ—åï¼Œä¸‹é¢çš„è¡Œä¸ºæ•°æ®ï¼ˆæ¯è¡Œæ•°æ®æœ€åä¸ºè¡Œå·ï¼‰
+	//wantæ˜¯æƒ³è¦çš„åˆ—å¯¹åº”çš„ä¸‹æ ‡
 
 	static bool cmp_vector_string(const vector<string>&t,const vector<string>&u);
 	bool equal(const vector<string>&t,const vector<string>&u);
 	vector<vector<string>> combine(vector<string>columnname,vector<vector<string>> a,vector<vector<string>> b,int mode);
-	//mode=1±íÊ¾ĞèÒªÈ¥ÖØ£¬mode=0±íÊ¾²»ĞèÒªÈ¥ÖØ
-	//´«½øÀ´µÄÊı¾İÎŞ±íÍ·£¬µ«Ã¿ĞĞ×îºóÓĞĞĞºÅ
+	//mode=1è¡¨ç¤ºéœ€è¦å»é‡ï¼Œmode=0è¡¨ç¤ºä¸éœ€è¦å»é‡
+	//ä¼ è¿›æ¥çš„æ•°æ®æ— è¡¨å¤´ï¼Œä½†æ¯è¡Œæœ€åæœ‰è¡Œå·
 };
 
 struct forsort{
 	vector<string>data;
 	Table* ptable;
 	vector<string>selected;
-	vector<string>want;//ÏëÒª±È½ÏµÄÏî
-	string mode;//±È½ÏÄ£Ê½£¬Èçstring\int\doubleÀàĞÍµÄ±È½Ï
-	int row;//ÔÚÔ­tableÖĞµÄĞĞºÅ
+	vector<string>want;//æƒ³è¦æ¯”è¾ƒçš„é¡¹
+	string mode;//æ¯”è¾ƒæ¨¡å¼ï¼Œå¦‚string\int\doubleç±»å‹çš„æ¯”è¾ƒ
+	int row;//åœ¨åŸtableä¸­çš„è¡Œå·
 	bool operator<(const forsort& u) const{
 		for(int i=0;i<want.size();++i){
 			if(mode=="string"){
