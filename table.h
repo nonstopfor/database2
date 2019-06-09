@@ -36,8 +36,8 @@ public:
 	void update_row(string cname,string value,const vector<bool>& check); //修改表中数据，cname表示列名，value表示要填入的值
 	vector<bool> whereClauses(const string& str); //把一个wherecluause处理为bool向量，其中check[i]为true表示该行符合条件，反之同理,这里的str不带分号
 	bool whereclauses_work(const int& i, const string& str); //为实现whereClauses函数定义的辅助函数，详见table.cpp
-	string gettype(vector<string>& t);//获得表达式的类型
-	vector<string> getdata(int i,vector<string>& t);//将表达式中的属性名字换成真正的值，同时去掉双引号
+	string gettype(vector<string> t);//获得表达式的类型
+	vector<string> getdata(int i,vector<string> t);//将表达式中的属性名字换成真正的值，同时去掉双引号
 	vector<vector<string>> groupit(vector<vector<string>>& need_group,vector<string>& group);//返回分组后的结果，包括表头和数据（数据最后一列为行号）
 	//need_group第一行为要展示的列名，下面的行为数据（每行数据最后为行号，如果是count等非表格中原来的列，对应的数据值为NULL）
 	//groupit同时承担对count的计算

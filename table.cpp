@@ -265,7 +265,7 @@ bool Table::whereclauses_work(const int& i, const string& str) { //对单行(第
     }
     return ans;
 }
-string Table::gettype(vector<string>& t){
+string Table::gettype(vector<string> t){
 	for(int i=0;i<t.size();++i){
 		if(iscountopt(t[i])) continue;
         clear_qua(t[i]);
@@ -280,7 +280,7 @@ string Table::gettype(vector<string>& t){
 	}
 	return "NULL";
 }
-vector<string> Table::getdata(int i,vector<string>& t){
+vector<string> Table::getdata(int i,vector<string> t){
 	vector<string>result;
 	for(int j=0;j<t.size();++j){
 		if(this->find_column(t[j])) {

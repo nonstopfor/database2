@@ -95,7 +95,46 @@ vector<vector<int>> Database::where_multiple(vector<string>& tablename,string co
 	enumerate(num_table,1,temp,tablename,result,condition);
 	return result;
 }
+string Database::gettype(vector<string>t){
+	for(int i=0;i<t.size();++i){
+		if(iscountopt(t[i])) continue;
+		clear_qua(t[i]);
 
+		if(t[i].find('.')!=-1) {
+			int w=t[i].find('.');
+			string tablename=t[i].substr(0,w);
+			string columnname=t[i].substr(w+1,t[i].size()-w-1);
+			return (*(*this)[tablename])[columnname]->gettype();
+			//if(find_column(t[i])) return (*this)[t[i]]->gettype();
+		}
+		if(t[i].find('-') != string::npos && t[i].find('-')>0) return "date";
+		if(t[i].find(':') != string::npos) return "time";
+		if(isdigit(t[i][0])) {
+			if(t[i].find(".")!=-1) return "double";
+			return "int(11)";
+		}
+		else return "char(1)";
+	}
+	return "NULL";
+	
+}
+vector<string> Database::getdata(vector<string>& tablename, vector<int>&data,vector<string> t){
+	vector<string>result;
+	for(int j=0;j<t.size();++j){
+		int w=t[j].find('.');
+		if(w!=-1&&this->find_table(t[j].substr(0,w))){
+			string table=t[j].substr(0,w);
+			string columnname=t[j].substr(w+1,t[j].size()-w-1);
+			int x=find_pos(tablename,table);
+			result.push_back((*(*(*this)[table])[columnname])[data[x]]);
+		}
+		else{
+			clear_qua(t[j]);
+			result.push_back(t[j]);
+		}
+	}
+	return result;
+}
 bool Database::where_multiple_work(vector<string>& tablename, vector<int>&data, string condition){
 	if(condition=="*") return true;
 	bool ans = true;
@@ -125,8 +164,24 @@ bool Database::where_multiple_work(vector<string>& tablename, vector<int>&data, 
         f = 1;
 		return ans = where_multiple_work(tablename,data, condition.substr(0, this_space)) && ! (where_multiple_work(tablename, data,condition.substr(this_space+4, condition.length()-this_space-4)));
     }
+	string str=condition;
+	vector<string>sstr=split_string(str);
+	int pos_cmp;//比较运算符的位置
+	for(pos_cmp=0;pos_cmp<sstr.size();++pos_cmp) if(iscmp(sstr[pos_cmp])) break;
+	vector<string>exp1,exp2;string opt=sstr[pos_cmp];
+	for(int i=0;i<pos_cmp;++i) exp1.push_back(sstr[i]);	
+	for(int i=pos_cmp+1;i<sstr.size();++i) exp2.push_back(sstr[i]);
+	string tp1=gettype(exp1),tp2=gettype(exp2);
+	if(tp1 == "date" || tp1 == "time") tp2 = tp1;
+	if(tp2 == "date" || tp2 == "time") tp1 = tp2;
+	vector<string> _data1=getdata(tablename,data,exp1),_data2=getdata(tablename,data,exp2);
+	if(check_null(_data1)||check_null(_data2)) return false;
+	string data1=CAL_alg(_data1,tp1),data2=CAL_alg(_data2,tp2);
+	ans=compare(data1,data2,tp1,tp2,opt);
+	return ans;
+
 	//先获得需要比较的数据
-	vector<string>t;
+	/*vector<string>t;
 	string tablename1,tablename2,columnname1,columnname2;
 	int x=condition.find('=');
 	if(x==-1) x=condition.find('>');
@@ -225,7 +280,7 @@ bool Database::where_multiple_work(vector<string>& tablename, vector<int>&data, 
 		}
 	}
 	string opt=t[1];
-	return compare(data1,data2,type1,type2,opt);
+	return compare(data1,data2,type1,type2,opt);*/
 }
 
 vector<vector<string>> Database::simple_select(string todo){
