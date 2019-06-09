@@ -11,3 +11,9 @@ INSERT INTO oop_score(stu_id, stu_score, exam_year) VALUES (2018011445, 95, 2011
 SELECT oop_info.stu_name, oop_score.stu_score FROM oop_info, oop_score WHERE oop_info.stu_id = oop_score.stu_id AND oop_info.join_year = oop_score.exam_year;
 SELECT oop_info.stu_name, oop_score.stu_score FROM oop_info, oop_score WHERE oop_info.stu_id=2018011243 AND oop_info.join_year = oop_score.exam_year;
 SELECT oop_info.stu_name, oop_score.stu_score FROM oop_info, oop_score WHERE oop_info.stu_name = 'b' AND oop_info.join_year = oop_score.exam_year;
+SELECT oop_info.stu_name, oop_score.stu_score FROM oop_info, oop_score WHERE oop_info.stu_name = 'b' AND oop_info.join_year = oop_score.exam_year OR 4 * 3 = 12;
+SELECT oop_info.stu_name, oop_score.stu_score FROM oop_info, oop_score WHERE oop_info.stu_name = 'b' AND oop_info.join_year = oop_score.exam_year OR 4 * 3 = 11;
+SELECT oop_info.stu_name, oop_score.stu_score FROM oop_info, oop_score WHERE 4 / 0 = 1 OR 4 / 4 = 1;
+SELECT oop_info.stu_name, oop_score.stu_score FROM oop_info, oop_score WHERE 4 / 3 = 1 OR 4 / 4 = 1;
+SELECT oop_info.stu_name, oop_score.stu_score FROM oop_info, oop_score WHERE 4 / * 3 = + 1 OR 4 / 4 = 1;
+DROP DATABASE OOP;
