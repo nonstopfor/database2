@@ -1,0 +1,6 @@
+database: OOP
+table: oop_info stu_id
+column: stu_id int(11) 0 stu_name char(1) 1 
+data: 2018011343 a 
+data: 2018011344 b 
+data: 2018011345 c 

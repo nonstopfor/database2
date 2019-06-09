@@ -152,7 +152,15 @@ string Tolower(string x){
 	}
 	return u;
 }
-vector<string> cut(const string& s) {
+vector<string> cut(const string& t) {
+	string s=t;
+	while(1){
+		char t=s.back();
+		if(t!=';'&&t!=' '&&t!='\r'&&t!='\n'&&t!='\t') break;
+		else{
+			s.pop_back();
+		}
+	}
     int l = s.length();
     string u = "";
     vector<string> temp;
