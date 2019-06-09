@@ -385,9 +385,16 @@ vector<string> split_string(string s){
 			if(u!="") result.push_back(u);
 			u="";u.push_back(s[i]);
 			if(isopt(s[i+1])){
-				u.push_back(s[i+1]);
-				result.push_back(u);
-				++i;u="";
+				if(s[i+1]=='='){
+					u.push_back(s[i+1]);
+					result.push_back(u);
+					++i;u="";
+				}
+				else{
+					result.push_back(u);
+					u="";
+					u.push_back(s[i+1]);++i;
+				}
 			}
 			else{
 				result.push_back(u);u="";
