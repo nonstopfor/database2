@@ -627,10 +627,12 @@ int main() {
 					}
 
 					vector<vector<int>>v=now->where_multiple(tablename,condition);
-					for(int i=0;i<columnname.size();++i){
-						cout<<columnname[i]<<'\t';
+					if(!v.empty()){
+						for(int i=0;i<columnname.size();++i){
+							cout<<columnname[i]<<'\t';
+						}
+						cout<<endl;
 					}
-					cout<<endl;
 					for(int i=0;i<v.size();++i){
 						for(int j=0;j<columnname.size();++j){
 							int x=table_sub[ctablename[j]];
