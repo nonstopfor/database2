@@ -1,6 +1,11 @@
 database: OOP
 table: oop_info stu_id
-column: stu_id int(11) 0 stu_name char(1) 1 
-data: 2018011243 a 
-data: 2018011344 b 
-data: 2018011445 c 
+column: stu_id int(11) 0 stu_name char(1) 1 join_year int(11) 1 
+data: 2018011243 a 2008 
+data: 2018011344 b 2009 
+data: 2018011445 c 2010 
+table: oop_score stu_id
+column: stu_id int(11) 0 stu_score int(11) 1 exam_year int(11) 1 
+data: 2018011243 91 2008 
+data: 2018011344 92 2009 
+data: 2018011445 95 2011 

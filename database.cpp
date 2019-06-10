@@ -102,7 +102,8 @@ string Database::gettype(vector<string>t){
 		if(iscountopt(t[i])) continue;
 		//clear_qua(t[i]);
 		if(t[i][0]=='"'||t[i][0]=='\'') return "char(1)";
-		if(t[i].find('.')!=-1) {
+		int w=t[i].find('.');
+		if(w!=-1&&this->find_table(t[i].substr(0,w))) {
 			int w=t[i].find('.');
 			string tablename=t[i].substr(0,w);
 			string columnname=t[i].substr(w+1,t[i].size()-w-1);

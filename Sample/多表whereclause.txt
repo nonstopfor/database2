@@ -8,6 +8,7 @@ CREATE TABLE oop_score(stu_id INT NOT NULL, PRIMARY KEY(stu_id), stu_score INT, 
 INSERT INTO oop_score(stu_id, stu_score, exam_year) VALUES (2018011243, 91, 2008);
 INSERT INTO oop_score(stu_id, stu_score, exam_year) VALUES (2018011344, 92, 2009);
 INSERT INTO oop_score(stu_id, stu_score, exam_year) VALUES (2018011445, 95, 2011);
+SELECT oop_info.stu_name, oop_score.stu_score FROM oop_info, oop_score WHERE 4.0/2.0>1;
 SELECT oop_info.stu_name, oop_score.stu_score FROM oop_info, oop_score WHERE oop_info.stu_id = oop_score.stu_id AND oop_info.join_year = oop_score.exam_year;
 SELECT oop_info.stu_name, oop_score.stu_score FROM oop_info, oop_score WHERE oop_info.stu_id=2018011243 AND oop_info.join_year = oop_score.exam_year;
 SELECT oop_info.stu_name, oop_score.stu_score FROM oop_info, oop_score WHERE oop_info.stu_name = 'b' AND oop_info.join_year = oop_score.exam_year;
