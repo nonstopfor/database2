@@ -19,7 +19,7 @@ public:
 	int getrowsize();//获得表格行数的接口
 	int count(string& s);//获得所有行的count
 	int count(int i,string& s);//获得某一行的count
-	vector<string> getall_columnname();
+	vector<string> getall_columnname();//获得所有的列名
 	Column* operator[](const int i);//重载[]，便于以列指标访问列的指针
 	friend class Database; //方便Database类访问Table数据
 	Column* operator[] (const string& a); //重载[]，便于以列名访问列的指针
@@ -60,17 +60,17 @@ public:
 	//need_group第一行为要展示的列名，下面的行为数据（每行数据最后为行号）
 	//want是想要的列对应的下标
 
-	static bool cmp_vector_string(const vector<string>&t,const vector<string>&u);
-	bool equal(const vector<string>&t,const vector<string>&u);
+	static bool cmp_vector_string(const vector<string>&t,const vector<string>&u);//比较两个vector<string>的大小
+	bool equal(const vector<string>&t,const vector<string>&u);//判断两个vector<string>是否相等
 	vector<vector<string>> combine(vector<string>columnname,vector<vector<string>> a,vector<vector<string>> b,int mode);
 	//mode=1表示需要去重，mode=0表示不需要去重
 	//传进来的数据无表头，但每行最后有行号
 };
 
 struct forsort{
-	vector<string>data;
-	Table* ptable;
-	vector<string>selected;
+	vector<string>data;//数据
+	Table* ptable;//指向对应的表
+	vector<string>selected;//需要展示的列名
 	vector<string>want;//想要比较的项
 	string mode;//比较模式，如string\int\double类型的比较
 	int row;//在原table中的行号

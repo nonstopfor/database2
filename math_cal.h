@@ -108,7 +108,7 @@ string CAA(vector<string> & hold_strs, bool& NULL_flag){
             else if(op_hold=="*")data_stack.push_back((TY)op1*(TY)op2);
             else if(op_hold=="/"){
                 if(op2==0){
-//cout<<"typical wrong"<<endl;
+                //cout<<"typical wrong"<<endl;
                 return "NULL";
                 }
                 else data_stack.push_back((TY)op1/(TY)op2);
@@ -135,6 +135,7 @@ string CAA(vector<string> & hold_strs, bool& NULL_flag){
 
 
 string CAL_alg(vector<string> &hold_strs, string type, bool& NULL_flag);
+//计算表达式的值
 
 string CAA_2(vector<string> & hold_strs, bool& NULL_flag);
 

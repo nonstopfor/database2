@@ -1,6 +1,8 @@
 # database2
 
-## <font color=#008b8b>其他目录</font>
+## <font color=#008b8b>本地使用</font>
+
+在linux命令行下进入到相应目录,make后输入./main，即可运行
 
 ## <font color=#008b8b>服务器与客户端的使用</font>
 ### <font color=#adff2f>服务器</font>

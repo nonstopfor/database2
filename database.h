@@ -23,15 +23,15 @@ public:
 	Table* get_table(const string& a);//通过表格名获得相应表格的指针
 	void del(const string& a); //通过表格名删除表格
 	vector<vector<int>> where_multiple(vector<string>& tablename,string condition);//返回多表中哪些行符合条件
-	string gettype(vector<string>s);
-	vector<string>getdata(vector<string>& tablename, vector<int>&data,vector<string> t);
+	string gettype(vector<string>s);//获得where后面的表达式的类型，包括int(11),char(1),double等
+	vector<string>getdata(vector<string>& tablename, vector<int>&data,vector<string> t);//获得where后面的表达式的具体数据,如将属性名换成某一行的具体数据
 	bool where_multiple_work(vector<string>& tablename, vector<int>&data, string condition,bool& NULL_flag);
 	//辅助函数，判断某一个组合是否满足条件    data中保存了各表对应的行数,保存顺序与tablename中一致
 	//待改进：1.大于小于等于号前后可能无空格(已解决)
 	//2.可能比较对象为某个表格属性和常数(已解决)
 	
 	void enumerate(int& num_table,int step,vector<int>v,vector<string>& tablename,
-	vector<vector<int>>& result,string condition);//辅助进行---行组合的枚举
+	vector<vector<int>>& result,string condition);//辅助进行---行组合的枚举(在多表操作中)
 	vector<vector<string>> simple_select(string todo);//select后面有一个属性，单表，todo末尾无分号，无空格
 	vector<vector<string>> multiple_select(string todo);//select后面有多/1个属性，单表，返回值是所有符合条件的数据（不包括表头）
 	//todo末尾无分号，无空格,属性后面是否带逗号没有关系
@@ -39,10 +39,12 @@ public:
 	//todo不含有group或者order
 	//count等本来不在表中的数据用NULL填充
 	vector<vector<pair<int,bool>>> join_it(vector<vector<pair<int,bool>>>r,vector<string>tablename,vector<string>need,string join);
+	//bool为true表示需要显示，否则为NULL, int代表第几行
 	bool join_ok(const vector<string>&tablename,const vector<pair<int,bool>>& r,vector<string>need,bool& NULL_flag);
-	string gettype(const vector<string>&tablename,const vector<string>&t,const vector<pair<int,bool>>& r);
-	vector<string>getdata(const vector<string>&tablename,const vector<string>&t,const vector<pair<int,bool>>& r);
-	void keep_data(string filename,fstream& fout);
+	//判断on后面的条件对于某个行的组合是否满足
+	string gettype(const vector<string>&tablename,const vector<string>&t,const vector<pair<int,bool>>& r);//获得on后面的表达式的类型，包括int(11),char(1),double等
+	vector<string>getdata(const vector<string>&tablename,const vector<string>&t,const vector<pair<int,bool>>& r);//获得on后面的表达式的具体数据,如将属性名换成某一行的具体数据
+	void keep_data(string filename,fstream& fout);//向存储数据的文件中写入数据(实现数据库存档功能)
 	
 };
 
