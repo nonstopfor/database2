@@ -1,6 +1,16 @@
 database: OOP
+table: fop stu_id
+column: stu_id int(11) 0 stu_score int(11) 1 exam_year int(11) 1 gender char(1) 1 
+data: 2018011246 91 2008 m 
+data: 2018011344 92 2009 w 
+data: 2018011445 95 2011 m 
 table: oop_info stu_id
-column: stu_id int(11) 0 stu_name char(1) 1 join_year int(11) 1 
-data: 2018011243 lebronjames 2008 
-data: 2018011344 kobe 2009 
-data: 2018011445 curry 2010 
+column: stu_id int(11) 0 stu_name char(1) 1 join_year int(11) 1 gender char(1) 1 
+data: 2018011247 a 2008 m 
+data: 2018011344 b 2009 w 
+data: 2018011445 c 2010 m 
+table: oop_score stu_id
+column: stu_id int(11) 0 stu_score int(11) 1 exam_year int(11) 1 gender char(1) 1 
+data: 2018011243 91 2008 m 
+data: 2018011344 92 2009 w 
+data: 2018011445 95 2011 m 

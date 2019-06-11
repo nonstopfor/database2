@@ -107,9 +107,11 @@ int main() {
 	vector<string>all_database;
 	//便于测试，先不从存档中读入数据
 	//read_data(database,all_database);
-    while(getline(cin,todo)) {
+    while(getline(cin,todo,';')) {
     	if (todo=="") continue; 
+		getchar();
     	if (todo[todo.length()-1]==' ') todo.erase(todo.end()-1); //删除行末空格 
+		todo.push_back(';');//适应之前的代码
     	if (str_com(todo.substr(0,8).c_str(),"CREATE D")) { //创建数据库 
     		string dname = todo.substr(16,todo.length()-17); //截取数据库名dname，下同 
     		database[dname] = new Database(dname);
@@ -275,7 +277,7 @@ int main() {
 			(*now)[tname]->update_row(cname,value,(*now)[tname]->whereClauses(clause));
 		}
 		else{
-			todo.erase(todo.size()-1);//为了适应之前的代码读入时把分号也读入进来
+			todo.erase(todo.size()-1);
 			auto t=cut(todo);int l=t.size();
 			if (Tolower(todo).find("outfile")!=-1){//数据导出
 				fstream fout;
