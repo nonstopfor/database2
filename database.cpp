@@ -75,10 +75,8 @@ void Database::enumerate(int& num_table,int step,vector<int>v,vector<string>& ta
 	if(step==num_table+1){
 		bool NULL_flag=false;
 		if(where_multiple_work(tablename,v,condition,NULL_flag)){
-//cout<<"one insert!"<<endl;
 			result.push_back(v);
 		}
-
 		return;
 	}
 	else{

@@ -14,11 +14,13 @@
 
 在`main.cpp`中通过标准输入`cin`读入数据（以分号为分隔符），根据对输入语句的语法分类，调用不同的类中的函数进行相应的处理。
 
+关于客户端和服务器的运行方式参加`README.md`。
+
 ## 3.接口说明
 
 对database.h,table.h,column.h三个类中的接口进行说明，math_cal.h中的函数只是为了计算where后的表达式的结果，此处略去。
 
-`database.h`:
+* `database.h`:
 
 ```class Database {
 class Database {
@@ -63,7 +65,7 @@ public:
 };
 ```
 
-​    `column.h`:(注：便于引用，在column.h中的Column类外声明了一些基本的功能函数)
+*  `column.h`:(注：便于引用，在column.h中的Column类外声明了一些基本的功能函数)
 
 ``` 
 class Column {
@@ -117,7 +119,7 @@ void print_vector(vector<string>& u);//打印一个vector<string>的内容
     
 ```
 
-`table.h`:(注：为了在group和order中进行排序操作，在这里定义了forsort结构体专门用于排序)
+* `table.h`:(注：为了在group和order中进行排序操作，在这里定义了`forsort`结构体专门用于排序)
 
 ```
 class Table {
