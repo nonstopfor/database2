@@ -1,0 +1,6 @@
+COUNT(*)
+4
+COUNT(stu_id)
+4
+COUNT(stu_name)
+3

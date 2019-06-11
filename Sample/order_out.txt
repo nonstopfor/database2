@@ -1,0 +1,18 @@
+stu_name        COUNT(*)
+a       1
+c       2
+b       3
+stu_name
+a
+b
+b
+b
+c
+c
+stu_name
+a
+c
+b
+c
+b
+b

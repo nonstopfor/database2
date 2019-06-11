@@ -1,0 +1,22 @@
+join_year       exam_year
+2009    2009
+2010    2011
+join_year       exam_year
+2008    NULL
+2009    2009
+2010    2011
+join_year       exam_year
+2009    2009
+2010    2011
+NULL    2008
+join_year       exam_year       gender
+2009    2009    w
+2010    2011    m
+join_year       exam_year       gender
+2009    2009    w
+2010    2011    m
+NULL    2008    m
+join_year       exam_year       gender
+2009    2009    w
+2010    2011    m
+NULL    2008    m
