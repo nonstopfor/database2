@@ -1,2 +1,2 @@
-main:column.cpp column.h table.cpp table.h database.cpp database.h math_cal.cpp math_cal.h main.cpp
-	g++ -g column.cpp table.cpp database.cpp math_cal.cpp main.cpp -o main -std=c++14
+main:column.cpp column.h table.cpp table.h database.cpp database.h math_cal.cpp math_cal.h base_function.h base_function.cpp main.cpp
+	g++ -g base_function.cpp column.cpp table.cpp database.cpp math_cal.cpp main.cpp -o main -std=c++14
