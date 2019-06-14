@@ -18,7 +18,7 @@
 
 ## 3.接口说明
 
-对database.h,table.h,column.h三个类中的接口进行说明，math_cal.h中的函数只是为了计算where后的表达式的结果，此处略去。
+对database.h,table.h,column.h三个类中的接口以及base_function.h中的基础功能函数接口进行说明，math_cal.h中的函数只是为了计算where后的表达式的结果，此处略去。
 
 * `database.h`:
 
@@ -63,60 +63,6 @@ public:
 	void keep_data(string filename,fstream& fout);//向存储数据的文件中写入数据(实现数据库存档功能)
 	
 };
-```
-
-*  `column.h`:(注：便于引用，在column.h中的Column类外声明了一些基本的功能函数)
-
-``` 
-class Column {
-	string cname; //列名 
-	string type; //列存储的变量类型名 
-	bool can_be_null; //表示该列数据是否可为空 
-	vector<string> cvalue; //包含列所有行数据的向量 
-public:
-	Column(string a,string b,bool c); //构造函数，a为列名，b为列存储的变量类型名，c表示该列数据是否可为NULL
-	~Column(); //析构函数
-	string getname() const; //获得列名的接口
-	string gettype() const; //获得列存储变量类型的接口
-	bool can_null() const; //获得该列元素是否可为NULL的接口
-	int getsize(); //获得该列元素个数，即表格行数的接口
-	void insert(const string& a); //在列中插入元素，a为待插入的值
-	void del(int s); //删除列中元素，s为行数
-	void update(int s,const string& a); //修改列中元素，s为行数，a为目标值
-	friend class Table; //便于Table访问Column数据
-	string& operator[] (int s); //重载[]，便于用Column对象+[行数]访问相应位置的元素
-};
-
-
-
-bool str_com(const string& a,const string& b);//忽略大小写的字符串比较函数
-string Tolower(string x);//将string字符串转为小写，返回转为小写后的结果
-vector<string> cut(const string& s);//将string字符串进行切割，过滤空格和制表符等
-bool compare(string data1,string data2,string type1,string type2,string opt);//用于where子句的两个数据之间的比较
-void clear_space(string& data);//除去data前后的空格
-void clear_qua(string& data);//除去data前后的双引号
-int find_pos(const vector<string>& t,string need,bool strict=false,bool care_big_small=false);//找一个string字符串在vector<string>中的下标,strict代表是否严格相等
-template<class T>
-vector<T> get_vecstr(vector<T>u,int x,int y){
-	vector<T>result;
-	for(int i=x;i<=y;++i) result.push_back(u[i]);
-	return result;
-}//截取vector<T>的从x到y下标的部分
-string to_date(string t);
-string to_time(string t);
-string adddate(string s1, string s2);
-string addtime(string s1, string s2);
-string getvalid_string(string t);//去除该string的前后空格或者逗号
-vector<string> get_show_columnname(vector<string>& t);//从select...from...语句中得到需要展示的列名(包括count)
-vector<string> split_string(string s);//根据运算符或者>,<,=对string进行分割，同时除去空格
-bool isopt(char c);//判断一个字符c是否是运算符或者比较符的一部分
-bool iscmp(string x);//是否是比较符
-bool iscountopt(string x);//是否是运算符
-string putvector_tostring(vector<string>& t,int start,int end);//将vector<string>拼接成string
-vector<string>clear_tablename(vector<string>& u);//去除表格名字
-bool check_null(vector<string>& u);//检查vector<string>中是否有"null"
-void print_vector(vector<string>& u);//打印一个vector<string>的内容
-    
 ```
 
 * `table.h`:(注：为了在group和order中进行排序操作，在这里定义了`forsort`结构体专门用于排序)
@@ -244,7 +190,64 @@ struct forsort{
 };
 ```
 
+* `column.h`:
 
+  ```
+  class Column {
+  	string cname; //列名 
+  	string type; //列存储的变量类型名 
+  	bool can_be_null; //表示该列数据是否可为空 
+  	vector<string> cvalue; //包含列所有行数据的向量 
+  public:
+  	Column(string a,string b,bool c); //构造函数，a为列名，b为列存储的变量类型名，c表示该列数据是否可为NULL
+  	~Column(); //析构函数
+  	string getname() const; //获得列名的接口
+  	string gettype() const; //获得列存储变量类型的接口
+  	bool can_null() const; //获得该列元素是否可为NULL的接口
+  	int getsize(); //获得该列元素个数，即表格行数的接口
+  	void insert(const string& a); //在列中插入元素，a为待插入的值
+  	void del(int s); //删除列中元素，s为行数
+  	void update(int s,const string& a); //修改列中元素，s为行数，a为目标值
+  	friend class Table; //便于Table访问Column数据
+  	string& operator[] (int s); //重载[]，便于用Column对象+[行数]访问相应位置的元素
+  };
+  ```
+
+* `base_function.h`:声明了一些基本的功能函数
+
+  ```
+  const int monthd[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};//每个月有多少天
+  
+  bool str_com(const string& a,const string& b);//忽略大小写的字符串比较函数
+  string Tolower(string x);//将string字符串转为小写，返回转为小写后的结果
+  vector<string> cut(const string& s);//将string字符串进行切割，过滤空格和制表符等
+  bool compare(string data1,string data2,string type1,string type2,string opt);//用于where子句的两个数据之间的比较
+  void clear_space(string& data);//除去data前后的空格
+  void clear_qua(string& data);//除去data前后的双引号
+  int find_pos(const vector<string>& t,string need,bool strict=false,bool care_big_small=false);//找一个string字符串在vector<string>中的下标,strict代表是否严格相等
+  template<class T>
+  vector<T> get_vecstr(vector<T>u,int x,int y){
+  	vector<T>result;
+  	for(int i=x;i<=y;++i) result.push_back(u[i]);
+  	return result;
+  }//截取vector<T>的从x到y下标的部分
+  string to_date(string t);
+  string to_time(string t);
+  string adddate(string s1, string s2);
+  string addtime(string s1, string s2);
+  string getvalid_string(string t);//去除该string的前后空格或者逗号
+  vector<string> get_show_columnname(vector<string>& t);//从select...from...语句中得到需要展示的列名(包括count)
+  vector<string> split_string(string s);//根据运算符或者>,<,=对string进行分割，同时除去空格
+  bool isopt(char c);//判断一个字符c是否是运算符或者比较符的一部分
+  bool iscmp(string x);//是否是比较符
+  bool iscountopt(string x);//是否是运算符
+  string putvector_tostring(vector<string>& t,int start,int end);//将vector<string>拼接成string
+  vector<string>clear_tablename(vector<string>& u);//去除表格名字
+  bool check_null(vector<string>& u);//检查vector<string>中是否有"null"
+  void print_vector(vector<string>& u);//打印一个vector<string>的内容
+  ```
+
+  
 
 
 
