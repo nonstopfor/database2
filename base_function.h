@@ -4,7 +4,7 @@
 #include<string>
 #include<vector>
 using namespace std;
-const int monthd[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+const int monthd[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};//每个月有多少天
 
 bool str_com(const string& a,const string& b);//忽略大小写的字符串比较函数
 string Tolower(string x);//将string字符串转为小写，返回转为小写后的结果
