@@ -9,3 +9,4 @@ INSERT INTO oop_info(stu_id, stu_name, stu_birth) VALUES (2018001394, "b", 04123
 INSERT INTO oop_info(stu_id, stu_name, stu_birth) VALUES (2018011445, "c", 130505);
 select stu_name, stu_id, stu_birth from oop_info where stu_birth>010102;
 DROP DATABASE OOP;
+ADDTIME("98:01:59", 11);

@@ -42,8 +42,8 @@ void Column::insert(const string& a) { //插入新数据
         if(value != "NULL") value = t;
     }else if(type == "time"){
         string t = to_time(value);
-        if(t[0] != '-' && t.find(':') > 3) value = "NULL";
-        else if(t[0] == '-' && t.find(':') > 4) value = "NULL";
+        if(t[0] != '-' && t.find(':') > 2) value = "NULL";
+        else if(t[0] == '-' && t.find(':') > 3) value = "NULL";
         int m = stoi(t.substr(t.length() - 5)), s = stoi(t.substr(t.length() - 2));
         if(m > 59 || s > 59) value = "NULL";
         if(value != "NULL") value = t;

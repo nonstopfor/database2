@@ -279,7 +279,20 @@ int main() {
 		else{
 			todo.erase(todo.size()-1);
 			auto t=cut(todo);int l=t.size();
-			if (Tolower(todo).find("outfile")!=-1){//数据导出
+            if (str_com(todo.substr(0,7).c_str(),"ADDTIME") || str_com(todo.substr(0,7).c_str(),"ADDDATE")) {
+                string s1, s2;
+                if(t.size() == 2){
+                    s1 = t[0].substr(t[0].find('(') + 1);
+                    s1 = s1.substr(0, s1.length() - 1);
+                    s2 = t[1].substr(0, t[1].find(')'));
+                } else{
+                    s1 = t[1].substr(0, t[1].length() - 1);
+                    s2 = t[2].substr(0, t[2].find(')'));
+                }
+                clear_qua(s1);
+                if(str_com(todo.substr(0,7).c_str(),"ADDTIME")) cout << addtime(s1, s2) << endl;
+                else cout << adddate(s1, s2) << endl;
+            } else if (Tolower(todo).find("outfile")!=-1){//数据导出
 				fstream fout;
 				string filename=t[l-3].substr(1,t[l-3].size()-2);
 				ifstream check_if_exist(filename);

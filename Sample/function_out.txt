@@ -1,0 +1,4 @@
+stu_name	COUNT(*)	max(join_year)	var_samp(join_year)
+a	1	2008	0.000000
+c	2	2010	0.000000
+b	3	2019	27.555556

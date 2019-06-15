@@ -6,6 +6,6 @@ INSERT INTO oop_info(stu_id, stu_name, stu_birth) VALUES (2018011043, "a", 19980
 INSERT INTO oop_info(stu_id, stu_name, stu_birth) VALUES (2018010243, "a", 20000229);
 INSERT INTO oop_info(stu_id, stu_name, stu_birth) VALUES (2018001344, "b", 20020115);
 INSERT INTO oop_info(stu_id, stu_name, stu_birth) VALUES (2018001394, "b", 20041231);
-INSERT INTO oop_info(stu_id, stu_name, stu_birth) VALUES (2018011445, "c", 20130505);
+INSERT INTO oop_info(stu_id, stu_name, stu_birth) VALUES (2018011445, "c", '2013-05-05');
 select stu_name, stu_id, stu_birth from oop_info where stu_birth>20000102;
 DROP DATABASE OOP;
