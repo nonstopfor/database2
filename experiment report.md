@@ -6,17 +6,16 @@
 
 * 拓展需求(注：测试数据以及测试结果在Sample文件夹中给出，这里就不再展示)
 
-  1.多表`whereclause`子句
+  1.多表`whereclause`子句：
 
-  实现了多表（大于等于2）的`whereclause`子句，实现大的思路与单表类似，通过枚举所有行的组合（每个表中取一行），对每种组合判断是否符合`where`后的条件，如果是，就加入结果集。
 
-  接口设计如下：
+  实现了多表（大于等于2）的`whereclause`子句，实现大的思路与单表类似，通过枚举所有行的组合（每个表中取一行），对每种组合判断是否符合`where`后的条件，如果是，就加入结果集。接口设计如下：
 
   ```
   vector<vector<int>>v=now->where_multiple(tablename,condition)
   enumerate(num_table,1,temp,tablename,result,condition)
   if(where_multiple_work(tablename,v,condition,NULL_flag)){
-  			result.push_back(v);
+    result.push_back(v);
   }
   ```
 
@@ -26,9 +25,7 @@
 
   2.支持`UNION`操作符
 
-  实现了多个`UNION`的操作，支持大于等于2个`UNION`以及`UNION ALL`的混合使用。由于`UNION`的操作满足左结合性质，所以只需从左往右进行循环计算即可（可以证明只需从右往左找到第一个`UNION`，左边的都要去重，右边的不去重）。
-
-  接口设计如下：
+  实现了多个`UNION`的操作，支持大于等于2个`UNION`以及`UNION ALL`的混合使用。由于`UNION`的操作满足左结合性质，所以只需从左往右进行循环计算即可（可以证明只需从右往左找到第一个`UNION`，左边的都要去重，右边的不去重）。接口设计如下：
 
   ```
   for(int i=0;i<=pos_start;++i){
@@ -63,11 +60,11 @@
 
   5.实现SQL算术运算符
 
-  
+  新增算符：`+`,`-`,`*`,`/`,`%`，通过在头文件`math_cal.h`中定义的函数实现运算的处理，函数中接收来自主进程的变量`NULL_flag`，用来监测是否出现返回`NULL`的情形（如除数为0,对浮点类型取余数）。
 
   6.实现SQL逻辑运算符
 
-  
+  新增逻辑运算符`NOT`,`AND`,`OR`,`XOR`的支持，具体的功能由递归实现，关于`NULL`的处理依然依靠变量`NULL_flag`。
 
   7.支持多表的`JOIN`
 
