@@ -56,9 +56,7 @@ public:
 	
 
 
-	vector<vector<string>> takeout(vector<vector<string>>& need_group,vector<int>& want);//返回取完特定列之后的结果，只有数据与行号，无表名
-	//need_group第一行为要展示的列名，下面的行为数据（每行数据最后为行号）
-	//want是想要的列对应的下标
+	
 
 	static bool cmp_vector_string(const vector<string>&t,const vector<string>&u);//比较两个vector<string>的大小
 	bool equal(const vector<string>&t,const vector<string>&u);//判断两个vector<string>是否相等

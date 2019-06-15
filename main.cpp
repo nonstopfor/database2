@@ -5,33 +5,8 @@
 #include <vector>
 #include "database.h"
 using namespace std;
-string ordername;//调用sort之前更新
-vector<string>overall_columnname;
-int order_sub;//UNION操作中排序指标对应的下标
-map<vector<string>,int>overall_mcount;//调用sort之前更新
+
 string data_keep_filename="data_keep.txt";
-bool cmp(vector<string>& u,vector<string>& v){
-	if(Tolower(ordername.substr(0,5))=="count"){
-		return overall_mcount[u]<overall_mcount[v];
-	}
-	else{
-		int k;
-		for(k=0;k<overall_columnname.size();++k){
-			if(overall_columnname[k]==ordername) break;
-		}
-		return u[k]<v[k];
-	}
-}
-bool cmp2(vector<string>& u,vector<string>& v){//用于UNION实现中sort，去重
-	for(int i=0;i<u.size();++i){
-		if(u[i]<v[i]) return true;
-		else if(u[i]>v[i]) return false;
-	}
-	return false;
-}
-bool cmp3(vector<string>& u,vector<string>& v){//用于UNION实现中的ORDER BY语句
-	return u[order_sub]<v[order_sub];
-}
 
 void read_data(map<string,Database*>& database,vector<string>& all_database){
 	fstream fin;
@@ -691,10 +666,6 @@ int main() {
 		}
 		//fout<<"nowdatabase: "<<now->getname()<<endl;
 		fout.close();
-		/*else {
-			cout << "WRONG INPUT!\n"; //防止错误输入使程序崩溃 
-			continue;
-		}*/
 		
 	}
 	return 0;

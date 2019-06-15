@@ -471,17 +471,7 @@ vector<vector<string>> Table::orderit(vector<vector<string>>& need_order,string 
 	}
 	return result;
 }
-vector<vector<string>> Table::takeout(vector<vector<string>>& need_group,vector<int>& want){
-	vector<vector<string>> result;
-	for(int i=1;i<need_group.size();++i){
-		vector<string>temp;
-		for(int j=0;j<want.size();++j){
-			temp.push_back(need_group[i][j]);
-		}
-		result.push_back(temp);
-	}
-	return result;
-}
+
 bool Table::cmp_vector_string(const vector<string>&t,const vector<string>&u){
 	for(int i=0;i<min(t.size(),u.size())-1;++i){
 		if(t[i]<u[i]) return true;
