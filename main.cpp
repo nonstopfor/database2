@@ -292,7 +292,8 @@ int main() {
                 clear_qua(s1);
                 if(str_com(todo.substr(0,7).c_str(),"ADDTIME")) cout << addtime(s1, s2) << endl;
                 else cout << adddate(s1, s2) << endl;
-            } else if (Tolower(todo).find("outfile")!=-1){//数据导出
+            } 
+			else if (Tolower(todo).find("outfile")!=-1){//数据导出
 				fstream fout;
 				string filename=t[l-3].substr(1,t[l-3].size()-2);
 				ifstream check_if_exist(filename);
