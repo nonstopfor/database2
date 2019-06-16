@@ -2,3 +2,7 @@ stu_name	COUNT(*)	max(join_year)	var_samp(join_year)
 a	1	2008	0.000000
 c	2	2010	0.000000
 b	3	2019	27.555556
+stu_name	min(join_year)	ave(join_year)	sum(join_year)
+a	2008	2008.000000	2008
+b	2007	2011.666667	6035
+c	2010	2010.000000	4020
