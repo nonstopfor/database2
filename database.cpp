@@ -299,15 +299,15 @@ vector<vector<pair<int,bool>>> Database::join_it(vector<vector<pair<int,bool>>>r
 	Table* table=(*this)[_table];
 	need.erase(need.begin());need.erase(need.begin());
 	vector<vector<pair<int,bool>>> result;
-	map<vector<pair<int,bool>>,int>m;
+	map<vector<pair<int,bool>>,int>m1,m2;
 	for(int i=0;i<r.size();++i){
 		for(int j=0;j<table->getrowsize();++j){
 			r[i].push_back(make_pair(j,true));
 			bool NULL_flag=false;
 			if(join_ok(tablename,r[i],need,NULL_flag)){
 				result.push_back(r[i]);
-				m[get_vecstr(r[i],0,r[i].size()-2)]++;
-				m[get_vecstr(r[i],r[i].size()-1,r[i].size()-1)]++;
+				m1[get_vecstr(r[i],0,r[i].size()-2)]++;
+				m2[get_vecstr(r[i],r[i].size()-1,r[i].size()-1)]++;
 				r[i].pop_back();
 			}
 			else{
@@ -315,7 +315,7 @@ vector<vector<pair<int,bool>>> Database::join_it(vector<vector<pair<int,bool>>>r
 			}
 		}
 		if(join=="left join"){
-			if(!m[r[i]]){
+			if(!m1[r[i]]){
 				r[i].push_back(make_pair(0,false));
 				result.push_back(r[i]);
 				r[i].pop_back();
@@ -326,7 +326,7 @@ vector<vector<pair<int,bool>>> Database::join_it(vector<vector<pair<int,bool>>>r
 		for(int j=0;j<table->getrowsize();++j){
 			auto u=make_pair(j,true);
 			vector<pair<int,bool>>temp;temp.push_back(u);
-			if(!m[temp]){
+			if(!m2[temp]){
 				vector<pair<int,bool>>q;
 				for(int i=0;i<r[0].size();++i){
 					auto o=r[0][i];o.second=false;
