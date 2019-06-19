@@ -1,0 +1,15 @@
+CREATE DATABASE OOP;
+USE OOP;
+CREATE TABLE oop_data(stu_id INT NOT NULL, PRIMARY KEY(stu_id), stu_score INT, stu_math INT);
+SHOW columns from oop_data;
+INSERT INTO oop_data(stu_id, stu_score, stu_math) VALUES (2018011243, 12, 30);
+INSERT INTO oop_data(stu_id, stu_score, stu_math) VALUES (2018011344, 23, 44);
+INSERT INTO oop_data(stu_id, stu_score, stu_math) VALUES (2018011445, 76, 66);
+INSERT INTO oop_data(stu_id, stu_score, stu_math) VALUES (2018011246, 90, 80);
+INSERT INTO oop_data(stu_id, stu_score, stu_math) VALUES (2018011345, 77, 0);
+INSERT INTO oop_data(stu_id, stu_score, stu_math) VALUES (2018011490, 0, 45);
+SELECT * from oop_data;
+SELECT stu_id from oop_data WHERE stu_math + stu_score = 42;
+SELECT stu_id from oop_data WHERE stu_math * stu_score = 0;
+SELECT stu_id from oop_data WHERE stu_score - stu_math = 10;
+DROP DATABASE OOP;
