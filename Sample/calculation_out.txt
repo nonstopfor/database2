@@ -1,0 +1,19 @@
+Field	Type	Null	Key	Default	Extra
+stu_id	int(11)	NO	PRI	NULL	
+stu_score	int(11)	YES		NULL	
+stu_math	int(11)	YES		NULL	
+stu_id	stu_score	stu_math	
+2018011243	12	30	
+2018011246	90	80	
+2018011344	23	44	
+2018011345	77	0	
+2018011445	76	66	
+2018011490	0	45	
+stu_id	
+2018011243	
+stu_id	
+2018011345	
+2018011490	
+stu_id	
+2018011246	
+2018011445	

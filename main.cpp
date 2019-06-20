@@ -82,6 +82,7 @@ int main() {
 	vector<string>all_database;
 	//便于测试，先不从存档中读入数据
 	//read_data(database,all_database);
+	//使用该函数即可完成存档数据的读取（数据默认保存在"data_keep.txt"中，可以通过修改data_keep_filename的值来修改储存数据的文件名）
     while(getline(cin,todo,';')) {
     	if (todo=="") continue; 
 		getchar();
@@ -666,7 +667,7 @@ int main() {
 		}
 		//fout<<"nowdatabase: "<<now->getname()<<endl;
 		fout.close();
-		
+		//将数据储存
 	}
 	return 0;
 }
