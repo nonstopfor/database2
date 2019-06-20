@@ -8,5 +8,9 @@ INSERT INTO oop_info(stu_id, stu_name, stu_birth) VALUES (2018001344, "b", 02011
 INSERT INTO oop_info(stu_id, stu_name, stu_birth) VALUES (2018001394, "b", 041231);
 INSERT INTO oop_info(stu_id, stu_name, stu_birth) VALUES (2018011445, "c", 130505);
 select stu_name, stu_id, stu_birth from oop_info where stu_birth>010102;
+select stu_name, stu_id, stu_birth from oop_info where stu_birth<010102;
+select stu_name, stu_id, stu_birth from oop_info where stu_birth<=020115;
+select stu_name, stu_id, stu_birth from oop_info where stu_birth>= '02:01:15';
+select stu_name, stu_id, stu_birth from oop_info where stu_birth!=020115;
 DROP DATABASE OOP;
 ADDTIME("98:01:59", 11);

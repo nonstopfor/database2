@@ -8,4 +8,8 @@ INSERT INTO oop_info(stu_id, stu_name, stu_birth) VALUES (2018001344, "b", 20020
 INSERT INTO oop_info(stu_id, stu_name, stu_birth) VALUES (2018001394, "b", 20041231);
 INSERT INTO oop_info(stu_id, stu_name, stu_birth) VALUES (2018011445, "c", '2013-05-05');
 select stu_name, stu_id, stu_birth from oop_info where stu_birth>20000102;
+select stu_name, stu_id, stu_birth from oop_info where stu_birth=20000101;
+select stu_name, stu_id, stu_birth from oop_info where stu_birth<=20000101;
+select stu_name, stu_id, stu_birth from oop_info where stu_birth>=20000101;
+select stu_name, stu_id, stu_birth from oop_info where stu_birth<>20000101;
 DROP DATABASE OOP;
